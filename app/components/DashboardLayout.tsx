@@ -10,7 +10,7 @@ export default function DashboardLayout({
       <div className="flex flex-col justify-between">
         <ul className="menu p-4 w-72 h-full bg-base-200 text-base-content justify-between">
           <div>
-            <li>
+            <li className="mb-2">
               <Link to="/dashboard/new-scene">
                 <span>
                   <svg

@@ -6,16 +6,13 @@ import DashboardLayout from "~/components/DashboardLayout";
 
 export const loader = async ({ request }) => {
   const response = new Response();
-
   const supabase = createServerClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_ANON_KEY,
     { request, response }
   );
-  const user = (await supabase.auth.getUser()).data;
 
-  const { data } = await supabase.from("scenes").select();
-
+  const { data } = await supabase.auth.getUser();
   return json({ data }, { headers: response.headers });
 };
 
@@ -23,6 +20,7 @@ export default function Index() {
   const { supabase } = useOutletContext();
   const [scenes, setScenes] = useState([]);
   const [state, setState] = useState("");
+  
   useEffect(() => {
     const getData = async () => {
       setState("LOADING");

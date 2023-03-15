@@ -23,6 +23,24 @@ export default function Index() {
 
   return (
     <div>
+      <input type="checkbox" id="account-modal" className="modal-toggle" />
+      <div className="modal">
+        <div className="modal-box relative">
+          <label
+            for="account-modal"
+            class="btn btn-sm btn-circle absolute right-2 top-2"
+          >
+            ✕
+          </label>
+          <h3 className="text-lg font-bold">draw.puntgris accounts</h3>
+          <div className="py-4">
+            This is mostly for personal use but if you would like an account you can reach me at{" "}
+            <a href="https://puntogris.com/" className="link link-primary">
+              puntogris.com
+            </a>
+          </div>
+        </div>
+      </div>
       <div className="hero min-h-screen bg-base-200">
         <div className="hero-content flex-col lg:flex-row-reverse">
           <div className="text-center lg:text-left">
@@ -59,10 +77,15 @@ export default function Index() {
                 />
                 <label className="label">
                   <a
-                    href="/dashboard"
+                    href="https://puntogris.com/"
                     className="link-hover label-text-alt link"
                   >
-                    Want an account?
+                    <label
+                      for="account-modal"
+                      class="link-hover label-text-alt link"
+                    >
+                      Want an account?
+                    </label>
                   </a>
                 </label>
               </div>
