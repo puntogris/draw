@@ -20,7 +20,7 @@ export default function Index() {
   const { supabase } = useOutletContext();
   const [scenes, setScenes] = useState([]);
   const [state, setState] = useState("");
-  
+
   useEffect(() => {
     const getData = async () => {
       setState("LOADING");

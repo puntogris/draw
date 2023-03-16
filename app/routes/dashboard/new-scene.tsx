@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useState } from "react";
 import DashboardLayout from "~/components/DashboardLayout";
 import { json } from "@remix-run/node";
+
 export const loader = async ({ request }) => {
   const response = new Response();
 
@@ -25,6 +26,7 @@ export default function NewScene() {
   const navigate = useNavigate();
   const { data } = useLoaderData();
   const userId = data.user.id;
+  
   const handleLogin = async () => {
     setState("LOADING");
     const { error } = await supabase
