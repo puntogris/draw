@@ -1,12 +1,38 @@
+import { json, redirect } from "@remix-run/node";
 import { useNavigate, useOutletContext } from "@remix-run/react";
-import { useState } from "react";
+import { createServerClient } from "@supabase/auth-helpers-remix";
+import { useEffect, useState } from "react";
+
+export const loader = async ({ request }) => {
+  const response = new Response();
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY,
+    { request, response }
+  );
+
+  const { data } = await supabase.auth.getUser();
+
+  if (data && data.user) {
+    return redirect("/dashboard/draw");
+  } else {
+    return json({ data }, { headers: response.headers });
+  }
+};
 
 export default function Index() {
   const { supabase } = useOutletContext();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
   const [state, setState] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (document) {
+      setEmail(document.getElementById("email_input")?.value);
+      setPassword(document.getElementById("password_input")?.value);
+    }
+  }, []);
 
   const handleLogin = async () => {
     setState("LOADING");
@@ -27,14 +53,15 @@ export default function Index() {
       <div className="modal">
         <div className="modal-box relative">
           <label
-            for="account-modal"
-            class="btn btn-sm btn-circle absolute right-2 top-2"
+            htmlFor="account-modal"
+            className="btn btn-sm btn-circle absolute right-2 top-2"
           >
             ✕
           </label>
           <h3 className="text-lg font-bold">draw.puntgris accounts</h3>
           <div className="py-4">
-            This is mostly for personal use but if you would like an account you can reach me at{" "}
+            This is mostly for personal use but if you would like an account you
+            can reach me at{" "}
             <a href="https://puntogris.com/" className="link link-primary">
               puntogris.com
             </a>
@@ -59,6 +86,7 @@ export default function Index() {
                   <span className="label-text">Email</span>
                 </label>
                 <input
+                  id="email_input"
                   type="text"
                   placeholder="email"
                   className="input-bordered input"
@@ -70,6 +98,7 @@ export default function Index() {
                   <span className="label-text">Password</span>
                 </label>
                 <input
+                  id="password_input"
                   type="password"
                   placeholder="password"
                   className="input-bordered input"
@@ -81,8 +110,8 @@ export default function Index() {
                     className="link-hover label-text-alt link"
                   >
                     <label
-                      for="account-modal"
-                      class="link-hover label-text-alt link"
+                      htmlFor="account-modal"
+                      className="link-hover label-text-alt link"
                     >
                       Want an account?
                     </label>

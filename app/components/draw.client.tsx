@@ -1,22 +1,24 @@
-import { Excalidraw, MainMenu, WelcomeScreen } from "@excalidraw/excalidraw";
-import { useNavigate } from "@remix-run/react";
+import { Excalidraw, MainMenu, THEME, WelcomeScreen } from "@excalidraw/excalidraw";
+import { useNavigate, useParams } from "@remix-run/react";
 import { useEffect, useState } from "react";
 
 export default function Draw({ id }: { id: string }) {
   const [state, setState] = useState();
   const navigate = useNavigate();
-  const theme = localStorage.getItem("THEME") ?? "dark";
-  localStorage.setItem("LAST_SCENE_ID", id);
-  const savedScene = localStorage.getItem("SCENE_2");
+  const sceneId = localStorage.getItem("LAST_SCENE_ID") as string;
+  const theme = localStorage.getItem("THEME") ?? THEME.DARK;
+  const savedScene = localStorage.getItem(sceneId);
+ 
   // options
-  // every time it changes the scene we save it on local storage
-  // when we open the scene we check local storage and init the scene with that
+  // every time it changes the scene we save it on local storage - DONE
+  // when we open the scene we check local storage and init the scene with that -DONE
+
   // to automatically save it we can save every x time like 30 secons
   // and have a button to force the save
 
   return (
     <div className="h-screen">
-      asda
+      INSPECT HERE
       <Excalidraw
         initialData={{ elements: JSON.parse(savedScene) }}
         UIOptions={{
@@ -33,7 +35,7 @@ export default function Draw({ id }: { id: string }) {
             appState: appState,
             files: {},
           };
-          localStorage.setItem("SCENE_2", JSON.stringify(elements));
+          localStorage.setItem(sceneId, JSON.stringify(elements));
           localStorage.setItem("THEME", appState.theme);
         }}
       >
@@ -44,7 +46,7 @@ export default function Draw({ id }: { id: string }) {
           <MainMenu.DefaultItems.ClearCanvas />
           <MainMenu.Separator />
           <MainMenu.Item onSelect={() => navigate("/dashboard")}>
-            Change scene
+            Dashboard
           </MainMenu.Item>
           <MainMenu.Item onSelect={() => navigate("/dashboard")}>
             Save to cloud

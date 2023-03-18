@@ -2,7 +2,7 @@ import { useLoaderData, useNavigate, useOutletContext } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useState } from "react";
 import DashboardLayout from "~/components/DashboardLayout";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 
 export const loader = async ({ request }) => {
   const response = new Response();
@@ -14,8 +14,11 @@ export const loader = async ({ request }) => {
   );
 
   const { data } = await supabase.auth.getUser();
-
-  return json({ data }, { headers: response.headers });
+  if (data && data.user) {
+    return json({ data }, { headers: response.headers });
+  } else {
+    return redirect("/");
+  }
 };
 
 export default function NewScene() {

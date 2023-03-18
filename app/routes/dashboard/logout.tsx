@@ -1,4 +1,22 @@
+import { json, redirect } from "@remix-run/node";
 import { Link, useOutletContext } from "@remix-run/react";
+import { createServerClient } from "@supabase/auth-helpers-remix";
+
+export const loader = async ({ request }) => {
+  const response = new Response();
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY,
+    { request, response }
+  );
+
+  const { data } = await supabase.auth.getUser();
+  if (data && data.user) {
+    return json({ data }, { headers: response.headers });
+  } else {
+    return redirect("/");
+  }
+};
 
 export default function Index() {
   const { supabase } = useOutletContext();
@@ -13,7 +31,7 @@ export default function Index() {
             Your sessions is closed, see you next time and have a good one!
           </p>
           <Link to="/">
-          <button className="btn btn-primary">Sign in again</button>
+            <button className="btn btn-primary">Sign in again</button>
           </Link>
         </div>
       </div>
