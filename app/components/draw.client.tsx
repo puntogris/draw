@@ -20,12 +20,11 @@ export default function Draw({ id }: { id: string }) {
 
   // to automatically save it we can save every x time like 30 secons
   // and have a button to force the save
-
   return (
     <div className="h-screen">
       INSPECT HERE
       <Excalidraw
-        //  initialData={{ elements: JSON.parse(savedScene) }}
+        initialData={{ elements: JSON.parse(savedScene) }}
         UIOptions={{
           canvasActions: {
             toggleTheme: true,
@@ -45,7 +44,8 @@ export default function Draw({ id }: { id: string }) {
             appState: appState,
             files: {},
           };
-          localStorage.setItem(sceneId, JSON.stringify(elements));
+          const elementsToSave = elements.filter((e)=> !e.isDeleted)
+          localStorage.setItem(sceneId, JSON.stringify(elementsToSave));
           localStorage.setItem("THEME", appState.theme);
         }}
       >
