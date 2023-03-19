@@ -29,17 +29,18 @@ export default function NewScene() {
   const navigate = useNavigate();
   const { data } = useLoaderData();
   const userId = data.user.id;
-  
+
   const handleLogin = async () => {
     setState("LOADING");
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("scenes")
-      .insert({ name: name, description: description, uid: userId });
+      .insert({ name: name, description: description, uid: userId })
+      .select();
 
     if (!error) {
+      localStorage.setItem("LAST_SCENE_ID", data[0].id.toString());
       navigate("/dashboard/draw");
     } else {
-      console.log(error);
       setState("ERROR");
     }
   };
