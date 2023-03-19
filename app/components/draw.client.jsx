@@ -7,19 +7,31 @@ import {
 import { useNavigate } from "@remix-run/react";
 import { useEffect, useState } from "react";
 
-export default function Draw({ id }: { id: string }) {
+export default function Draw({ id, supabase }) {
   const [state, setState] = useState();
   const navigate = useNavigate();
-  const sceneId = localStorage.getItem("LAST_SCENE_ID") as string;
+  const sceneId = localStorage.getItem("LAST_SCENE_ID");
   const theme = localStorage.getItem("THEME") ?? THEME.DARK;
   const savedScene = localStorage.getItem(sceneId);
+  let currentElements = JSON.parse(savedScene);
+  let lastSyncedElemets = null;
 
-  // options
-  // every time it changes the scene we save it on local storage - DONE
-  // when we open the scene we check local storage and init the scene with that -DONE
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (currentElements != lastSyncedElemets) {
+        await supabase
+          .from("scenes")
+          .update({
+            elements: currentElements,
+            updated_at: new Date(),
+          })
+          .eq("id", sceneId);
+      }
+      lastSyncedElemets = currentElements;
+    }, 1231);
+    return () => clearInterval(interval);
+  }, []);
 
-  // to automatically save it we can save every x time like 30 secons
-  // and have a button to force the save
   return (
     <div className="h-screen">
       INSPECT HERE
@@ -34,7 +46,7 @@ export default function Draw({ id }: { id: string }) {
           },
           welcomeScreen: true,
         }}
-        theme="dark"
+        theme={theme}
         onChange={(elements, appState, files) => {
           const template = {
             type: "excalidraw",
@@ -44,7 +56,8 @@ export default function Draw({ id }: { id: string }) {
             appState: appState,
             files: {},
           };
-          const elementsToSave = elements.filter((e)=> !e.isDeleted)
+          const elementsToSave = elements.filter((e) => !e.isDeleted);
+          currentElements = elementsToSave;
           localStorage.setItem(sceneId, JSON.stringify(elementsToSave));
           localStorage.setItem("THEME", appState.theme);
         }}
@@ -65,7 +78,7 @@ export default function Draw({ id }: { id: string }) {
               <WelcomeScreen.Center.MenuItemLoadScene />
               <WelcomeScreen.Center.MenuItemHelp />
               <WelcomeScreen.Center.MenuItem
-                onClick={() => console.log("clicked!")}
+                onSelect={() => console.log("clicked!")}
               >
                 Click me!
               </WelcomeScreen.Center.MenuItem>

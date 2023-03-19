@@ -1,7 +1,7 @@
 import { ClientOnly } from "remix-utils";
 import Draw from "~/components/draw.client";
 import { json } from "@remix-run/node";
-import { redirect, useLoaderData } from "react-router";
+import { redirect, useLoaderData, useOutletContext } from "react-router";
 import { useEffect } from "react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 
@@ -26,6 +26,8 @@ export const loader = async ({ request, params }) => {
 };
 
 export default function Index() {
+  const { supabase } = useOutletContext();
+
   //TODO pass the id and all necesary data from here maybe
   const { data } = useLoaderData();
   console.log(data);
@@ -36,5 +38,5 @@ export default function Index() {
       window.history.replaceState(null, "draw.puntogris", "/dashboard/draw");
     }
   }, []);
-  return <ClientOnly fallback={<></>}>{() => <Draw id={""} />}</ClientOnly>;
+  return <ClientOnly fallback={<></>}>{() => <Draw id={""} supabase={supabase}/>}</ClientOnly>;
 }
