@@ -4,6 +4,12 @@ import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
 import DashboardLayout from "~/components/DashboardLayout";
 
+export const meta = () => ({
+  charset: "utf-8",
+  title: "draw - dashboard",
+  viewport: "width=device-width,initial-scale=1",
+});
+
 export const loader = async ({ request }) => {
   const response = new Response();
   const supabase = createServerClient(

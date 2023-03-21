@@ -2,6 +2,12 @@ import { json, redirect } from "@remix-run/node";
 import { Link, useOutletContext } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 
+export const meta = () => ({
+  charset: "utf-8",
+  title: "draw - sign out",
+  viewport: "width=device-width,initial-scale=1",
+});
+
 export const loader = async ({ request }) => {
   const response = new Response();
   const supabase = createServerClient(

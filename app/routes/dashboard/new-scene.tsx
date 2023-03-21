@@ -4,6 +4,12 @@ import { useState } from "react";
 import DashboardLayout from "~/components/DashboardLayout";
 import { json, redirect } from "@remix-run/node";
 
+export const meta = () => ({
+  charset: "utf-8",
+  title: "draw - new scene",
+  viewport: "width=device-width,initial-scale=1",
+});
+
 export const loader = async ({ request }) => {
   const response = new Response();
 
