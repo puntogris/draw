@@ -71,7 +71,11 @@ export default function Index() {
 function Card({ name, description, sceneId }) {
   const navigate = useNavigate();
   const handleSelection = async () => {
-    localStorage.setItem("LAST_SCENE_ID", sceneId);
+    const data = {
+      id: sceneId,
+      name: name,
+    };
+    localStorage.setItem("CURRENT_SCENE", JSON.stringify(data));
     navigate("/dashboard/draw");
   };
 

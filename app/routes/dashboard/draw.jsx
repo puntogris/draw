@@ -1,9 +1,10 @@
 import { ClientOnly } from "remix-utils";
 import Draw from "~/components/draw.client";
-import { json } from "@remix-run/node";
+import { json, MetaFunction } from "@remix-run/node";
 import { redirect, useLoaderData, useOutletContext } from "react-router";
 import { useEffect } from "react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
+
 
 export const loader = async ({ request, params }) => {
   // url = /some_internal_id/some_name?id=some_id
@@ -30,12 +31,15 @@ export default function Index() {
 
   //TODO pass the id and all necesary data from here maybe
   const { data } = useLoaderData();
-  console.log(data);
   // check if we have a query param with json, we should not save the changes to local storage
 
   useEffect(() => {
     if (window != null) {
       window.history.replaceState(null, "draw.puntogris", "/dashboard/draw");
+    }
+    if(document) {
+      const scene = JSON.parse(localStorage.getItem("CURRENT_SCENE"))
+      document.title = `draw - ${scene.name}`
     }
   }, []);
   return <ClientOnly fallback={<></>}>{() => <Draw id={""} supabase={supabase}/>}</ClientOnly>;
