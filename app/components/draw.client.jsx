@@ -5,22 +5,40 @@ import {
   WelcomeScreen,
 } from "@excalidraw/excalidraw";
 import { useNavigate } from "@remix-run/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { compress, blobToBase64Async } from "../utils/compression";
 
 export default function Draw({ id, supabase }) {
   const scene = JSON.parse(localStorage.getItem("CURRENT_SCENE")) ?? {
     name: "",
-    id: 9999
-  }
-  const sceneId = scene.id
+    id: 9999,
+  };
+  const sceneId = scene.id;
   const savedScene = localStorage.getItem(sceneId);
   let currentScene = JSON.parse(savedScene) ?? {};
   let lastSyncedScene = null;
 
+  let db;
+  const request = indexedDB.open("draw_files_db", 1);
+  request.onerror = (event) => {
+    console.error("Error opening the DB");
+  };
+  request.onsuccess = (event) => {
+    db = event.target.result;
+    console.log("asd");
+  };
+
+  request.onupgradeneeded = (event) => {
+    // Save the IDBDatabase interface
+    const db = event.target.result;
+    db.createObjectStore("draw_files_store",  { keyPath: "id" });
+  };
+
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (lastSyncedScene != currentScene) {
+      let shouldEnableSync = false;
+
+      if (shouldEnableSync) {
         const date = new Date();
         const { error } = await supabase
           .from("scenes")
@@ -43,7 +61,7 @@ export default function Draw({ id, supabase }) {
           localStorage.setItem(`updated_at_${sceneId}`, date.toString());
         }
       }
-    }, 60000);
+    }, 1111);
     return () => clearInterval(interval);
   }, []);
 
@@ -96,13 +114,29 @@ export default function Draw({ id, supabase }) {
           welcomeScreen: true,
         }}
         onChange={(elements, appState, files) => {
-          const sceneToSave = {
-            elements: elements.filter((e) => !e.isDeleted),
-            files: files,
-            appState: appState,
-          };
-          currentScene = sceneToSave;
-          localStorage.setItem(sceneId, JSON.stringify(sceneToSave));
+          localStorage.setItem(
+            `draw_elements_${sceneId}`,
+            JSON.stringify(elements.filter((e) => !e.isDeleted))
+          );
+          localStorage.setItem(
+            `draw_app_state_${sceneId}`,
+            JSON.stringify(appState)
+          );
+          //save files to local db
+          const elementsFiles = elements.filter((e) => e.type == "image" && !e.isDeleted);
+          if (db) {
+            const transaction = db.transaction(
+              ["draw_files_store"],
+              "readwrite"
+            );
+            const objectStore = transaction.objectStore("draw_files_store");
+            elementsFiles.forEach((e) => {
+              const fileToSave = files[e.fileId];
+              if(fileToSave) {
+                objectStore.add(fileToSave);
+              }
+            });
+          }
         }}
       >
         <Welcome />

@@ -60,7 +60,9 @@ export default function Index() {
     <DashboardLayout>
       {state == "LOADING" && <p>Loading</p>}
       {state == "ERROR" && <AlertError />}
-      <div className="grid grid-cols-4 gap-4 p-4">
+
+
+      <div className="grid gap-4 p-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 lg:grid-cols-3  ">
         {scenes.map((entry) => (
           <Card
             key={entry.id}
@@ -86,7 +88,7 @@ function Card({ name, description, sceneId }) {
   };
 
   return (
-    <div className="card w-96 h-40 bg-base-100 shadow-xl">
+    <div className="card h-40 bg-base-100 shadow-xl">
       {/* <figure>
         <img
           src="/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg"
@@ -111,8 +113,8 @@ function Card({ name, description, sceneId }) {
 
 function AlertError() {
   return (
-    <div className="alert alert-error shadow-lg h-10 m-4 max-w-lg mx-auto">
-      <div>
+    <div className="px-4">
+      <div className="rounded-xl alert-error m-4 p-4 flex flex-row gap-5 items-center max-w-md mx-auto">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="stroke-current flex-shrink-0 h-6 w-6"
