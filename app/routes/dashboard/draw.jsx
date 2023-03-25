@@ -33,6 +33,7 @@ export default function Index() {
   const { data } = useLoaderData();
   // check if we have a query param with json, we should not save the changes to local storage
 
+  let lastId
   useEffect(() => {
     if (window != null) {
       window.history.replaceState(null, "draw.puntogris", "/dashboard/draw");
@@ -40,7 +41,9 @@ export default function Index() {
     if(document) {
       const scene = JSON.parse(localStorage.getItem("CURRENT_SCENE"))
       document.title = `draw - ${scene.name}`
+      lastId = localStorage.getItem("CURRENT_SCENE", JSON.stringify(data));
+
     }
   }, []);
-  return <ClientOnly fallback={<></>}>{() => <Draw id={""} supabase={supabase}/>}</ClientOnly>;
+  return <ClientOnly fallback={<></>}>{() => <Draw id={lastId} supabase={supabase}/>}</ClientOnly>;
 }

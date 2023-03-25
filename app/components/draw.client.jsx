@@ -5,103 +5,120 @@ import {
   WelcomeScreen,
 } from "@excalidraw/excalidraw";
 import { useNavigate } from "@remix-run/react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { compress, blobToBase64Async } from "../utils/compression";
 
 export default function Draw({ id, supabase }) {
-  const scene = JSON.parse(localStorage.getItem("CURRENT_SCENE")) ?? {
-    name: "",
-    id: 9999,
-  };
-  const sceneId = scene.id;
-  const savedScene = localStorage.getItem(sceneId);
-  let currentScene = JSON.parse(savedScene) ?? {};
+  const excalidrawApiRef = useRef(null);
+  const excalidrawRef = useCallback((excalidrawApi) => {
+    excalidrawApiRef.current = excalidrawApi;
+  }, []);
+
+  // save elements and app state in different local storage
+  const sceneElements = JSON.parse(localStorage.getItem(`draw_elements_${id}`));
+  const sceneAppState = JSON.parse(
+    localStorage.getItem(`draw_app_state_${id}`)
+  );
+  const sceneInformation = JSON.parse(localStorage.getItem(`draw_scene_${id}`));
+  let sceneFiles = [];
   let lastSyncedScene = null;
 
+  // setup db
   let db;
   const request = indexedDB.open("draw_files_db", 1);
-  request.onerror = (event) => {
+  request.onerror = () => {
     console.error("Error opening the DB");
   };
   request.onsuccess = (event) => {
     db = event.target.result;
-    console.log("asd");
-  };
+    const transaction = db.transaction(["draw_files_store"], "readwrite");
+    const objectStore = transaction.objectStore("draw_files_store");
+    const getFilesRequest = objectStore.getAll();
 
+    getFilesRequest.onsuccess = () => {
+      const files = getFilesRequest.result;
+      sceneFiles = files;
+      excalidrawApiRef.current?.addFiles(files);
+    };
+  };
   request.onupgradeneeded = (event) => {
-    // Save the IDBDatabase interface
-    const db = event.target.result;
-    db.createObjectStore("draw_files_store",  { keyPath: "id" });
+    event.target.result.createObjectStore("draw_files_store", {
+      keyPath: "id",
+    });
   };
 
+  // sync
   useEffect(() => {
     const interval = setInterval(async () => {
+      // we should check to see if the db has a different version, we can check the date that was uploaded
+      // we can show a dialog so the user can accept and upload, bring back the server data or dont do anything
+      // if the conditions arent meet we wont sync to avoid overriding the scene
       let shouldEnableSync = false;
-
       if (shouldEnableSync) {
         const date = new Date();
         const { error } = await supabase
           .from("scenes")
           .update({
             data: {
-              elements: currentScene?.elements,
-              files: currentScene?.files,
-              appState: currentScene?.appState,
+              elements: sceneElements,
+              files: sceneFiles,
+              appState: sceneAppState,
             },
             updated_at: date,
           })
-          .eq("id", sceneId);
+          .eq("id", id);
 
         const preview = await blobToBase64Async(
-          await exportToBlob({ elements: currentScene.elements })
+          await exportToBlob({ elements: sceneElements })
         );
-        localStorage.setItem(`${sceneId}_preview`, compress(preview));
+        localStorage.setItem(`${id}_preview`, compress(preview));
         if (!error) {
-          lastSyncedScene = currentScene;
-          localStorage.setItem(`updated_at_${sceneId}`, date.toString());
+          //  lastSyncedScene = currentScene;
+          localStorage.setItem(`updated_at_${id}`, date.toString());
         }
       }
-    }, 1111);
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="h-screen">
       <Excalidraw
+        ref={excalidrawRef}
         initialData={{
-          elements: currentScene.elements,
-          files: currentScene.files,
+          elements: sceneElements,
+          files: sceneFiles,
           appState: {
-            theme: currentScene?.appState?.theme,
-            viewBackgroundColor: currentScene?.appState?.viewBackgroundColor,
-            selectedElementIds: currentScene?.appState?.selectedElementIds,
-            currentChartType: currentScene?.appState?.currentChartType,
+            theme: sceneAppState?.appState?.theme,
+            viewBackgroundColor: sceneAppState?.appState?.viewBackgroundColor,
+            selectedElementIds: sceneAppState?.appState?.selectedElementIds,
+            currentChartType: sceneAppState?.appState?.currentChartType,
             currentItemBackgroundColor:
-              currentScene?.appState?.currentItemBackgroundColor,
+              sceneAppState?.appState?.currentItemBackgroundColor,
             currentItemEndArrowhead:
-              currentScene?.appState?.currentItemEndArrowhead,
-            currentItemFillStyle: currentScene?.appState?.currentItemFillStyle,
+              sceneAppState?.appState?.currentItemEndArrowhead,
+            currentItemFillStyle: sceneAppState?.appState?.currentItemFillStyle,
             currentItemFontFamily:
-              currentScene?.appState?.currentItemFontFamily,
-            currentItemFontSize: currentScene?.appState?.currentItemFontSize,
-            currentItemOpacity: currentScene?.appState?.currentItemOpacity,
-            currentItemRoughness: currentScene?.appState?.currentItemRoughness,
+              sceneAppState?.appState?.currentItemFontFamily,
+            currentItemFontSize: sceneAppState?.appState?.currentItemFontSize,
+            currentItemOpacity: sceneAppState?.appState?.currentItemOpacity,
+            currentItemRoughness: sceneAppState?.appState?.currentItemRoughness,
             currentItemStartArrowhead:
-              currentScene?.appState?.currentItemStartArrowhead,
+              sceneAppState?.appState?.currentItemStartArrowhead,
             currentItemStrokeColor:
-              currentScene?.appState?.currentItemStrokeColor,
-            currentItemRoundness: currentScene?.appState?.currentItemRoundness,
+              sceneAppState?.appState?.currentItemStrokeColor,
+            currentItemRoundness: sceneAppState?.appState?.currentItemRoundness,
             currentItemStrokeStyle:
-              currentScene?.appState?.currentItemStrokeStyle,
+              sceneAppState?.appState?.currentItemStrokeStyle,
             currentItemStrokeWidth:
-              currentScene?.appState?.currentItemStrokeWidth,
-            currentItemTextAlign: currentScene?.appState?.currentItemTextAlign,
-            cursorButton: currentScene?.appState?.cursorButton,
-            draggingElement: currentScene?.appState?.draggingElement,
-            editingElement: currentScene?.appState?.editingElement,
-            editingGroupId: currentScene?.appState?.editingGroupId,
-            editingLinearElement: currentScene?.appState?.editingLinearElement,
-            activeTool: currentScene?.appState?.activeTool,
+              sceneAppState?.appState?.currentItemStrokeWidth,
+            currentItemTextAlign: sceneAppState?.appState?.currentItemTextAlign,
+            cursorButton: sceneAppState?.appState?.cursorButton,
+            draggingElement: sceneAppState?.appState?.draggingElement,
+            editingElement: sceneAppState?.appState?.editingElement,
+            editingGroupId: sceneAppState?.appState?.editingGroupId,
+            editingLinearElement: sceneAppState?.appState?.editingLinearElement,
+            activeTool: sceneAppState?.appState?.activeTool,
           },
         }}
         UIOptions={{
@@ -115,15 +132,17 @@ export default function Draw({ id, supabase }) {
         }}
         onChange={(elements, appState, files) => {
           localStorage.setItem(
-            `draw_elements_${sceneId}`,
+            `draw_elements_${id}`,
             JSON.stringify(elements.filter((e) => !e.isDeleted))
           );
           localStorage.setItem(
-            `draw_app_state_${sceneId}`,
+            `draw_app_state_${id}`,
             JSON.stringify(appState)
           );
           //save files to local db
-          const elementsFiles = elements.filter((e) => e.type == "image" && !e.isDeleted);
+          const elementsFiles = elements.filter(
+            (e) => e.type == "image" && !e.isDeleted
+          );
           if (db) {
             const transaction = db.transaction(
               ["draw_files_store"],
@@ -132,7 +151,7 @@ export default function Draw({ id, supabase }) {
             const objectStore = transaction.objectStore("draw_files_store");
             elementsFiles.forEach((e) => {
               const fileToSave = files[e.fileId];
-              if(fileToSave) {
+              if (fileToSave) {
                 objectStore.add(fileToSave);
               }
             });

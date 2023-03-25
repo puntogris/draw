@@ -44,13 +44,11 @@ export default function Index() {
     const getData = async () => {
       setState("LOADING");
       const { data, error } = await supabase.from("scenes").select();
-      console.log(data);
       if (!error) {
         setScenes(data);
         setState("IDLE");
       } else {
         setState("ERROR");
-        console.log;
       }
     };
     getData();

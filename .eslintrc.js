@@ -1,4 +1,20 @@
-/** @type {import('eslint').Linter.Config} */
 module.exports = {
-  extends: ["@remix-run/eslint-config", "@remix-run/eslint-config/node"],
-};
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": "plugin:react/recommended",
+    "overrides": [
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "@typescript-eslint"
+    ],
+    "rules": {
+    }
+}
