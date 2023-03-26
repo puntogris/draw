@@ -1,59 +1,46 @@
-import {
-  Excalidraw,
-  exportToBlob,
-  MainMenu,
-  WelcomeScreen,
-} from "@excalidraw/excalidraw";
+import { Excalidraw, MainMenu, WelcomeScreen } from "@excalidraw/excalidraw";
 import { useNavigate } from "@remix-run/react";
-import { useEffect, useState, useCallback, useRef } from "react";
-import { compress, blobToBase64Async } from "../utils/compression";
-
+import { useEffect, useCallback, useRef } from "react";
+import { LocalData } from "~/utils/LocalData";
+import { resolvablePromise, getOrCreateLocalUUID } from "~/utils/utils";
 import isEqual from "lodash/isEqual";
 
 export default function Draw({ id, supabase }) {
+  const initialStatePromiseRef = useRef({ promise: null });
+  if (!initialStatePromiseRef.current.promise) {
+    initialStatePromiseRef.current.promise = resolvablePromise();
+  }
   const excalidrawApiRef = useRef(null);
   const excalidrawRef = useCallback((excalidrawApi) => {
     excalidrawApiRef.current = excalidrawApi;
   }, []);
-
   const sceneInformation = JSON.parse(localStorage.getItem(`draw_scene_${id}`));
   let sceneElements = JSON.parse(localStorage.getItem(`draw_elements_${id}`));
   let sceneAppState = JSON.parse(localStorage.getItem(`draw_app_state_${id}`));
-  let localUUID = localStorage.getItem("draw_local_uuid");
-  if (!localUUID) {
-    const newUUID = crypto.randomUUID();
-    localStorage.setItem("draw_local_uuid", newUUID);
-    localUUID = newUUID;
-  }
+  let localUUID = getOrCreateLocalUUID();
   let sceneFiles = [];
   let lastDataUploaded = null;
 
-  // setup db
-  let db;
-  const request = indexedDB.open("draw_files_db", 1);
-  request.onerror = () => {
-    console.error("Error opening the DB");
-  };
-  request.onsuccess = (event) => {
-    db = event.target.result;
-    const transaction = db.transaction(["draw_files_store"], "readwrite");
-    const objectStore = transaction.objectStore("draw_files_store");
-    const getFilesRequest = objectStore.getAll();
-
-    getFilesRequest.onsuccess = () => {
-      const files = getFilesRequest.result;
-      sceneFiles = files;
-      excalidrawApiRef.current?.addFiles(files);
-    };
-  };
-  request.onupgradeneeded = (event) => {
-    event.target.result.createObjectStore("draw_files_store", {
-      keyPath: "id",
+  useEffect(() => {
+    const filesIds = sceneElements
+      .filter((e) => e.type == "image")
+      .map((e) => e.fileId);
+    LocalData.getFiles(filesIds).then((files) => {
+      //TODO mb just add the files here to the scene
+      // or do this again in the catch in case something fails getting the files we should show the scene anyways
+      const filesData = {};
+      files.forEach((f) => {
+        filesData[f.id] = f;
+      });
+      const scene = {
+        elements: sceneElements,
+        files: filesData,
+        appState: sceneAppState,
+      };
+      sceneFiles = filesData;
+      initialStatePromiseRef.current.promise.resolve(scene);
     });
-    event.target.result.createObjectStore("draw_previews_store", {
-      keyPath: "id",
-    });
-  };
+  }, []);
 
   function startInverval() {
     const interval = setInterval(async () => {
@@ -77,20 +64,7 @@ export default function Draw({ id, supabase }) {
           lastDataUploaded = dataToUpload;
         }
       }
-      if (db) {
-        const preview = await blobToBase64Async(
-          await exportToBlob({ elements: sceneElements })
-        );
-        const transaction = db.transaction(
-          ["draw_previews_store"],
-          "readwrite"
-        );
-        const objectStore = transaction.objectStore("draw_previews_store");
-        objectStore.add({
-          id: id,
-          preview: compress(preview),
-        });
-      }
+      LocalData.savePreview(sceneElements, id.toString());
     }, 3000);
 
     return interval;
@@ -126,15 +100,18 @@ export default function Draw({ id, supabase }) {
     return () => clearInterval(intervalId);
   }, []);
 
+  const onChange = (elements, appState, files) => {
+    sceneElements = elements;
+    sceneAppState = appState;
+    sceneFiles = files;
+    LocalData.save(id.toString(), elements, appState, files, () => {});
+  };
+
   return (
     <div className="h-screen">
       <Excalidraw
         ref={excalidrawRef}
-        initialData={{
-          elements: sceneElements,
-          files: sceneFiles,
-          appState: { ...sceneAppState, collaborators: [] },
-        }}
+        initialData={initialStatePromiseRef.current.promise}
         UIOptions={{
           canvasActions: {
             toggleTheme: true,
@@ -144,36 +121,7 @@ export default function Draw({ id, supabase }) {
           },
           welcomeScreen: true,
         }}
-        onChange={(elements, appState, files) => {
-          sceneElements = elements;
-          sceneAppState = appState;
-          sceneFiles = files;
-          localStorage.setItem(
-            `draw_elements_${id}`,
-            JSON.stringify(elements.filter((e) => !e.isDeleted))
-          );
-          localStorage.setItem(
-            `draw_app_state_${id}`,
-            JSON.stringify(appState)
-          );
-          //save files to local db
-          const elementsFiles = elements.filter(
-            (e) => e.type == "image" && !e.isDeleted
-          );
-          if (db) {
-            const transaction = db.transaction(
-              ["draw_files_store"],
-              "readwrite"
-            );
-            const objectStore = transaction.objectStore("draw_files_store");
-            elementsFiles.forEach((e) => {
-              const fileToSave = files[e.fileId];
-              if (fileToSave) {
-                objectStore.add(fileToSave);
-              }
-            });
-          }
-        }}
+        onChange={onChange}
       >
         <Welcome />
         <Menu />
