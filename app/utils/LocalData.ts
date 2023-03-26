@@ -5,12 +5,12 @@ import {
   BinaryFiles,
 } from "@excalidraw/excalidraw/types/types";
 import { debounce } from "./utils";
-import { createStore, getMany, setMany, set } from "idb-keyval";
-import { blobToBase64Async, compress } from "./compression";
+import { createStore, getMany, setMany, set, get } from "idb-keyval";
+import { blobToBase64Async, compress, decompress } from "./compression";
 import { exportToBlob } from "@excalidraw/excalidraw";
 
 const filesStore = createStore("draw-db", "draw_files_store");
-const previesStore = createStore("draw-db", "draw_previews_store");
+const previewsStore = createStore("draw-db-previews", "draw_previews_store");
 
 export class LocalData {
   private static _save = debounce(
@@ -73,9 +73,17 @@ export class LocalData {
   }
 
   static async savePreview(elements: readonly ExcalidrawElement[], id: string) {
-    const preview = await blobToBase64Async(
-        await exportToBlob({elements: elements})
-      );
-      set([id, compress(preview)], previesStore)
+    const blob = await exportToBlob({ elements: elements, exportPadding: 40 });
+    const preview = await blobToBase64Async(blob);
+    await set(id, compress(preview), previewsStore);
+  }
+
+  static async getPreview(id: string) {
+    const preview = await get(id, previewsStore);
+    if (preview) {
+      return decompress(preview);
+    } else {
+      null;
+    }
   }
 }

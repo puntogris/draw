@@ -10,15 +10,15 @@ export default function DashboardLayout({
       <div className="navbar bg-base-100">
         <div className="flex-1 gap-4">
           <Link to="/dashboard/new-scene">
-            <button className="btn btn-ghost capitalize">New scene</button>
+            <button className="btn-ghost btn capitalize">New scene</button>
           </Link>
           <Link to="/dashboard">
-            <button className="btn btn-ghost capitalize">Scenes</button>
+            <button className="btn-ghost btn capitalize">Scenes</button>
           </Link>
         </div>
         <div className="flex-none">
           <Link to="/dashboard/logout">
-            <button className="btn btn-ghost capitalize">
+            <button className="btn-ghost btn capitalize">
               <span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +26,7 @@ export default function DashboardLayout({
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-7 h-7 bg-base-100 p-1 rounded-md"
+                  className="h-7 w-7 rounded-md bg-base-100 p-1"
                 >
                   <path
                     strokeLinecap="round"

@@ -25,6 +25,7 @@ export default function Draw({ id, supabase }) {
     const filesIds = sceneElements
       .filter((e) => e.type == "image")
       .map((e) => e.fileId);
+
     LocalData.getFiles(filesIds).then((files) => {
       //TODO mb just add the files here to the scene
       // or do this again in the catch in case something fails getting the files we should show the scene anyways
@@ -35,7 +36,7 @@ export default function Draw({ id, supabase }) {
       const scene = {
         elements: sceneElements,
         files: filesData,
-        appState: sceneAppState,
+        appState: {...sceneAppState, collaborators: [] },
       };
       sceneFiles = filesData;
       initialStatePromiseRef.current.promise.resolve(scene);
@@ -117,7 +118,7 @@ export default function Draw({ id, supabase }) {
             toggleTheme: true,
             export: {
               onExportToBackend(exportedElements, appState, files, canvas) {},
-            },
+            }
           },
           welcomeScreen: true,
         }}

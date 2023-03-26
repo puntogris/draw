@@ -54,9 +54,9 @@ export default function NewScene() {
   return (
     <DashboardLayout>
       <div className="h-full">
-        <div className="card w-full max-w-2xl flex-shrink-0 bg-base-100 shadow-2xl mx-auto mt-14">
+        <div className="card mx-auto mt-14 w-full max-w-2xl flex-shrink-0 bg-base-100 shadow-2xl">
           <div className="card-body">
-            <p className="text-lg font-bold text-center">Create new scene</p>
+            <p className="text-center text-lg font-bold">Create new scene</p>
             {state == "ERROR" && <AlertError />}
             <div className="form-control">
               <label className="label">
@@ -83,7 +83,7 @@ export default function NewScene() {
             <div className="form-control mt-6">
               {state == "LOADING" ? (
                 <button
-                  className="btn-primary btn loading"
+                  className="loading btn-primary btn"
                   onClick={handleLogin}
                 >
                   Create
@@ -102,11 +102,11 @@ export default function NewScene() {
 }
 function AlertError() {
   return (
-    <div className="alert alert-error shadow-lg h-10">
+    <div className="alert alert-error h-10 shadow-lg">
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="stroke-current flex-shrink-0 h-6 w-6"
+          className="h-6 w-6 flex-shrink-0 stroke-current"
           fill="none"
           viewBox="0 0 24 24"
         >

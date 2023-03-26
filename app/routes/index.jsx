@@ -54,7 +54,7 @@ export default function Index() {
         <div className="modal-box relative">
           <label
             htmlFor="account-modal"
-            className="btn btn-sm btn-circle absolute right-2 top-2"
+            className="btn-sm btn-circle btn absolute right-2 top-2"
           >
             ✕
           </label>
@@ -62,7 +62,7 @@ export default function Index() {
           <div className="py-4">
             This is mostly for personal use but if you would like an account you
             can reach me at{" "}
-            <a href="https://puntogris.com/" className="link link-primary">
+            <a href="https://puntogris.com/" className="link-primary link">
               puntogris.com
             </a>
           </div>
@@ -121,7 +121,7 @@ export default function Index() {
               <div className="form-control mt-6">
                 {state == "LOADING" ? (
                   <button
-                    className="btn-primary btn loading"
+                    className="loading btn-primary btn"
                     onClick={handleLogin}
                   >
                     Login
@@ -142,11 +142,11 @@ export default function Index() {
 
 function AlertError() {
   return (
-    <div className="alert alert-error shadow-lg h-10">
+    <div className="alert alert-error h-10 shadow-lg">
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="stroke-current flex-shrink-0 h-6 w-6"
+          className="h-6 w-6 flex-shrink-0 stroke-current"
           fill="none"
           viewBox="0 0 24 24"
         >

@@ -37,7 +37,7 @@ export default function Index() {
             Your sessions is closed, see you next time and have a good one!
           </p>
           <Link to="/">
-            <button className="btn btn-primary">Sign in again</button>
+            <button className="btn-primary btn">Sign in again</button>
           </Link>
         </div>
       </div>

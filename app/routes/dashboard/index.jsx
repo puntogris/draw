@@ -3,6 +3,8 @@ import { useNavigate, useOutletContext } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
 import DashboardLayout from "~/components/DashboardLayout";
+import Card from "~/components/card.client";
+import Spinner from "~/components/spinner";
 
 export const meta = () => ({
   charset: "utf-8",
@@ -56,16 +58,21 @@ export default function Index() {
 
   return (
     <DashboardLayout>
-      {state == "LOADING" && <p>Loading</p>}
+      {state == "LOADING" && (
+        <div className="flex h-screen items-center justify-center">
+          <Spinner size={50} />
+        </div>
+      )}
       {state == "ERROR" && <AlertError />}
 
-      <div className="grid gap-4 p-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 lg:grid-cols-3  ">
+      <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {scenes.map((entry) => (
           <Card
             key={entry.id}
             name={entry.name}
             description={entry.description}
             sceneId={entry.id}
+            elements={entry.data.elements}
           />
         ))}
       </div>
@@ -73,48 +80,13 @@ export default function Index() {
   );
 }
 
-function Card({ name, description, sceneId }) {
-  const navigate = useNavigate();
-  const handleSelection = async () => {
-    const data = {
-      id: sceneId,
-      name: name,
-    };
-    localStorage.setItem("CURRENT_SCENE", JSON.stringify(data));
-    navigate("/dashboard/draw");
-  };
-
-  return (
-    <div className="card h-40 bg-base-100 shadow-md rounded-md">
-      {/* <figure>
-        <img
-          src="/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg"
-          alt="Shoes"
-        />
-      </figure> */}
-      <div className="card-body">
-        <h2 className="card-title">{name}</h2>
-        <p>{description}</p>
-        <div className="card-actions justify-end">
-          <button
-            className="btn btn-primary btn-sm w-full"
-            onClick={handleSelection}
-          >
-            open
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function AlertError() {
   return (
     <div className="px-4">
-      <div className="rounded-xl alert-error m-4 p-4 flex flex-row gap-5 items-center max-w-md mx-auto">
+      <div className="alert-error m-4 mx-auto flex max-w-md flex-row items-center gap-5 rounded-xl p-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="stroke-current flex-shrink-0 h-6 w-6"
+          className="h-6 w-6 flex-shrink-0 stroke-current"
           fill="none"
           viewBox="0 0 24 24"
         >

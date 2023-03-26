@@ -44,7 +44,7 @@ export default function Index() {
   }, []);
   return (
     <ClientOnly fallback={<></>}>
-      {() => <Draw id={lastId} supabase={supabase} />}
+      {() => <Draw id={"17"} supabase={supabase} />}
     </ClientOnly>
   );
 }
