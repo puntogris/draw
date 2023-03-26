@@ -15,6 +15,7 @@
     "@vercel/node": "^2.6.2",
     "daisyui": "^2.51.3",
     "isbot": "latest",
+    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "remix-utils": "^6.0.0"

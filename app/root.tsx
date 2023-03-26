@@ -9,7 +9,7 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import { createBrowserClient } from "@supabase/auth-helpers-remix";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import stylesheet from "~/tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -33,6 +33,13 @@ export const loader = () => {
 export default function App() {
   const { env } = useLoaderData();
   const [supabase] = useState(() => createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY))
+
+  useEffect(()=> {
+    if(!localStorage.getItem("draw_local_uuid")) {
+      localStorage.setItem("draw_local_uuid", crypto.randomUUID())
+    }
+  },[])
+ 
   return (
     <html lang="en" data-theme="garden">
       <head>

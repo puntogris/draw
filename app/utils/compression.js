@@ -1,7 +1,7 @@
 const keyStr =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
-function compress(input) {
+export function compress(input) {
   var output = [],
     ol = 1,
     output_,
@@ -67,7 +67,7 @@ function compress(input) {
   return output;
 }
 
-function decompress(input) {
+export function decompress(input) {
   var output = [];
   var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
   var i = 1;
@@ -108,7 +108,7 @@ function decompress(input) {
   return output.join("");
 }
 
-async function blobToBase64Async(blob) {
+export async function blobToBase64Async(blob) {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.onerror = (e) => reject(fileReader.error);

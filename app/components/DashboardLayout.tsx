@@ -10,15 +10,15 @@ export default function DashboardLayout({
       <div className="navbar bg-base-100">
         <div className="flex-1 gap-4">
           <Link to="/dashboard/new-scene">
-            <button className="btn btn-ghost">New scene</button>
+            <button className="btn btn-ghost capitalize">New scene</button>
           </Link>
           <Link to="/dashboard">
-            <button className="btn btn-ghost">Scenes</button>
+            <button className="btn btn-ghost capitalize">Scenes</button>
           </Link>
         </div>
         <div className="flex-none">
           <Link to="/dashboard/logout">
-            <button className="btn btn-ghost">
+            <button className="btn btn-ghost capitalize">
               <span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

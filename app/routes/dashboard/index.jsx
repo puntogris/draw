@@ -59,7 +59,6 @@ export default function Index() {
       {state == "LOADING" && <p>Loading</p>}
       {state == "ERROR" && <AlertError />}
 
-
       <div className="grid gap-4 p-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 lg:grid-cols-3  ">
         {scenes.map((entry) => (
           <Card
@@ -86,7 +85,7 @@ function Card({ name, description, sceneId }) {
   };
 
   return (
-    <div className="card h-40 bg-base-100 shadow-xl">
+    <div className="card h-40 bg-base-100 shadow-md rounded-md">
       {/* <figure>
         <img
           src="/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg"

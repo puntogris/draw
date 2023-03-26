@@ -8,20 +8,25 @@ import { useNavigate } from "@remix-run/react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { compress, blobToBase64Async } from "../utils/compression";
 
+import isEqual from "lodash/isEqual";
+
 export default function Draw({ id, supabase }) {
   const excalidrawApiRef = useRef(null);
   const excalidrawRef = useCallback((excalidrawApi) => {
     excalidrawApiRef.current = excalidrawApi;
   }, []);
 
-  // save elements and app state in different local storage
-  const sceneElements = JSON.parse(localStorage.getItem(`draw_elements_${id}`));
-  const sceneAppState = JSON.parse(
-    localStorage.getItem(`draw_app_state_${id}`)
-  );
   const sceneInformation = JSON.parse(localStorage.getItem(`draw_scene_${id}`));
+  let sceneElements = JSON.parse(localStorage.getItem(`draw_elements_${id}`));
+  let sceneAppState = JSON.parse(localStorage.getItem(`draw_app_state_${id}`));
+  let localUUID = localStorage.getItem("draw_local_uuid");
+  if (!localUUID) {
+    const newUUID = crypto.randomUUID();
+    localStorage.setItem("draw_local_uuid", newUUID);
+    localUUID = newUUID;
+  }
   let sceneFiles = [];
-  let lastSyncedScene = null;
+  let lastDataUploaded = null;
 
   // setup db
   let db;
@@ -45,40 +50,80 @@ export default function Draw({ id, supabase }) {
     event.target.result.createObjectStore("draw_files_store", {
       keyPath: "id",
     });
+    event.target.result.createObjectStore("draw_previews_store", {
+      keyPath: "id",
+    });
   };
 
-  // sync
-  useEffect(() => {
+  function startInverval() {
     const interval = setInterval(async () => {
-      // we should check to see if the db has a different version, we can check the date that was uploaded
-      // we can show a dialog so the user can accept and upload, bring back the server data or dont do anything
-      // if the conditions arent meet we wont sync to avoid overriding the scene
-      let shouldEnableSync = false;
-      if (shouldEnableSync) {
-        const date = new Date();
+      const dataToUpload = {
+        elements: sceneElements,
+        files: sceneFiles,
+        appState: sceneAppState,
+      };
+
+      if (!isEqual(dataToUpload, lastDataUploaded)) {
         const { error } = await supabase
           .from("scenes")
           .update({
-            data: {
-              elements: sceneElements,
-              files: sceneFiles,
-              appState: sceneAppState,
-            },
-            updated_at: date,
+            data: dataToUpload,
+            local_uuid: localUUID,
+            updated_at: new Date().getTime(),
           })
           .eq("id", id);
 
+        if (!error) {
+          lastDataUploaded = dataToUpload;
+        }
+      }
+      if (db) {
         const preview = await blobToBase64Async(
           await exportToBlob({ elements: sceneElements })
         );
-        localStorage.setItem(`${id}_preview`, compress(preview));
-        if (!error) {
-          //  lastSyncedScene = currentScene;
-          localStorage.setItem(`updated_at_${id}`, date.toString());
-        }
+        const transaction = db.transaction(
+          ["draw_previews_store"],
+          "readwrite"
+        );
+        const objectStore = transaction.objectStore("draw_previews_store");
+        objectStore.add({
+          id: id,
+          preview: compress(preview),
+        });
       }
-    }, 60000);
-    return () => clearInterval(interval);
+    }, 3000);
+
+    return interval;
+  }
+
+  // sync
+  useEffect(() => {
+    let intervalId;
+    async function fetch() {
+      const { error, data } = await supabase
+        .from("scenes")
+        .select()
+        .eq("id", parseInt(id));
+
+      if (data && data[0]) {
+        const cloudLocalUUID = data[0].local_uuid.toString();
+        if (cloudLocalUUID == localUUID) {
+          // we can update, last update was from these device
+          clearInterval(intervalId);
+          intervalId = startInverval();
+        } else {
+          // date doest not match so it must be from another device or the local db was deleted
+          // ask the user what to do
+        }
+      } else {
+        // we dont update as we dont know what went wrong, mb not internet connection
+        // we could show and alert to let the user know and mb a button to retry
+      }
+      return () => clearInterval(intervalId);
+    }
+
+    fetch();
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -88,38 +133,7 @@ export default function Draw({ id, supabase }) {
         initialData={{
           elements: sceneElements,
           files: sceneFiles,
-          appState: {
-            theme: sceneAppState?.appState?.theme,
-            viewBackgroundColor: sceneAppState?.appState?.viewBackgroundColor,
-            selectedElementIds: sceneAppState?.appState?.selectedElementIds,
-            currentChartType: sceneAppState?.appState?.currentChartType,
-            currentItemBackgroundColor:
-              sceneAppState?.appState?.currentItemBackgroundColor,
-            currentItemEndArrowhead:
-              sceneAppState?.appState?.currentItemEndArrowhead,
-            currentItemFillStyle: sceneAppState?.appState?.currentItemFillStyle,
-            currentItemFontFamily:
-              sceneAppState?.appState?.currentItemFontFamily,
-            currentItemFontSize: sceneAppState?.appState?.currentItemFontSize,
-            currentItemOpacity: sceneAppState?.appState?.currentItemOpacity,
-            currentItemRoughness: sceneAppState?.appState?.currentItemRoughness,
-            currentItemStartArrowhead:
-              sceneAppState?.appState?.currentItemStartArrowhead,
-            currentItemStrokeColor:
-              sceneAppState?.appState?.currentItemStrokeColor,
-            currentItemRoundness: sceneAppState?.appState?.currentItemRoundness,
-            currentItemStrokeStyle:
-              sceneAppState?.appState?.currentItemStrokeStyle,
-            currentItemStrokeWidth:
-              sceneAppState?.appState?.currentItemStrokeWidth,
-            currentItemTextAlign: sceneAppState?.appState?.currentItemTextAlign,
-            cursorButton: sceneAppState?.appState?.cursorButton,
-            draggingElement: sceneAppState?.appState?.draggingElement,
-            editingElement: sceneAppState?.appState?.editingElement,
-            editingGroupId: sceneAppState?.appState?.editingGroupId,
-            editingLinearElement: sceneAppState?.appState?.editingLinearElement,
-            activeTool: sceneAppState?.appState?.activeTool,
-          },
+          appState: { ...sceneAppState, collaborators: [] },
         }}
         UIOptions={{
           canvasActions: {
@@ -131,6 +145,9 @@ export default function Draw({ id, supabase }) {
           welcomeScreen: true,
         }}
         onChange={(elements, appState, files) => {
+          sceneElements = elements;
+          sceneAppState = appState;
+          sceneFiles = files;
           localStorage.setItem(
             `draw_elements_${id}`,
             JSON.stringify(elements.filter((e) => !e.isDeleted))
