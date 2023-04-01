@@ -1,8 +1,18 @@
-import { useLoaderData, useNavigate, useOutletContext } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useNavigate,
+  useNavigation,
+} from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
-import { useState } from "react";
+import { useEffect } from "react";
 import DashboardLayout from "~/components/DashboardLayout";
-import { json, redirect } from "@remix-run/node";
+import {
+  ActionFunction,
+  json,
+  LoaderFunction,
+  redirect,
+} from "@remix-run/node";
 
 export const meta = () => ({
   charset: "utf-8",
@@ -10,9 +20,13 @@ export const meta = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
-export const loader = async ({ request }) => {
-  const response = new Response();
+type ActionData = {
+  sceneId?: string;
+  error?: string;
+};
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const response = new Response();
   const supabase = createServerClient(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_ANON_KEY!,
@@ -27,29 +41,59 @@ export const loader = async ({ request }) => {
   }
 };
 
+export const action: ActionFunction = async ({ request }) => {
+  const body = await request.formData();
+  const name = body.get("name");
+  const description = body.get("description");
+  const response = new Response();
+
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+    return {
+      error: "Error",
+    };
+  }
+
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY,
+    { request, response }
+  );
+
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) {
+    return {
+      error: "Error",
+    };
+  }
+
+  const { data: insertData, error: insertError } = await supabase
+    .from("scenes")
+    .insert({ name: name, description: description, uid: userData.user.id })
+    .select();
+
+  if (!insertError && insertData[0]) {
+    return {
+      sceneId: insertData[0].id.toString(),
+    };
+  } else {
+    return {
+      error: "Error",
+    };
+  }
+};
+
 export default function NewScene() {
-  const { supabase } = useOutletContext();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [state, setState] = useState("");
   const navigate = useNavigate();
-  const { data } = useLoaderData();
-  const userId = data.user.id;
+  const navigation = useNavigation();
+  const isLoading = navigation.state !== "idle";
+  const actionData = useActionData<ActionData | undefined>();
 
-  const handleLogin = async () => {
-    setState("LOADING");
-    const { data, error } = await supabase
-      .from("scenes")
-      .insert({ name: name, description: description, uid: userId })
-      .select();
-
-    if (!error) {
-      localStorage.setItem("LAST_SCENE_ID", data[0].id.toString());
+  useEffect(() => {
+    if (actionData?.sceneId) {
+      localStorage.setItem("LAST_SCENE_ID", actionData.sceneId);
       navigate("/dashboard/draw");
-    } else {
-      setState("ERROR");
     }
-  };
+  }, [actionData]);
 
   return (
     <DashboardLayout>
@@ -57,49 +101,45 @@ export default function NewScene() {
         <div className="card mx-auto mt-14 w-full max-w-2xl flex-shrink-0 bg-base-100 shadow-2xl">
           <div className="card-body">
             <p className="text-center text-lg font-bold">Create new scene</p>
-            {state == "ERROR" && <AlertError />}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Title</span>
-              </label>
-              <input
-                type="text"
-                placeholder="title"
-                className="input-bordered input"
-                onChange={(v) => setName(v.target.value)}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Description</span>
-              </label>
-              <input
-                type="text"
-                placeholder="description"
-                className="input-bordered input"
-                onChange={(v) => setDescription(v.target.value)}
-              />
-            </div>
-            <div className="form-control mt-6">
-              {state == "LOADING" ? (
-                <button
-                  className="loading btn-primary btn"
-                  onClick={handleLogin}
-                >
-                  Create
-                </button>
-              ) : (
-                <button className="btn-primary btn" onClick={handleLogin}>
-                  Creating
-                </button>
-              )}
-            </div>
+            {actionData?.error && <AlertError />}
+            <Form method="post">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Title</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="title"
+                  className="input-bordered input"
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Description</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="description"
+                  className="input-bordered input"
+                />
+              </div>
+              <div className="form-control mt-6">
+                {isLoading ? (
+                  <button className="loading btn-primary btn">Creating</button>
+                ) : (
+                  <button className=" btn-primary btn" type="submit">
+                    Create
+                  </button>
+                )}
+              </div>
+            </Form>
           </div>
         </div>
       </div>
     </DashboardLayout>
   );
 }
+
 function AlertError() {
   return (
     <div className="alert alert-error h-10 shadow-lg">

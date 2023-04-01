@@ -1,4 +1,4 @@
-import { json, redirect } from "@remix-run/node";
+import { json, LoaderFunction, redirect } from "@remix-run/node";
 import { Link, useOutletContext } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 
@@ -8,8 +8,11 @@ export const meta = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
-export const loader = async ({ request }) => {
+export const loader: LoaderFunction = async ({ request }) => {
   const response = new Response();
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+    return redirect("/");
+  }
   const supabase = createServerClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_ANON_KEY,
