@@ -72,7 +72,7 @@ export default function Index() {
             name={entry.name}
             description={entry.description}
             sceneId={entry.id}
-            elements={entry.data.elements}
+            elements={entry.elements}
           />
         ))}
       </div>

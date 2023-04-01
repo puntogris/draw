@@ -1,5 +1,5 @@
 import { json, redirect } from "@remix-run/node";
-import { useNavigate, useOutletContext } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
 
@@ -20,12 +20,35 @@ export const loader = async ({ request }) => {
   }
 };
 
+export async function action({ request }) {
+  const body = await request.formData();
+  const response = new Response();
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY,
+    { request, response }
+  );
+  const { error } = await supabase.auth.signInWithPassword({
+    email: body.get("email"),
+    password: body.get("password"),
+  });
+  if (!error) {
+    return redirect("/dashboard", { headers: response.headers });
+  } else {
+    return {
+      error: "Error authenticating.",
+    };
+  }
+}
+
 export default function Index() {
-  const { supabase } = useOutletContext();
+  const navigation = useNavigation();
+  const actionData = useActionData();
+  const isLoading = navigation.state !== "idle";
+  const hasError = actionData?.error;
+
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const [state, setState] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (document) {
@@ -33,19 +56,6 @@ export default function Index() {
       setPassword(document.getElementById("password_input")?.value);
     }
   }, []);
-
-  const handleLogin = async () => {
-    setState("LOADING");
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-    if (!error) {
-      navigate("/dashboard");
-    } else {
-      setState("ERROR");
-    }
-  };
 
   return (
     <div>
@@ -77,63 +87,61 @@ export default function Index() {
               <a href="https://github.com/excalidraw/excalidraw">Exalidraw</a>.
             </p>
           </div>
-
-          <div className="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
-            <div className="card-body">
-              {state == "ERROR" && <AlertError />}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Email</span>
-                </label>
-                <input
-                  id="email_input"
-                  type="text"
-                  placeholder="email"
-                  className="input-bordered input"
-                  onChange={(v) => setEmail(v.target.value)}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Password</span>
-                </label>
-                <input
-                  id="password_input"
-                  type="password"
-                  placeholder="password"
-                  className="input-bordered input"
-                  onChange={(v) => setPassword(v.target.value)}
-                />
-                <label className="label">
-                  <a
-                    href="https://puntogris.com/"
-                    className="link-hover label-text-alt link"
-                  >
-                    <label
-                      htmlFor="account-modal"
+            <div className="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
+              <Form method="post">
+              <div className="card-body">
+                {hasError && !isLoading && <AlertError />}
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Email</span>
+                  </label>
+                  <input
+                    id="email_input"
+                    type="text"
+                    name="email"
+                    placeholder="email"
+                    className="input-bordered input"
+                    onChange={(v) => setEmail(v.target.value)}
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Password</span>
+                  </label>
+                  <input
+                    id="password_input"
+                    type="password"
+                    name="password"
+                    placeholder="password"
+                    className="input-bordered input"
+                    onChange={(v) => setPassword(v.target.value)}
+                  />
+                  <label className="label">
+                    <a
+                      href="https://puntogris.com/"
                       className="link-hover label-text-alt link"
                     >
-                      Want an account?
-                    </label>
-                  </a>
-                </label>
+                      <label
+                        htmlFor="account-modal"
+                        className="link-hover label-text-alt link"
+                      >
+                        Want an account?
+                      </label>
+                    </a>
+                  </label>
+                </div>
+                <div className="form-control mt-6">
+                  {isLoading ? (
+                    <button className="loading btn-primary btn">Loging</button>
+                  ) : (
+                    <button className="btn-primary btn" type="submit">
+                      Login
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="form-control mt-6">
-                {state == "LOADING" ? (
-                  <button
-                    className="loading btn-primary btn"
-                    onClick={handleLogin}
-                  >
-                    Login
-                  </button>
-                ) : (
-                  <button className="btn-primary btn" onClick={handleLogin}>
-                    Login
-                  </button>
-                )}
-              </div>
+              </Form>
             </div>
-          </div>
         </div>
       </div>
     </div>

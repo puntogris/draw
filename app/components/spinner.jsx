@@ -19,7 +19,6 @@ export default function Spinner({ size }) {
           fill="currentFill"
         />
       </svg>
-      <span tabIndex="sr-only">Loading...</span>
     </div>
   );
 }
