@@ -59,6 +59,94 @@ export default function Index() {
 
   return (
     <div>
+      <AccountModal />
+      <FormContainer>
+        <Form method="post">
+          <div className="card-body">
+            {hasError && !isLoading && <AlertError />}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Email</span>
+              </label>
+              <input
+                id="email_input"
+                type="text"
+                name="email"
+                placeholder="email"
+                className="input-bordered input"
+                onChange={(v) => setEmail(v.target.value)}
+              />
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Password</span>
+              </label>
+              <input
+                id="password_input"
+                type="password"
+                name="password"
+                placeholder="password"
+                className="input-bordered input"
+                onChange={(v) => setPassword(v.target.value)}
+              />
+              <WhantAnAccountLabel />
+            </div>
+            <div className="form-control mt-6">
+              {isLoading ? (
+                <button className="loading btn-primary btn">Loging</button>
+              ) : (
+                <button className="btn-primary btn" type="submit">
+                  Login
+                </button>
+              )}
+            </div>
+          </div>
+        </Form>
+      </FormContainer>
+    </div>
+  );
+}
+
+function FormContainer({ children }) {
+  return (
+    <div className="hero min-h-screen bg-base-200">
+      <div className="hero-content flex-col lg:flex-row-reverse">
+        <div className="text-center lg:text-left">
+          <h1 className="text-5xl font-bold">draw.puntogris</h1>
+          <p className="py-6">
+            Personal site for drawing using{" "}
+            <a href="https://github.com/excalidraw/excalidraw">Exalidraw</a>.
+          </p>
+        </div>
+        <div className="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WhantAnAccountLabel() {
+  return (
+    <label className="label">
+      <a
+        href="https://puntogris.com/"
+        className="link-hover label-text-alt link"
+      >
+        <label
+          htmlFor="account-modal"
+          className="link-hover label-text-alt link"
+        >
+          Want an account?
+        </label>
+      </a>
+    </label>
+  );
+}
+
+function AccountModal() {
+  return (
+    <>
       <input type="checkbox" id="account-modal" className="modal-toggle" />
       <div className="modal">
         <div className="modal-box relative">
@@ -78,73 +166,7 @@ export default function Index() {
           </div>
         </div>
       </div>
-      <div className="hero min-h-screen bg-base-200">
-        <div className="hero-content flex-col lg:flex-row-reverse">
-          <div className="text-center lg:text-left">
-            <h1 className="text-5xl font-bold">draw.puntogris</h1>
-            <p className="py-6">
-              Personal site for drawing using{" "}
-              <a href="https://github.com/excalidraw/excalidraw">Exalidraw</a>.
-            </p>
-          </div>
-            <div className="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
-              <Form method="post">
-              <div className="card-body">
-                {hasError && !isLoading && <AlertError />}
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Email</span>
-                  </label>
-                  <input
-                    id="email_input"
-                    type="text"
-                    name="email"
-                    placeholder="email"
-                    className="input-bordered input"
-                    onChange={(v) => setEmail(v.target.value)}
-                  />
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Password</span>
-                  </label>
-                  <input
-                    id="password_input"
-                    type="password"
-                    name="password"
-                    placeholder="password"
-                    className="input-bordered input"
-                    onChange={(v) => setPassword(v.target.value)}
-                  />
-                  <label className="label">
-                    <a
-                      href="https://puntogris.com/"
-                      className="link-hover label-text-alt link"
-                    >
-                      <label
-                        htmlFor="account-modal"
-                        className="link-hover label-text-alt link"
-                      >
-                        Want an account?
-                      </label>
-                    </a>
-                  </label>
-                </div>
-                <div className="form-control mt-6">
-                  {isLoading ? (
-                    <button className="loading btn-primary btn">Loging</button>
-                  ) : (
-                    <button className="btn-primary btn" type="submit">
-                      Login
-                    </button>
-                  )}
-                </div>
-              </div>
-              </Form>
-            </div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
 
