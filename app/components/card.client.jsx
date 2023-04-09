@@ -26,13 +26,13 @@ export default function Card({ name, description, sceneId, elements }) {
   };
 
   return (
-    <div className="card w-96 rounded-md bg-primary bg-opacity-20 shadow-lg">
-      <div className="flex justify-between py-1 pl-3 pr-2">
+    <div className="card bg-slate-50 rounded-md shadow-md">
+      <div className="flex justify-between py-3 pl-3 pr-2 min-h-[100px]">
         <div>
-          <div className="text-sm capitalize">{name}</div>
+          <div className="text-sm capitalize font-semibold">{name}</div>
           <div className="text-xs capitalize text-gray-600">{description}</div>
         </div>
-        <div className="dropdown-right dropdown flex items-center">
+        <div className="dropdown-right dropdown flex ">
           <label tabIndex="0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -62,8 +62,9 @@ export default function Card({ name, description, sceneId, elements }) {
           </ul>
         </div>
       </div>
-      <button onClick={handleSelection}>
-        <img className="rounded-b-md" src={image} alt="Preview" />
+      <button onClick={handleSelection} className="btn text-xs capitalize btn-sm m-3">
+        Open scene
+        {/* <img className="rounded-b-md" src={image} alt="Preview" /> */}
       </button>
     </div>
   );

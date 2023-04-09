@@ -22,6 +22,7 @@ export const meta = () => ({
 
 type ActionData = {
   sceneId?: string;
+  name?: string;
   error?: string;
 };
 
@@ -68,12 +69,18 @@ export const action: ActionFunction = async ({ request }) => {
 
   const { data: insertData, error: insertError } = await supabase
     .from("scenes")
-    .insert({ name: name, description: description, uid: userData.user.id })
-    .select();
-
+    .insert({
+      name: name,
+      description: description,
+      uid: userData.user.id,
+      created_at: new Date().getTime(),
+    })
+    .select()
+    
   if (!insertError && insertData[0]) {
     return {
       sceneId: insertData[0].id.toString(),
+      name: name,
     };
   } else {
     return {
@@ -89,8 +96,11 @@ export default function NewScene() {
   const actionData = useActionData<ActionData | undefined>();
 
   useEffect(() => {
-    if (actionData?.sceneId) {
-      localStorage.setItem("LAST_SCENE_ID", actionData.sceneId);
+    if (actionData?.sceneId || actionData?.name) {
+      const data = {
+        id: actionData?.sceneId,
+        name: actionData?.sceneId,
+      };
       navigate("/dashboard/draw");
     }
   }, [actionData]);
@@ -109,6 +119,7 @@ export default function NewScene() {
                 </label>
                 <input
                   type="text"
+                  name="name"
                   placeholder="title"
                   className="input-bordered input"
                 />
@@ -118,6 +129,7 @@ export default function NewScene() {
                   <span className="label-text">Description</span>
                 </label>
                 <input
+                  name="description"
                   type="text"
                   placeholder="description"
                   className="input-bordered input"

@@ -41,7 +41,7 @@ export default function App() {
   },[])
  
   return (
-    <html lang="en" data-theme="garden">
+    <html lang="en" data-theme="emerald">
       <head>
         <Meta />
         <Links />

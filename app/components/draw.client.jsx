@@ -14,6 +14,7 @@ export default function Draw({ id, supabase }) {
   const excalidrawRef = useCallback((excalidrawApi) => {
     excalidrawApiRef.current = excalidrawApi;
   }, []);
+  
   const sceneInformation = JSON.parse(localStorage.getItem(`draw_scene_${id}`));
   let sceneElements = JSON.parse(localStorage.getItem(`draw_elements_${id}`));
   let sceneAppState = JSON.parse(localStorage.getItem(`draw_app_state_${id}`));
@@ -22,7 +23,8 @@ export default function Draw({ id, supabase }) {
   let lastDataUploaded = null;
 
   useEffect(() => {
-    const filesIds = sceneElements
+    if(sceneElements) {
+      const filesIds = sceneElements
       .filter((e) => e.type == "image")
       .map((e) => e.fileId);
 
@@ -41,6 +43,9 @@ export default function Draw({ id, supabase }) {
       sceneFiles = filesData;
       initialStatePromiseRef.current.promise.resolve(scene);
     });
+    } else {
+      initialStatePromiseRef.current.promise.resolve();
+    }
   }, []);
 
   function startInverval() {
@@ -66,7 +71,7 @@ export default function Draw({ id, supabase }) {
         }
       }
       LocalData.savePreview(sceneElements, id.toString());
-    }, 3000);
+    }, 60000);
 
     return interval;
   }

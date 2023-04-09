@@ -45,9 +45,13 @@ export default function Index() {
   useEffect(() => {
     const getData = async () => {
       setState("LOADING");
-      const { data, error } = await supabase.from("scenes").select();
+      const { data, error } = await supabase
+        .from("scenes")
+        .select()
+        .order("created_at", { ascending: false });
       if (!error) {
         setScenes(data);
+        console.log(data);
         setState("IDLE");
       } else {
         setState("ERROR");
@@ -65,7 +69,7 @@ export default function Index() {
       )}
       {state == "ERROR" && <AlertError />}
 
-      <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-8 p-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {scenes.map((entry) => (
           <Card
             key={entry.id}
