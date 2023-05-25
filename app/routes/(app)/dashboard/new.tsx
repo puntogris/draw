@@ -29,9 +29,9 @@ export const loader: LoaderFunction = async ({ request }) => {
       { request, response }
     );
 
-    const { error, data } = await supabase.auth.getUser();
+    const { error, data } = await supabase.auth.getSession();
 
-    if (error) {
+    if (error || !data.session) {
       throw error;
     }
 

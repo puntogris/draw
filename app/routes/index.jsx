@@ -6,18 +6,24 @@ import { toast } from "react-hot-toast";
 
 export const loader = async ({ request }) => {
   const response = new Response();
-  const supabase = createServerClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY,
-    { request, response }
-  );
 
-  const { data } = await supabase.auth.getUser();
+  try {
+    const supabase = createServerClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_ANON_KEY,
+      { request, response }
+    );
 
-  if (data && data.user) {
+    const { error, data } = await supabase.auth.getSession();
+
+    if (error || !data.session) {
+      throw error.message;
+    }
+
     return redirect("/draw");
-  } else {
-    return json({ data }, { headers: response.headers });
+  } catch (e) {
+    console.error(e);
+    return json({ error: e.toString() }, { headers: response.headers });
   }
 };
 
