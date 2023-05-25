@@ -13,7 +13,6 @@
     "@remix-run/vercel": "^1.14.1",
     "@supabase/auth-helpers-remix": "^0.1.5",
     "@vercel/node": "^2.6.2",
-    "daisyui": "^2.51.3",
     "idb-keyval": "^6.2.0",
     "isbot": "latest",
     "lodash": "^4.17.21",
