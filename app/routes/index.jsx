@@ -22,6 +22,7 @@ export const loader = async ({ request }) => {
 
 export async function action({ request }) {
   const body = await request.formData();
+  const values = Object.fromEntries(body);
   const response = new Response();
   const supabase = createServerClient(
     process.env.SUPABASE_URL,
@@ -29,15 +30,15 @@ export async function action({ request }) {
     { request, response }
   );
   const { error } = await supabase.auth.signInWithPassword({
-    email: body.get("email"),
-    password: body.get("password"),
+    email: values.email,
+    password: values.password,
   });
+
   if (!error) {
     return redirect("/dashboard", { headers: response.headers });
   } else {
-    return {
-      error: "Error authenticating.",
-    };
+    console.log(error.message);
+    return { error: error.message };
   }
 }
 
@@ -46,6 +47,7 @@ export default function Index() {
   const actionData = useActionData();
   const isLoading = navigation.state !== "idle";
   const hasError = actionData?.error;
+  console.log(hasError);
 
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -58,58 +60,83 @@ export default function Index() {
   }, []);
 
   return (
-    <div>
-      <AccountModal />
-      <FormContainer>
-        <Form method="post">
-          <div className="card-body">
-            {hasError && !isLoading && <AlertError />}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Email</span>
-              </label>
-              <input
-                id="email_input"
-                type="text"
-                name="email"
-                placeholder="email"
-                className="input-bordered input"
-                onChange={(v) => setEmail(v.target.value)}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Password</span>
-              </label>
-              <input
-                id="password_input"
-                type="password"
-                name="password"
-                placeholder="password"
-                className="input-bordered input"
-                onChange={(v) => setPassword(v.target.value)}
-              />
-              <WhantAnAccountLabel />
-            </div>
-            <div className="form-control mt-6">
-              {isLoading ? (
-                <button className="loading btn-primary btn">Loging</button>
-              ) : (
-                <button className="btn-primary btn" type="submit">
-                  Login
-                </button>
-              )}
-            </div>
+    <div className="bg-gray-100">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center gap-8 px-4 md:flex-row md:gap-4">
+        <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2 md:px-0">
+          <h1 className="block text-3xl font-bold text-gray-800 sm:text-4xl md:text-5xl lg:text-6xl">
+            draw.puntogris
+          </h1>
+          <div className="mt-3 items-center space-x-1 text-center md:max-w-md md:text-start">
+            <span>Drawing site using</span>
+            <a
+              className="font-bold text-blue-600 hover:underline"
+              href="https://github.com/excalidraw/excalidraw"
+              target="_blank"
+            >
+              Exalidraw
+            </a>{" "}
+            and
+            <a
+              className="font-bold text-blue-600 hover:underline"
+              href="https://supabase.com/"
+              target="_blank"
+            >
+              Supabase
+            </a>
+            . This is mostly for personal use but if you would like an account,
+            you can reach me at:
+            <a
+              href="mailto:dev@puntogris.com"
+              className="font-bold text-blue-600 hover:underline"
+            >
+              dev@puntogris.com
+            </a>
           </div>
-        </Form>
-      </FormContainer>
+        </div>
+        <div className="flex w-full flex-col items-center justify-center md:w-1/2">
+          <Form
+            method="post"
+            className="flex w-full max-w-sm flex-col rounded-md bg-white p-8 shadow-sm"
+          >
+            <h1 className="block self-center text-2xl font-bold text-gray-800">
+              Sign in
+            </h1>
+            <label htmlFor="email" className="mb-2 mt-3 block text-sm">
+              Email address
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className="block w-full rounded-md border border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500"
+              required
+            />
+            <label htmlFor="email" className="mb-2 mt-3 block text-sm">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="block w-full rounded-md border border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500"
+              required
+            />
+            <button
+              type="submit"
+              className="mt-4 inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 py-3 px-4 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Sign in
+            </button>
+          </Form>
+        </div>
+      </div>
     </div>
   );
 }
 
 function FormContainer({ children }) {
   return (
-    <div className="hero min-h-screen bg-base-200">
+    <div className="hero bg-base-200 min-h-screen">
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="text-center lg:text-left">
           <h1 className="text-5xl font-bold">draw.puntogris</h1>
@@ -118,7 +145,7 @@ function FormContainer({ children }) {
             <a href="https://github.com/excalidraw/excalidraw">Exalidraw</a>.
           </p>
         </div>
-        <div className="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
+        <div className="card bg-base-100 w-full max-w-sm flex-shrink-0 shadow-2xl">
           {children}
         </div>
       </div>

@@ -1,8 +1,7 @@
-import { ClientOnly } from "remix-utils";
 import Draw from "~/components/draw.client";
-import { json, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { redirect, useLoaderData, useOutletContext } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 
 export const loader = async ({ request, params }) => {
@@ -46,10 +45,22 @@ export default function Index() {
     }
   }, []);
   return (
-    id && (
-      <ClientOnly fallback={<div>Loading</div>}>
-        {() => <Draw id={id} supabase={supabase} />}
-      </ClientOnly>
-    )
+    <Suspense fallback={<Spinner />}>
+      <Draw id={id} supabase={supabase} />
+    </Suspense>
+  );
+}
+
+function Spinner() {
+  return (
+    <div className="flex h-screen w-full items-center justify-center">
+      <div
+        class="inline-block h-16 w-16 animate-spin rounded-full border-[3px] border-current border-t-transparent text-blue-600"
+        role="status"
+        aria-label="loading"
+      >
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
   );
 }
