@@ -57,9 +57,6 @@ export default function Index() {
   const navigation = useNavigation();
   const actionData = useActionData();
   const isLoading = navigation.state !== "idle";
-  const { supabase } = useOutletContext();
-
-  console.log(supabase);
 
   const [, setEmail] = useState();
   const [, setPassword] = useState();

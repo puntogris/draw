@@ -44,14 +44,18 @@ export const action: ActionFunction = async ({ request }) => {
       })
       .select();
 
-    if (insertError) {
-      return { error: insertError.message };
-    } else {
+    if (!insertError) {
       return {
         sceneId: insertData[0].id.toString(),
         name: name,
       };
     }
+
+    if (insertError.code == "23505") {
+      return { error: "There is already a scene with this name." };
+    }
+    
+    return { error: insertError.message };
   } catch (e) {
     console.error(e);
     return { error: "Internal error." };
@@ -64,7 +68,7 @@ export default function New() {
   const navigation = useNavigation();
   const isLoading = navigation.state !== "idle";
 
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
 
   useEffect(() => {
     if (actionData?.error) {
@@ -94,14 +98,14 @@ export default function New() {
     >
       <h1 className="text-center text-lg font-bold">Create new scene</h1>
       <h2 className="text-center text-sm text-zinc-700">
-        A title is required as it will be the ID of scene and it can't be
+        A name is required as it will be the ID of the scene and it can't be
         repeated.
       </h2>
-      <label className="mb-2 mt-3 block self-start text-sm">Title</label>
+      <label className="mb-2 mt-3 block self-start text-sm">Name</label>
       <input
         type="text"
-        name="title"
-        onChange={(e) => setTitle(e.target.value)}
+        name="name"
+        onChange={(e) => setName(e.target.value)}
         className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500"
       />
       <label className="mb-2 mt-3 block self-start text-sm">Description</label>
@@ -126,7 +130,7 @@ export default function New() {
         <button
           className="mt-4 w-full rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-zinc-500"
           type="submit"
-          disabled={title.length < 3}
+          disabled={name.length < 3}
         >
           Create
         </button>
