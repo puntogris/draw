@@ -20,24 +20,24 @@ export const meta = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
-type ActionData = {
-  sceneId?: string;
-  name?: string;
-  error?: string;
-};
-
 export const loader: LoaderFunction = async ({ request }) => {
   const response = new Response();
-  const supabase = createServerClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
-    { request, response }
-  );
+  try {
+    const supabase = createServerClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_ANON_KEY!,
+      { request, response }
+    );
 
-  const { data } = await supabase.auth.getUser();
-  if (data && data.user) {
+    const { error, data } = await supabase.auth.getUser();
+
+    if (error) {
+      throw error;
+    }
+
     return json({ data }, { headers: response.headers });
-  } else {
+  } catch (e) {
+    console.error(e);
     return redirect("/");
   }
 };
@@ -48,46 +48,48 @@ export const action: ActionFunction = async ({ request }) => {
   const description = body.get("description");
   const response = new Response();
 
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-    return { error: "Error" };
-  }
+  try {
+    const supabase = createServerClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_ANON_KEY!,
+      { request, response }
+    );
 
-  const supabase = createServerClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY,
-    { request, response }
-  );
+    const { error: userError, data: userData } = await supabase.auth.getUser();
 
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) {
-    return { error: "Error" };
-  }
+    if (userError) {
+      return { error: userError.message };
+    }
 
-  const { data: insertData, error: insertError } = await supabase
-    .from("scenes")
-    .insert({
-      name: name,
-      description: description,
-      uid: userData.user.id,
-      created_at: new Date().getTime(),
-    })
-    .select();
+    const { error: insertError, data: insertData } = await supabase
+      .from("scenes")
+      .insert({
+        name: name,
+        description: description,
+        uid: userData.user.id,
+        created_at: new Date().getTime(),
+      })
+      .select();
 
-  if (!insertError && insertData[0]) {
-    return {
-      sceneId: insertData[0].id.toString(),
-      name: name,
-    };
-  } else {
-    return { error: "Error" };
+    if (insertError) {
+      return { error: insertError.message };
+    } else {
+      return {
+        sceneId: insertData[0].id.toString(),
+        name: name,
+      };
+    }
+  } catch (e) {
+    console.error(e);
+    return { error: "Internal error." };
   }
 };
 
 export default function New() {
+  const actionData = useActionData();
   const navigate = useNavigate();
   const navigation = useNavigation();
   const isLoading = navigation.state !== "idle";
-  const actionData = useActionData<ActionData | undefined>();
 
   const [title, setTitle] = useState("");
 
