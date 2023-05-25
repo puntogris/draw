@@ -8,7 +8,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import { createBrowserClient } from "@supabase/auth-helpers-remix";
+import { SupabaseClient, createBrowserClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import stylesheet from "~/tailwind.css";

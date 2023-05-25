@@ -6,12 +6,7 @@ import {
 } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
-import {
-  ActionFunction,
-  json,
-  LoaderFunction,
-  redirect,
-} from "@remix-run/node";
+import { ActionFunction } from "@remix-run/node";
 import { toast } from "react-hot-toast";
 
 export const meta = () => ({
@@ -19,28 +14,6 @@ export const meta = () => ({
   title: "draw - new scene",
   viewport: "width=device-width,initial-scale=1",
 });
-
-export const loader: LoaderFunction = async ({ request }) => {
-  const response = new Response();
-  try {
-    const supabase = createServerClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_ANON_KEY!,
-      { request, response }
-    );
-
-    const { error, data } = await supabase.auth.getSession();
-
-    if (error || !data.session) {
-      throw error;
-    }
-
-    return json({ data }, { headers: response.headers });
-  } catch (e) {
-    console.error(e);
-    return redirect("/");
-  }
-};
 
 export const action: ActionFunction = async ({ request }) => {
   const body = await request.formData();
@@ -129,18 +102,18 @@ export default function New() {
         type="text"
         name="title"
         onChange={(e) => setTitle(e.target.value)}
-        className="block w-full rounded-md border border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500"
+        className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500"
       />
       <label className="mb-2 mt-3 block self-start text-sm">Description</label>
       <input
         name="description"
         type="text"
-        className="block w-full rounded-md border border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500"
+        className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500"
       />
       {isLoading ? (
         <button
           disabled
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 py-3 px-4 text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           <span
             className="inline-block h-4 w-4 animate-spin rounded-full border-[3px] border-current border-t-transparent text-white"
@@ -151,7 +124,7 @@ export default function New() {
         </button>
       ) : (
         <button
-          className="mt-4 w-full rounded-md border border-transparent bg-blue-500 py-3 px-4 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-zinc-500"
+          className="mt-4 w-full rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-zinc-500"
           type="submit"
           disabled={title.length < 3}
         >

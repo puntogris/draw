@@ -4,6 +4,7 @@ import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
 import Card from "~/components/card.client";
 import Spinner from "~/components/spinner";
+import { OutletContext } from "~/utils/types";
 
 export const meta = () => ({
   charset: "utf-8",
@@ -11,23 +12,10 @@ export const meta = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
-export const loader = async ({ request }) => {
-  const response = new Response();
-  const supabase = createServerClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY,
-    { request, response }
-  );
-
-  const { data } = await supabase.auth.getUser();
-  if (data && data.user) {
-    return json({ data }, { headers: response.headers });
-  } else {
-    return redirect("/");
-  }
-};
 
 export default function Index() {
+  const { supabase } = useOutletContext<OutletContext>();
+
   // const { supabase } = useOutletContext();
   // const [scenes, setScenes] = useState([]);
   // const [state, setState] = useState("");

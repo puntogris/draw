@@ -1,6 +1,44 @@
-import { Link, NavLink, Outlet } from "@remix-run/react";
+import {
+  NavLink,
+  Outlet,
+  useNavigate,
+  useOutletContext,
+} from "@remix-run/react";
+import { json, LoaderFunction, redirect } from "@remix-run/node";
+import { createServerClient } from "@supabase/auth-helpers-remix";
+import { OutletContext } from "~/utils/types";
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const response = new Response();
+  try {
+    const supabase = createServerClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_ANON_KEY!,
+      { request, response }
+    );
+
+    const { error, data } = await supabase.auth.getUser();
+
+    if (error) {
+      throw error;
+    }
+
+    return json({ data }, { headers: response.headers });
+  } catch (e) {
+    console.error(e);
+    return redirect("/");
+  }
+};
 
 export default function Dashboard() {
+  const { supabase } = useOutletContext<OutletContext>();
+  const navigate = useNavigate();
+
+  function signOut() {
+    supabase.auth.signOut();
+    navigate("/");
+  }
+
   return (
     <div className="flex min-h-screen flex-row">
       <div className="flex w-60 flex-col gap-1 bg-slate-100 p-2">
@@ -35,16 +73,16 @@ export default function Dashboard() {
         >
           Settings
         </NavLink>
-        <Link
-          to="/dashboard/logout"
+        <button
+          onClick={signOut}
           className="mt-auto flex flex-row items-center gap-2 rounded p-2 hover:bg-slate-200"
         >
           Sign out
           <SignOutIcon />
-        </Link>
+        </button>
       </div>
       <div className="w-full bg-slate-50">
-        <Outlet />
+        <Outlet context={{ supabase }} />
       </div>
     </div>
   );

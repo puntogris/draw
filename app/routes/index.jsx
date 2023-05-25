@@ -1,5 +1,10 @@
 import { json, redirect } from "@remix-run/node";
-import { Form, useActionData, useNavigation } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useNavigation,
+  useOutletContext,
+} from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -20,7 +25,7 @@ export const loader = async ({ request }) => {
       throw error.message;
     }
 
-    return redirect("/draw");
+    return {};
   } catch (e) {
     console.error(e);
     return json({ error: e.toString() }, { headers: response.headers });
@@ -52,6 +57,9 @@ export default function Index() {
   const navigation = useNavigation();
   const actionData = useActionData();
   const isLoading = navigation.state !== "idle";
+  const { supabase } = useOutletContext();
+
+  console.log(supabase);
 
   const [, setEmail] = useState();
   const [, setPassword] = useState();
@@ -87,7 +95,7 @@ export default function Index() {
   return (
     <div className="bg-gray-100">
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center gap-8 px-4 md:flex-row md:gap-4">
-        <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2 md:px-0">
+        <div className="md:w-1/2 flex w-full flex-col items-center justify-center px-4 md:px-0">
           <h1 className="block text-3xl font-bold text-gray-800 sm:text-4xl md:text-5xl lg:text-6xl">
             draw.puntogris
           </h1>
@@ -120,7 +128,7 @@ export default function Index() {
         </div>
         <Form
           method="post"
-          className="flex w-full max-w-sm flex-col items-center justify-center rounded-md bg-white p-8 shadow-sm md:w-1/2"
+          className="md:w-1/2 flex w-full max-w-sm flex-col items-center justify-center rounded-md bg-white p-8 shadow-sm"
         >
           <h1 className="block self-center text-2xl font-bold text-gray-800">
             Sign in
@@ -132,7 +140,7 @@ export default function Index() {
             type="email"
             id="email"
             name="email"
-            className="block w-full rounded-md border border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500"
+            className="autofill:shadow-[inset_0_0_0px_1000px_rgb(250,250,250)] block w-full rounded-md border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500"
             required
           />
           <label
@@ -145,12 +153,12 @@ export default function Index() {
             type="password"
             id="password"
             name="password"
-            className="block w-full rounded-md border border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500"
+            className="autofill:shadow-[inset_0_0_0px_1000px_rgb(250,250,250)] block w-full rounded-md border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500"
             required
           />
           <button
             type="submit"
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 py-3 px-4 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Sign in
           </button>
