@@ -12,6 +12,7 @@ import {
   LoaderFunction,
   redirect,
 } from "@remix-run/node";
+import { toast } from "react-hot-toast";
 
 export const meta = () => ({
   charset: "utf-8",
@@ -88,15 +89,39 @@ export default function New() {
   const isLoading = navigation.state !== "idle";
   const actionData = useActionData<ActionData | undefined>();
 
-  const [title, setTitle] = useState("")
+  const [title, setTitle] = useState("");
+
+  useEffect(() => {
+    if (actionData?.error) {
+      toast.error(actionData.error, { position: "bottom-center" });
+    }
+  }, [actionData]);
+
+  useEffect(() => {
+    if (isLoading) {
+      toast.loading("Creating new scene", {
+        position: "bottom-center",
+        id: "create_loading",
+      });
+    } else {
+      toast.dismiss("create_loading");
+    }
+
+    return () => {
+      toast.dismiss("create_loading");
+    };
+  }, [isLoading]);
 
   return (
     <Form
       method="post"
-      className="mx-auto mt-14 flex w-full max-w-2xl flex-shrink-0 flex-col p-8 shadow-xl rounded"
+      className="mx-auto mt-14 flex w-full max-w-2xl flex-shrink-0 flex-col rounded p-8 shadow-xl"
     >
       <h1 className="text-center text-lg font-bold">Create new scene</h1>
-      <h2 className="text-sm text-zinc-700 text-center">A title is required as it will be the ID of scene and it can't be repeated.</h2>
+      <h2 className="text-center text-sm text-zinc-700">
+        A title is required as it will be the ID of scene and it can't be
+        repeated.
+      </h2>
       <label className="mb-2 mt-3 block self-start text-sm">Title</label>
       <input
         type="text"
@@ -111,10 +136,20 @@ export default function New() {
         className="block w-full rounded-md border border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500"
       />
       {isLoading ? (
-        <button className="loading btn-primary btn">Creating</button>
+        <button
+          disabled
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 py-3 px-4 text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          <span
+            className="inline-block h-4 w-4 animate-spin rounded-full border-[3px] border-current border-t-transparent text-white"
+            role="status"
+            aria-label="loading"
+          ></span>
+          Creating
+        </button>
       ) : (
         <button
-          className="disabled:bg-zinc-500 mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 py-3 px-4 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="mt-4 w-full rounded-md border border-transparent bg-blue-500 py-3 px-4 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-zinc-500"
           type="submit"
           disabled={title.length < 3}
         >
@@ -122,28 +157,5 @@ export default function New() {
         </button>
       )}
     </Form>
-  );
-}
-
-function AlertError() {
-  return (
-    <div className="alert alert-error h-10 shadow-lg">
-      <div>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 flex-shrink-0 stroke-current"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <span>Ops, an error ocurred.</span>
-      </div>
-    </div>
   );
 }
