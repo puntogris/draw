@@ -2,6 +2,7 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
 
 export const loader = async ({ request }) => {
   const response = new Response();
@@ -14,7 +15,7 @@ export const loader = async ({ request }) => {
   const { data } = await supabase.auth.getUser();
 
   if (data && data.user) {
-    return redirect("/dashboard/draw");
+    return {};
   } else {
     return json({ data }, { headers: response.headers });
   }
@@ -37,7 +38,6 @@ export async function action({ request }) {
   if (!error) {
     return redirect("/dashboard", { headers: response.headers });
   } else {
-    console.log(error.message);
     return { error: error.message };
   }
 }
@@ -46,11 +46,26 @@ export default function Index() {
   const navigation = useNavigation();
   const actionData = useActionData();
   const isLoading = navigation.state !== "idle";
-  const hasError = actionData?.error;
-  console.log(hasError);
 
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+
+  useEffect(() => {
+    if (actionData?.error) {
+      toast.error(actionData.error, { position: "bottom-center" });
+    }
+  }, [actionData]);
+
+  useEffect(() => {
+    if (isLoading) {
+      toast.loading("Checking login credentials", {
+        position: "bottom-center",
+        id: "login_loading",
+      });
+    } else {
+      toast.dismiss("login_loading");
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     if (document) {
@@ -58,7 +73,6 @@ export default function Index() {
       setPassword(document.getElementById("password_input")?.value);
     }
   }, []);
-
   return (
     <div className="bg-gray-100">
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center gap-8 px-4 md:flex-row md:gap-4">

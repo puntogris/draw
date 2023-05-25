@@ -10,6 +10,7 @@ import {
 } from "@remix-run/react";
 import { createBrowserClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
 import stylesheet from "~/tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -32,14 +33,16 @@ export const loader = () => {
 
 export default function App() {
   const { env } = useLoaderData();
-  const [supabase] = useState(() => createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY))
+  const [supabase] = useState(() =>
+    createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
+  );
 
-  useEffect(()=> {
-    if(!localStorage.getItem("draw_local_uuid")) {
-      localStorage.setItem("draw_local_uuid", crypto.randomUUID())
+  useEffect(() => {
+    if (!localStorage.getItem("draw_local_uuid")) {
+      localStorage.setItem("draw_local_uuid", crypto.randomUUID());
     }
-  },[])
- 
+  }, []);
+
   return (
     <html lang="en" className="light">
       <head>
@@ -47,7 +50,8 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet context={{supabase}} />
+        <Toaster />
+        <Outlet context={{ supabase }} />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
