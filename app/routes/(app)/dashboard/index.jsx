@@ -2,7 +2,6 @@ import { json, redirect } from "@remix-run/node";
 import { useNavigate, useOutletContext } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
-import DashboardLayout from "~/components/DashboardLayout";
 import Card from "~/components/card.client";
 import Spinner from "~/components/spinner";
 
@@ -29,9 +28,9 @@ export const loader = async ({ request }) => {
 };
 
 export default function Index() {
-  const { supabase } = useOutletContext();
-  const [scenes, setScenes] = useState([]);
-  const [state, setState] = useState("");
+  // const { supabase } = useOutletContext();
+  // const [scenes, setScenes] = useState([]);
+  // const [state, setState] = useState("");
 
   // TODO if we can get the projects from the server, get them from local storage
   // i think what we do is get the local projects and show them,
@@ -42,27 +41,27 @@ export default function Index() {
   // and compare which one is more recent
   // for adding and removing projects there shoulnd be a problem
 
-  useEffect(() => {
-    const getData = async () => {
-      setState("LOADING");
-      const { data, error } = await supabase
-        .from("scenes")
-        .select()
-        .order("created_at", { ascending: false });
-      if (!error) {
-        setScenes(data);
-        console.log(data);
-        setState("IDLE");
-      } else {
-        setState("ERROR");
-      }
-    };
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     setState("LOADING");
+  //     const { data, error } = await supabase
+  //       .from("scenes")
+  //       .select()
+  //       .order("created_at", { ascending: false });
+  //     if (!error) {
+  //       setScenes(data);
+  //       console.log(data);
+  //       setState("IDLE");
+  //     } else {
+  //       setState("ERROR");
+  //     }
+  //   };
+  //   getData();
+  // }, []);
 
   return (
-    <DashboardLayout>
-      {state == "LOADING" && (
+    <div>
+      {/* {state == "LOADING" && (
         <div className="flex h-screen items-center justify-center">
           <Spinner size={50} />
         </div>
@@ -79,8 +78,8 @@ export default function Index() {
             elements={entry.elements}
           />
         ))}
-      </div>
-    </DashboardLayout>
+      </div> */}
+    </div>
   );
 }
 

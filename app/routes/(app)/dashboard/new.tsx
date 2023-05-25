@@ -5,8 +5,7 @@ import {
   useNavigation,
 } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
-import { useEffect } from "react";
-import DashboardLayout from "~/components/DashboardLayout";
+import { useEffect, useState } from "react";
 import {
   ActionFunction,
   json,
@@ -49,9 +48,7 @@ export const action: ActionFunction = async ({ request }) => {
   const response = new Response();
 
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-    return {
-      error: "Error",
-    };
+    return { error: "Error" };
   }
 
   const supabase = createServerClient(
@@ -62,9 +59,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) {
-    return {
-      error: "Error",
-    };
+    return { error: "Error" };
   }
 
   const { data: insertData, error: insertError } = await supabase
@@ -75,80 +70,58 @@ export const action: ActionFunction = async ({ request }) => {
       uid: userData.user.id,
       created_at: new Date().getTime(),
     })
-    .select()
-    
+    .select();
+
   if (!insertError && insertData[0]) {
     return {
       sceneId: insertData[0].id.toString(),
       name: name,
     };
   } else {
-    return {
-      error: "Error",
-    };
+    return { error: "Error" };
   }
 };
 
-export default function NewScene() {
+export default function New() {
   const navigate = useNavigate();
   const navigation = useNavigation();
   const isLoading = navigation.state !== "idle";
   const actionData = useActionData<ActionData | undefined>();
 
-  useEffect(() => {
-    if (actionData?.sceneId || actionData?.name) {
-      const data = {
-        id: actionData?.sceneId,
-        name: actionData?.sceneId,
-      };
-      navigate("/dashboard/draw");
-    }
-  }, [actionData]);
+  const [title, setTitle] = useState("")
 
   return (
-    <DashboardLayout>
-      <div className="h-full">
-        <div className="card mx-auto mt-14 w-full max-w-2xl flex-shrink-0 bg-base-100 shadow-2xl">
-          <div className="card-body">
-            <p className="text-center text-lg font-bold">Create new scene</p>
-            {actionData?.error && <AlertError />}
-            <Form method="post">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Title</span>
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="title"
-                  className="input-bordered input"
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Description</span>
-                </label>
-                <input
-                  name="description"
-                  type="text"
-                  placeholder="description"
-                  className="input-bordered input"
-                />
-              </div>
-              <div className="form-control mt-6">
-                {isLoading ? (
-                  <button className="loading btn-primary btn">Creating</button>
-                ) : (
-                  <button className=" btn-primary btn" type="submit">
-                    Create
-                  </button>
-                )}
-              </div>
-            </Form>
-          </div>
-        </div>
-      </div>
-    </DashboardLayout>
+    <Form
+      method="post"
+      className="mx-auto mt-14 flex w-full max-w-2xl flex-shrink-0 flex-col p-8 shadow-xl rounded"
+    >
+      <h1 className="text-center text-lg font-bold">Create new scene</h1>
+      <h2 className="text-sm text-zinc-700 text-center">A title is required as it will be the ID of scene and it can't be repeated.</h2>
+      <label className="mb-2 mt-3 block self-start text-sm">Title</label>
+      <input
+        type="text"
+        name="title"
+        onChange={(e) => setTitle(e.target.value)}
+        className="block w-full rounded-md border border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500"
+      />
+      <label className="mb-2 mt-3 block self-start text-sm">Description</label>
+      <input
+        name="description"
+        type="text"
+        className="block w-full rounded-md border border-gray-200 py-3 px-4 text-sm focus:border-blue-500 focus:ring-blue-500"
+      />
+      {isLoading ? (
+        <button className="loading btn-primary btn">Creating</button>
+      ) : (
+        <button
+          className="disabled:bg-zinc-500 mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 py-3 px-4 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          type="submit"
+          disabled={title.length < 3}
+        >
+          Create
+        </button>
+      )}
+    </Form>
   );
 }
 

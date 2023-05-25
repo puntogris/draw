@@ -15,7 +15,7 @@ export const loader = async ({ request }) => {
   const { data } = await supabase.auth.getUser();
 
   if (data && data.user) {
-    return redirect("/dashboard/draw");
+    return redirect("/draw");
   } else {
     return json({ data }, { headers: response.headers });
   }

@@ -33,7 +33,7 @@ export default function Index() {
   let lastId;
   useEffect(() => {
     if (window != null) {
-      window.history.replaceState(null, "draw.puntogris", "/dashboard/draw");
+      window.history.replaceState(null, "draw.puntogris", "/draw");
     }
     if (document && localStorage) {
       const scene = JSON.parse(localStorage.getItem("CURRENT_SCENE"));
