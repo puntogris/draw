@@ -7,11 +7,11 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@excalidraw/excalidraw": "^0.14.2",
-    "@remix-run/node": "^1.14.1",
-    "@remix-run/react": "^1.14.1",
-    "@remix-run/vercel": "^1.14.1",
-    "@supabase/auth-helpers-remix": "^0.1.5",
+    "@excalidraw/excalidraw": "^0.15.2",
+    "@remix-run/node": "^1.16.1",
+    "@remix-run/react": "^1.16.1",
+    "@remix-run/vercel": "^1.16.1",
+    "@supabase/auth-helpers-remix": "^0.2.0",
     "@vercel/node": "^2.6.2",
     "idb-keyval": "^6.2.0",
     "isbot": "latest",

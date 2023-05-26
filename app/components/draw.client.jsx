@@ -10,6 +10,7 @@ export default function Draw({ id, supabase }) {
   if (!initialStatePromiseRef.current.promise) {
     initialStatePromiseRef.current.promise = resolvablePromise();
   }
+  
   const excalidrawApiRef = useRef(null);
   const excalidrawRef = useCallback((excalidrawApi) => {
     excalidrawApiRef.current = excalidrawApi;
@@ -105,6 +106,7 @@ export default function Draw({ id, supabase }) {
     fetch();
     return () => clearInterval(intervalId);
   }, []);
+
 
   const onChange = (elements, appState, files) => {
     sceneElements = elements;

@@ -54,7 +54,7 @@ export const action: ActionFunction = async ({ request }) => {
     if (insertError.code == "23505") {
       return { error: "There is already a scene with this name." };
     }
-    
+
     return { error: insertError.message };
   } catch (e) {
     console.error(e);
@@ -66,7 +66,7 @@ export default function New() {
   const actionData = useActionData();
   const navigate = useNavigate();
   const navigation = useNavigation();
-  const isLoading = navigation.state !== "idle";
+  const isLoading = navigation.state == "submitting";
 
   const [name, setName] = useState("");
 
@@ -99,8 +99,10 @@ export default function New() {
       <h1 className="text-center text-lg font-bold">Create new scene</h1>
       <h2 className="text-center text-sm text-zinc-700">
         A name is required as it will be the ID of the scene and it can't be
-        repeated.
+        repeated. As this is intended for personal use all scenes are located at
+        the root.
       </h2>
+      <h2 className="font-bold text-sm text-center">draw.puntogris.com/{name.length == 0 ? "ID" : name}</h2>
       <label className="mb-2 mt-3 block self-start text-sm">Name</label>
       <input
         type="text"
