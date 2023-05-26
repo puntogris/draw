@@ -1,6 +1,7 @@
 import {
   NavLink,
   Outlet,
+  useLoaderData,
   useNavigate,
   useOutletContext,
 } from "@remix-run/react";
@@ -23,7 +24,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       throw error;
     }
 
-    return json({ data }, { headers: response.headers });
+    return json({ user: data.user }, { headers: response.headers });
   } catch (e) {
     console.error(e);
     return redirect("/");
@@ -32,6 +33,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Dashboard() {
   const { supabase } = useOutletContext<OutletContext>();
+  const { user } = useLoaderData();
   const navigate = useNavigate();
 
   function signOut() {
@@ -61,7 +63,7 @@ export default function Dashboard() {
           }
           end
         >
-          Scenes
+          Dashboard
         </NavLink>
         <NavLink
           to="/dashboard/settings"
@@ -82,7 +84,7 @@ export default function Dashboard() {
         </button>
       </div>
       <div className="w-full bg-slate-50">
-        <Outlet context={{ supabase }} />
+        <Outlet context={{ supabase, user }} />
       </div>
     </div>
   );

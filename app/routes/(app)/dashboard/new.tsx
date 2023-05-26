@@ -52,7 +52,7 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     if (insertError.code == "23505") {
-      return { error: "There is already a scene with this name." };
+      return { error: "There is already a scene with this ID." };
     }
 
     return { error: insertError.message };
@@ -72,7 +72,10 @@ export default function New() {
 
   useEffect(() => {
     if (actionData?.error) {
-      toast.error(actionData.error, { position: "bottom-center" });
+      toast.error(actionData.error, {
+        position: "bottom-center",
+        style: { marginLeft: "15rem" },
+      });
     }
   }, [actionData]);
 
@@ -81,6 +84,7 @@ export default function New() {
       toast.loading("Creating new scene", {
         position: "bottom-center",
         id: "create_loading",
+        style: { marginLeft: "15rem" },
       });
     } else {
       toast.dismiss("create_loading");
@@ -102,7 +106,9 @@ export default function New() {
         repeated. As this is intended for personal use all scenes are located at
         the root.
       </h2>
-      <h2 className="font-bold text-sm text-center">draw.puntogris.com/{name.length == 0 ? "ID" : name}</h2>
+      <h2 className="text-center text-sm font-bold">
+        draw.puntogris.com/{name.length == 0 ? "ID" : name}
+      </h2>
       <label className="mb-2 mt-3 block self-start text-sm">Name</label>
       <input
         type="text"
