@@ -52,7 +52,7 @@ export default function Index() {
   }, [searchInput]);
 
   return (
-    <div className="flex h-full flex-col p-16">
+    <div className="flex h-full flex-col px-16 py-10">
       <h1 className="text-lg font-bold">Dashboard</h1>
       <p className="text-sm text-zinc-600">
         These are your scenes. They will automatically sync every x minutes.

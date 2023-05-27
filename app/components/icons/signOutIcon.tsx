@@ -1,4 +1,4 @@
-export default function SignOutIcon() {
+export default function SignOutIcon({ style = "", size = 24 }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -6,7 +6,9 @@ export default function SignOutIcon() {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="bg-base-100 h-7 w-7 rounded-md p-1"
+      height={size}
+      width={size}
+      className={style}
     >
       <path
         strokeLinecap="round"

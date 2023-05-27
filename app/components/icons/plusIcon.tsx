@@ -1,20 +1,20 @@
-export default function PlusSquareIcon() {
+export default function PlusIcon({ style = "", size = 24 }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
       fill="none"
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      strokeWidth={1.5}
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      className="lucide lucide-plus-square"
+      className={style}
     >
-      <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
-      <line x1="12" x2="12" y1="8" y2="16"></line>
-      <line x1="8" x2="16" y1="12" y2="12"></line>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 4.5v15m7.5-7.5h-15"
+      />
     </svg>
   );
 }

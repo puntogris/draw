@@ -101,12 +101,12 @@ export default function New() {
       className="mx-auto mt-14 flex w-full max-w-2xl flex-shrink-0 flex-col rounded p-8 shadow-xl"
     >
       <h1 className="text-center text-lg font-bold">Create new scene</h1>
-      <h2 className="text-center text-sm text-zinc-700">
+      <h2 className="mt-1 text-center text-sm text-zinc-700">
         A name is required as it will be the ID of the scene and it can't be
         repeated. As this is intended for personal use all scenes are located at
         the root.
       </h2>
-      <h2 className="text-center text-sm font-bold">
+      <h2 className="mt-1 text-center text-sm font-bold text-zinc-800">
         draw.puntogris.com/{name.length == 0 ? "ID" : name}
       </h2>
       <label className="mb-2 mt-3 block self-start text-sm">Name</label>

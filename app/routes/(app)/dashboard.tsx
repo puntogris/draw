@@ -10,7 +10,7 @@ import { createServerClient } from "@supabase/auth-helpers-remix";
 import { OutletContext } from "~/utils/types";
 import DashboardIcon from "~/components/icons/dashboardIcon";
 import PlusIcon from "~/components/icons/plusIcon";
-import SlidersIcon from "~/components/icons/slidersIcon";
+import SettingsIcon from "~/components/icons/settingsIcon";
 import SignOutIcon from "~/components/icons/signOutIcon";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -56,7 +56,7 @@ export default function Dashboard() {
               : "flex items-center gap-2 rounded p-2 hover:bg-slate-200"
           }
         >
-          <PlusIcon />
+          <PlusIcon style="text-zinc-700" size={20} />
           New scene
         </NavLink>
         <NavLink
@@ -68,7 +68,7 @@ export default function Dashboard() {
           }
           end
         >
-          <DashboardIcon />
+          <DashboardIcon style="text-zinc-700" size={20} />
           Dashboard
         </NavLink>
         <NavLink
@@ -79,14 +79,14 @@ export default function Dashboard() {
               : "flex items-center gap-2 rounded p-2 hover:bg-slate-200"
           }
         >
-          <SlidersIcon />
+          <SettingsIcon style="text-zinc-700" size={20} />
           Settings
         </NavLink>
         <button
           onClick={signOut}
           className="mt-auto flex items-center gap-2 rounded p-2 hover:bg-slate-200"
         >
-          <SignOutIcon />
+          <SignOutIcon style="text-zinc-700" size={20} />
           Sign out
         </button>
       </div>
