@@ -39,10 +39,10 @@ export default function Card({ name, description, sceneId, elements }) {
         alt="Image Description"
       />
       <div className="flex min-h-[100px]  flex-col p-4 md:p-3">
-        <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+        <h3 className="font-bold text-gray-800 dark:text-white truncate overflow-hidden">
           {name}
         </h3>
-        <p className="mt-1 text-sm text-gray-800 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-800 dark:text-gray-400 line-clamp-2 truncate">
           {description}
         </p>
         <p className="mt-auto  text-xs text-gray-500 dark:text-gray-500">
