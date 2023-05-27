@@ -10,7 +10,7 @@ import { createServerClient } from "@supabase/auth-helpers-remix";
 import { OutletContext } from "~/utils/types";
 import DashboardIcon from "~/components/icons/dashboardIcon";
 import PlusIcon from "~/components/icons/plusIcon";
-import SettingsIcon from "~/components/icons/settingsIcon";
+import SettingsIcon from "~/components/icons/slidersIcon";
 import SignOutIcon from "~/components/icons/signOutIcon";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -47,49 +47,49 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen flex-row">
-      <div className="flex w-60 flex-col gap-1 bg-slate-100 p-2">
+      <nav className="flex w-64 flex-col gap-1 bg-slate-100 p-2 text-sm">
         <NavLink
           to="/dashboard/new"
           className={({ isActive }) =>
             isActive
-              ? "flex items-center gap-2 rounded bg-slate-200 p-2"
-              : "flex items-center gap-2 rounded p-2 hover:bg-slate-200"
+              ? "flex items-center gap-3 rounded bg-blue-400 px-4 py-2 text-white"
+              : "flex items-center gap-3 rounded px-4 py-2 text-zinc-700 hover:bg-slate-200"
           }
         >
-          <PlusIcon style="text-zinc-700" size={20} />
+          <PlusIcon size={20} />
           New scene
         </NavLink>
         <NavLink
           to="/dashboard"
           className={({ isActive }) =>
             isActive
-              ? "flex items-center gap-2 rounded bg-slate-200 p-2"
-              : "flex items-center gap-2 rounded p-2 hover:bg-slate-200"
+              ? "flex items-center gap-3 rounded bg-blue-400 px-4 py-2 text-white"
+              : "flex items-center gap-3 rounded px-4 py-2 text-zinc-700 hover:bg-slate-200"
           }
           end
         >
-          <DashboardIcon style="text-zinc-700" size={20} />
+          <DashboardIcon size={20} />
           Dashboard
         </NavLink>
         <NavLink
           to="/dashboard/settings"
           className={({ isActive }) =>
             isActive
-              ? "flex items-center gap-2 rounded bg-slate-200 p-2"
-              : "flex items-center gap-2 rounded p-2 hover:bg-slate-200"
+              ? "flex items-center gap-3 rounded bg-blue-400 px-4 py-2 text-white"
+              : "flex items-center gap-3 rounded px-4 py-2 text-zinc-700 hover:bg-slate-200"
           }
         >
-          <SettingsIcon style="text-zinc-700" size={20} />
+          <SettingsIcon size={20} />
           Settings
         </NavLink>
         <button
           onClick={signOut}
-          className="mt-auto flex items-center gap-2 rounded p-2 hover:bg-slate-200"
+          className="mt-auto flex items-center gap-3 rounded px-4 py-2 hover:bg-slate-200"
         >
-          <SignOutIcon style="text-zinc-700" size={20} />
+          <SignOutIcon size={20} />
           Sign out
         </button>
-      </div>
+      </nav>
       <div className="w-full bg-slate-50">
         <Outlet context={{ supabase, user }} />
       </div>

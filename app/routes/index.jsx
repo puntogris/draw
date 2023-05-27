@@ -137,7 +137,7 @@ export default function Index() {
             type="email"
             id="email"
             name="email"
-            className="autofill:shadow-[inset_0_0_0px_1000px_rgb(250,250,250)] block w-full rounded-md border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500"
+            className="autofill:shadow-[inset_0_0_0px_1000px_rgb(250,250,250)] block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
             required
           />
           <label
@@ -150,7 +150,7 @@ export default function Index() {
             type="password"
             id="password"
             name="password"
-            className="autofill:shadow-[inset_0_0_0px_1000px_rgb(250,250,250)] block w-full rounded-md border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500"
+            className="autofill:shadow-[inset_0_0_0px_1000px_rgb(250,250,250)] block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
             required
           />
           <button

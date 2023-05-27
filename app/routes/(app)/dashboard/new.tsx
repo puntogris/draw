@@ -106,7 +106,7 @@ export default function New() {
         repeated. As this is intended for personal use all scenes are located at
         the root.
       </h2>
-      <h2 className="mt-1 text-center text-sm font-bold text-zinc-800">
+      <h2 className="mt-1 text-center text-sm font-bold text-blue-500">
         draw.puntogris.com/{name.length == 0 ? "ID" : name}
       </h2>
       <label className="mb-2 mt-3 block self-start text-sm">Name</label>
@@ -114,13 +114,13 @@ export default function New() {
         type="text"
         name="name"
         onChange={(e) => setName(e.target.value)}
-        className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500"
+        className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
       />
       <label className="mb-2 mt-3 block self-start text-sm">Description</label>
       <input
         name="description"
         type="text"
-        className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500"
+        className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
       />
       {isLoading ? (
         <button
