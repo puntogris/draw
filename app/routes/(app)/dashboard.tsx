@@ -47,49 +47,54 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen flex-row">
-      <nav className="flex w-64 flex-col gap-1 bg-slate-100 p-2 text-sm">
-        <NavLink
-          to="/dashboard/new"
-          className={({ isActive }) =>
-            isActive
-              ? "flex items-center gap-3 rounded bg-blue-400 px-4 py-2 text-white"
-              : "flex items-center gap-3 rounded px-4 py-2 text-zinc-700 hover:bg-slate-200"
-          }
-        >
-          <PlusIcon size={20} />
-          New scene
-        </NavLink>
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) =>
-            isActive
-              ? "flex items-center gap-3 rounded bg-blue-400 px-4 py-2 text-white"
-              : "flex items-center gap-3 rounded px-4 py-2 text-zinc-700 hover:bg-slate-200"
-          }
-          end
-        >
-          <DashboardIcon size={20} />
-          Dashboard
-        </NavLink>
-        <NavLink
-          to="/dashboard/settings"
-          className={({ isActive }) =>
-            isActive
-              ? "flex items-center gap-3 rounded bg-blue-400 px-4 py-2 text-white"
-              : "flex items-center gap-3 rounded px-4 py-2 text-zinc-700 hover:bg-slate-200"
-          }
-        >
-          <SettingsIcon size={20} />
-          Settings
-        </NavLink>
-        <button
-          onClick={signOut}
-          className="mt-auto flex items-center gap-3 rounded px-4 py-2 hover:bg-slate-200"
-        >
-          <SignOutIcon size={20} />
-          Sign out
-        </button>
-      </nav>
+      <aside className="flex w-80 flex-col gap-2 border-r border-gray-200 bg-white p-6">
+        <a className="mt-1 text-xl font-semibold dark:text-white" href="/">
+          draw.puntogris
+        </a>
+        <nav className="mt-5 flex h-full flex-col gap-2">
+          <NavLink
+            to="/dashboard/new"
+            className={({ isActive }) =>
+              "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100".concat(
+                isActive ? " bg-slate-100" : ""
+              )
+            }
+          >
+            <PlusIcon size={20} />
+            New scene
+          </NavLink>
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100".concat(
+                isActive ? " bg-slate-100" : ""
+              )
+            }
+            end
+          >
+            <DashboardIcon size={20} />
+            Dashboard
+          </NavLink>
+          <NavLink
+            to="/dashboard/settings"
+            className={({ isActive }) =>
+              "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100".concat(
+                isActive ? " bg-slate-100" : ""
+              )
+            }
+          >
+            <SettingsIcon size={20} />
+            Settings
+          </NavLink>
+          <button
+            onClick={signOut}
+            className="mt-auto flex items-center gap-3 rounded px-2.5 py-2 text-sm hover:bg-slate-200"
+          >
+            <SignOutIcon size={20} />
+            Sign out
+          </button>
+        </nav>
+      </aside>
       <div className="w-full bg-slate-50">
         <Outlet context={{ supabase, user }} />
       </div>

@@ -19,6 +19,7 @@ export const action: ActionFunction = async ({ request }) => {
   const body = await request.formData();
   const name = body.get("name");
   const description = body.get("description");
+  const published = body.get("publish") === "on";
   const response = new Response();
 
   try {
@@ -37,10 +38,11 @@ export const action: ActionFunction = async ({ request }) => {
     const { error: insertError, data: insertData } = await supabase
       .from("scenes")
       .insert({
-        name: name,
-        description: description,
+        name,
+        description,
         uid: userData.user.id,
         created_at: new Date().getTime(),
+        published,
       })
       .select();
 
@@ -95,25 +97,43 @@ export default function New() {
     };
   }, [isLoading]);
 
+  function validateAndSetName(name: string) {
+    const validationRegex = /^(?!.*--)[a-zA-Z0-9 -]+$/;
+    const modifiedName = name.replace(/ /g, "-");
+
+    if (name.length > 30 || modifiedName == "-") {
+      return;
+    } else if (validationRegex.test(modifiedName)) {
+      setName(modifiedName);
+    } else if (name.length === 0) {
+      setName("");
+    }
+  }
+
   return (
     <Form
       method="post"
-      className="mx-auto mt-14 flex w-full max-w-2xl flex-shrink-0 flex-col rounded p-8 shadow-xl"
+      className="mx-auto mt-14 flex w-full max-w-3xl flex-shrink-0 flex-col rounded p-12 shadow-xl"
     >
-      <h1 className="text-center text-lg font-bold">Create new scene</h1>
-      <h2 className="mt-1 text-center text-sm text-zinc-700">
-        A name is required as it will be the ID of the scene and it can't be
-        repeated. As this is intended for personal use all scenes are located at
-        the root.
+      <h1 className="text-center text-xl font-bold">Create a new scene</h1>
+      <h2 className="mt-2 text-sm text-slate-600">
+        <span className="font-semibold">A unique name is required </span>
+        as it will be the ID of the scene, as this is intended for personal use
+        all scenes are located at the root,{" "}
+        <span className="font-semibold">
+          all scenes are private by default
+        </span>{" "}
+        and only you can access them.
       </h2>
-      <h2 className="mt-1 text-center text-sm font-bold text-blue-500">
-        draw.puntogris.com/{name.length == 0 ? "ID" : name}
+      <h2 className="mt-2 text-center text-sm font-bold text-blue-500">
+        draw.puntogris.com/{name.length == 0 ? "super-cool-id" : name}
       </h2>
       <label className="mb-2 mt-3 block self-start text-sm">Name</label>
       <input
         type="text"
         name="name"
-        onChange={(e) => setName(e.target.value)}
+        value={name}
+        onChange={(e) => validateAndSetName(e.target.value)}
         className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
       />
       <label className="mb-2 mt-3 block self-start text-sm">Description</label>
@@ -122,6 +142,20 @@ export default function New() {
         type="text"
         className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
       />
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <div className="flex flex-col">
+          <label className="text-sm">Visibility</label>
+          <label className="text-sm text-slate-700">
+            This will make public this ID, it can be changed later.
+          </label>
+        </div>
+        <input
+          type="checkbox"
+          name="publish"
+          className="h-7 w-[3.25rem] cursor-pointer appearance-none rounded-full border-2 border-transparent bg-gray-200 ring-1 ring-transparent ring-offset-white transition-colors duration-200 ease-in-out before:inline-block before:h-6 before:w-6 before:translate-x-0 before:transform before:rounded-full before:bg-white before:shadow before:ring-0 before:transition before:duration-200 before:ease-in-out checked:bg-blue-600 checked:bg-none checked:before:translate-x-full checked:before:bg-blue-200 focus:outline-none dark:bg-gray-700 dark:before:bg-gray-400 dark:checked:bg-blue-600 dark:checked:before:bg-blue-200 dark:focus:ring-offset-gray-800"
+        />
+      </div>
+
       {isLoading ? (
         <button
           disabled

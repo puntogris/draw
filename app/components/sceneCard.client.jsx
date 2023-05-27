@@ -38,15 +38,14 @@ export default function Card({ name, description, sceneId, elements }) {
         src="https://placehold.co/400"
         alt="Image Description"
       />
-      <div className="p-4 md:p-3">
+      <div className="flex min-h-[100px]  flex-col p-4 md:p-3">
         <h3 className="text-lg font-bold text-gray-800 dark:text-white">
-          Card title
+          {name}
         </h3>
         <p className="mt-1 text-sm text-gray-800 dark:text-gray-400">
-          Some quick example text to build on the card title and make up the
-          bulk of the card's content.
+          {description}
         </p>
-        <p className="mt-5 text-xs text-gray-500 dark:text-gray-500">
+        <p className="mt-auto  text-xs text-gray-500 dark:text-gray-500">
           Last updated 5 mins ago
         </p>
       </div>

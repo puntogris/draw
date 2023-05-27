@@ -53,9 +53,9 @@ export default function Index() {
 
   return (
     <div className="flex h-full flex-col px-16 py-10">
-      <h1 className="text-lg font-bold">Dashboard</h1>
+      <h1 className="text-xl font-bold">Dashboard</h1>
       <p className="text-sm text-zinc-600">
-        These are your scenes. They will automatically sync every x minutes.
+        These are your scenes and they will be automatically synced.
       </p>
       {!isLoadingState && scenes.length == 0 && <EmptyDataView />}
       {isLoadingState && (
@@ -85,10 +85,10 @@ export default function Index() {
 
 function SearchInput({ inputChange }: { inputChange: Dispatch<string> }) {
   return (
-    <div className="mt-6 flex items-center gap-3 rounded-md border bg-white px-4 py-3 text-sm dark:border-gray-700">
+    <div className="mt-6 flex items-center gap-3 rounded-md border bg-white px-4  text-sm dark:border-gray-700">
       <SearchIcon />
       <input
-        className="w-full outline-none"
+        className="w-full py-3 outline-none"
         placeholder="Search for scenes"
         onChange={(e) => inputChange(e.target.value)}
       />
