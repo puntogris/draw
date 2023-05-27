@@ -1,31 +1,55 @@
 import Draw from "~/components/draw.client";
 import { json } from "@remix-run/node";
-import { redirect, useLoaderData, useOutletContext } from "react-router";
-import { useEffect, useState, Suspense } from "react";
+import { useLoaderData } from "react-router";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 
-// export const loader = async ({ request, params }) => {
-//   // url = /some_internal_id/some_name?id=some_id
-//   const response = new Response();
-//   const url = new URL(request.url);
-//   const data2 = url.searchParams.get("json");
+export const loader = async ({ request, params }) => {
+  const id = params.draw;
+  const response = new Response();
 
-//   const supabase = createServerClient(
-//     process.env.SUPABASE_URL,
-//     process.env.SUPABASE_ANON_KEY,
-//     { request, response }
-//   );
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY,
+    { request, response }
+  );
 
-//   const { data } = await supabase.auth.getUser();
-//   if (data && data.user) {
-//     return json({ data }, { headers: response.headers });
-//   } else {
-//     return redirect("/");
-//   }
-// };
+  const {
+    error: sessionError,
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const { error: sceneError, data: scene } = await supabase
+    .from("scenes")
+    .select()
+    .eq("name", id)
+    .single();
+
+  if (scene) {
+    return json(
+      {
+        scene,
+        isOwner: scene.uid == session?.user?.id,
+      },
+      { headers: response.headers }
+    );
+  } else {
+    return json(
+      {
+        isOwner: false,
+        error:
+          sceneError?.code == "PGRST116"
+            ? "You don't have the permissions to access this page."
+            : sceneError?.message || sessionError?.message,
+      },
+      { headers: response.headers }
+    );
+  }
+};
 
 export default function Index() {
-  return <div>draw scene</div>;
+  const { scene, isOwner, error } = useLoaderData();
+
+  return <div>Drawing</div>;
   // const { supabase } = useOutletContext();
   // //TODO pass the id and all necesary data from here maybe
   // const { data } = useLoaderData();
@@ -50,18 +74,4 @@ export default function Index() {
   //     <Draw id={id} supabase={supabase} />
   //   </Suspense>
   // );
-}
-
-function Spinner() {
-  return (
-    <div className="flex h-screen w-full items-center justify-center">
-      <div
-        class="inline-block h-16 w-16 animate-spin rounded-full border-[3px] border-current border-t-transparent text-blue-600"
-        role="status"
-        aria-label="loading"
-      >
-        <span class="sr-only">Loading...</span>
-      </div>
-    </div>
-  );
 }
