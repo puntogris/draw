@@ -8,6 +8,10 @@ import {
 import { json, LoaderFunction, redirect } from "@remix-run/node";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { OutletContext } from "~/utils/types";
+import DashboardIcon from "~/components/icons/dashboardIcon";
+import PlusIcon from "~/components/icons/plusIcon";
+import SlidersIcon from "~/components/icons/slidersIcon";
+import SignOutIcon from "~/components/icons/signOutIcon";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const response = new Response();
@@ -48,63 +52,47 @@ export default function Dashboard() {
           to="/dashboard/new"
           className={({ isActive }) =>
             isActive
-              ? "rounded bg-slate-200 p-2"
-              : "rounded p-2 hover:bg-slate-200"
+              ? "flex items-center gap-2 rounded bg-slate-200 p-2"
+              : "flex items-center gap-2 rounded p-2 hover:bg-slate-200"
           }
         >
+          <PlusIcon />
           New scene
         </NavLink>
         <NavLink
           to="/dashboard"
           className={({ isActive }) =>
             isActive
-              ? "rounded bg-slate-200 p-2"
-              : "rounded p-2 hover:bg-slate-200"
+              ? "flex items-center gap-2 rounded bg-slate-200 p-2"
+              : "flex items-center gap-2 rounded p-2 hover:bg-slate-200"
           }
           end
         >
+          <DashboardIcon />
           Dashboard
         </NavLink>
         <NavLink
           to="/dashboard/settings"
           className={({ isActive }) =>
             isActive
-              ? "rounded bg-slate-200 p-2"
-              : "rounded p-2 hover:bg-slate-200"
+              ? "flex items-center gap-2 rounded bg-slate-200 p-2"
+              : "flex items-center gap-2 rounded p-2 hover:bg-slate-200"
           }
         >
+          <SlidersIcon />
           Settings
         </NavLink>
         <button
           onClick={signOut}
-          className="mt-auto flex flex-row items-center gap-2 rounded p-2 hover:bg-slate-200"
+          className="mt-auto flex items-center gap-2 rounded p-2 hover:bg-slate-200"
         >
-          Sign out
           <SignOutIcon />
+          Sign out
         </button>
       </div>
       <div className="w-full bg-slate-50">
         <Outlet context={{ supabase, user }} />
       </div>
     </div>
-  );
-}
-
-function SignOutIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className="bg-base-100 h-7 w-7 rounded-md p-1"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
-      />
-    </svg>
   );
 }
