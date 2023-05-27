@@ -1,15 +1,27 @@
 import Draw from "~/components/draw.client";
-import { json } from "@remix-run/node";
+import { LoaderFunction, MetaFunction, json } from "@remix-run/node";
 import { useLoaderData } from "react-router";
 import { createServerClient } from "@supabase/auth-helpers-remix";
+import Spinner from "~/components/spinner";
+import { Suspense } from "react";
+import { OutletContext } from "~/utils/types";
+import { useOutletContext } from "@remix-run/react";
 
-export const loader = async ({ request, params }) => {
+export const meta: MetaFunction<typeof loader> = ({ params }) => {
+  return {
+    charset: "utf-8",
+    title: `draw - ${params.draw}`,
+    viewport: "width=device-width,initial-scale=1",
+  };
+};
+
+export const loader: LoaderFunction = async ({ request, params }) => {
   const id = params.draw;
   const response = new Response();
 
   const supabase = createServerClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY,
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
     { request, response }
   );
 
@@ -35,7 +47,6 @@ export const loader = async ({ request, params }) => {
   } else {
     return json(
       {
-        isOwner: false,
         error:
           sceneError?.code == "PGRST116"
             ? "You don't have the permissions to access this page."
@@ -48,8 +59,10 @@ export const loader = async ({ request, params }) => {
 
 export default function Index() {
   const { scene, isOwner, error } = useLoaderData();
+  const { supabase } = useOutletContext<OutletContext>();
+  //we pass the scene and the is owner to the draw component
+  // if is not the owner we skip saving
 
-  return <div>Drawing</div>;
   // const { supabase } = useOutletContext();
   // //TODO pass the id and all necesary data from here maybe
   // const { data } = useLoaderData();
@@ -69,9 +82,15 @@ export default function Index() {
   //     }
   //   }
   // }, []);
-  // return (
-  //   <Suspense fallback={<Spinner />}>
-  //     <Draw id={id} supabase={supabase} />
-  //   </Suspense>
-  // );
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-full min-h-screen items-center justify-center">
+          <Spinner size={"lg"} />
+        </div>
+      }
+    >
+      <Draw id={scene.id} supabase={supabase} />
+    </Suspense>
+  );
 }
