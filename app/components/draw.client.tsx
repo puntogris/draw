@@ -126,7 +126,8 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     function startSync() {
       const cloudLocalUUID = scene.local_uuid.toString();
 
-      if (cloudLocalUUID == localUUID) {
+      // TODO the scene UUID should already exists at this point -> new.tsx
+      if (!cloudLocalUUID || cloudLocalUUID == localUUID) {
         clearInterval(intervalId);
         intervalId = startSyncInverval();
       } else {
