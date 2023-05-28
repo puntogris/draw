@@ -25,7 +25,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
 
   const sceneDataRef = useRef<ExcalidrawInitialDataState>({
     elements: scene.data.elements,
-    appState: isOwner ? scene.data.appState : {},
+    appState: isOwner ? {...scene.data.appState, collaborators: []} : {},
     files: {},
   });
 
@@ -99,12 +99,11 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         id: "not_owner_toast",
       }
     );
-    
   }
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
-    let toastId: string
+    let toastId: string;
 
     if (!isOwner) {
       toastId = showViewerToast();
@@ -120,7 +119,6 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         // date doest not match so it must be from another device or the local db was deleted
         // ask the user what to do
       }
-
       return () => clearInterval(intervalId);
     }
 
@@ -138,7 +136,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     if (isOwner) {
       sceneDataRef.current = {
         elements: elements,
-        appState: appState,
+        appState: {...appState, collaborators: []},
         files: files,
       };
       LocalData.save(scene.id.toString(), elements, appState, files, () => {});
