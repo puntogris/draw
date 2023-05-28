@@ -5,8 +5,14 @@ import { LocalData } from "~/utils/LocalData";
 import { getOrCreateLocalUUID } from "~/utils/utils";
 import { SupabaseClient } from "@supabase/auth-helpers-remix";
 import isEqual from "lodash/isEqual";
-import type { ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
+import type {
+  AppState,
+  BinaryFiles,
+  ExcalidrawInitialDataState,
+} from "@excalidraw/excalidraw/types/types";
 import { toast } from "react-hot-toast";
+import EnvelopeIcon from "./icons/envelopeIcon";
+import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
 
 const UPDATE_INTERVAL_MS = 4000;
 
@@ -27,7 +33,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     elements: scene.data ? scene.data.elements : [],
     appState:
       isOwner && scene.data
-        ? { ...scene.data.appState, collaborators: [] }
+        ? { ...scene.data.appState, collaborators: undefined }
         : {},
     files: {},
   });
@@ -138,14 +144,19 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     };
   }, []);
 
-  const onChange = (elements: any, appState: any, files: any) => {
+  const onChange = (
+    elements: readonly ExcalidrawElement[],
+    appState: AppState,
+    files: BinaryFiles
+  ) => {
     if (isOwner) {
+      const notDeletedElemets = elements.filter((e) => !e.isDeleted)
       sceneDataRef.current = {
-        elements: elements,
-        appState: { ...appState, collaborators: [] },
+        elements: notDeletedElemets,
+        appState: { ...appState, collaborators: undefined },
         files: files,
       };
-      LocalData.save(scene.id.toString(), elements, appState, files, () => {});
+      LocalData.save(scene.id.toString(), notDeletedElemets, appState, files, () => {});
     }
   };
 
@@ -178,7 +189,7 @@ function Welcome() {
       <WelcomeScreen.Center>
         <WelcomeScreen.Center.Logo>draw.puntogris</WelcomeScreen.Center.Logo>
         <WelcomeScreen.Center.Heading>
-          Your data are autosaved to the cloud.
+          Your scene will be automatically synced to the cloud.
         </WelcomeScreen.Center.Heading>
         <WelcomeScreen.Hints.ToolbarHint />
         <WelcomeScreen.Hints.MenuHint />
@@ -186,12 +197,10 @@ function Welcome() {
         <WelcomeScreen.Center.Menu>
           <WelcomeScreen.Center.MenuItemLoadScene />
           <WelcomeScreen.Center.MenuItemHelp />
-          <WelcomeScreen.Center.MenuItem
-            onSelect={() => console.log("clicked!")}
+          <WelcomeScreen.Center.MenuItemLink
+            icon={<EnvelopeIcon size={16} />}
+            href="https://puntogris.com"
           >
-            Click me!
-          </WelcomeScreen.Center.MenuItem>
-          <WelcomeScreen.Center.MenuItemLink href="https://puntogris.com">
             Contact me
           </WelcomeScreen.Center.MenuItemLink>
         </WelcomeScreen.Center.Menu>

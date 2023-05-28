@@ -22,10 +22,7 @@ export class LocalData {
       onFilesSaved: () => void
     ) => {
       try {
-        localStorage.setItem(
-          `draw_elements_${id}`,
-          JSON.stringify(elements.filter((e) => !e.isDeleted))
-        );
+        localStorage.setItem(`draw_elements_${id}`, JSON.stringify(elements));
         localStorage.setItem(`draw_app_state_${id}`, JSON.stringify(appState));
         await this.saveFiles(elements, files);
         onFilesSaved();
