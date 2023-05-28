@@ -65,7 +65,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
             local_uuid: localUUID,
             updated_at: new Date().getTime(),
           })
-          .eq("id", id);
+          .eq("id", scene.id);
 
         if (!error) {
           lastDataUploaded = sceneDataRef.current;
@@ -110,7 +110,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         appState: appState,
         files: files,
       };
-      LocalData.save(id.toString(), elements, appState, files, () => {});
+      LocalData.save(scene.id.toString(), elements, appState, files, () => {});
     }
   };
 
