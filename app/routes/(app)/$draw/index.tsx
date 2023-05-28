@@ -63,10 +63,9 @@ export default function Index() {
     <Suspense fallback={<Loading />}>
       {scene != null && 
         <Draw
-          id={scene.id}
           scene={scene}
-          supabase={supabase}
           isOwner={isOwner}
+          supabase={supabase}
         />
       }
     </Suspense>

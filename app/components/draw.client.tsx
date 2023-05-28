@@ -3,15 +3,20 @@ import { useNavigate } from "@remix-run/react";
 import { useEffect, useState, useRef } from "react";
 import { LocalData } from "~/utils/LocalData";
 import { getOrCreateLocalUUID } from "~/utils/utils";
-import { ExcalidrawAPIRefValue } from "@excalidraw/excalidraw/types/types";
-import type { ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
+import { SupabaseClient } from "@supabase/auth-helpers-remix";
 import isEqual from "lodash/isEqual";
+import type { ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
 
 const UPDATE_INTERVAL_MS = 4000;
 
-export default function Draw({ id, supabase, scene, isOwner }) {
-  const [excalidrawAPI, setExcalidrawAPI] =
-    useState<ExcalidrawAPIRefValue | null>(null);
+type DrawProps = {
+  scene: any;
+  isOwner: boolean;
+  supabase: SupabaseClient;
+};
+
+export default function Draw({ scene, isOwner, supabase }: DrawProps) {
+  const [excalidrawAPI, setExcalidrawAPI] = useState(null);
 
   const localUUID = getOrCreateLocalUUID();
   let lastDataUploaded: ExcalidrawInitialDataState | null = null;
