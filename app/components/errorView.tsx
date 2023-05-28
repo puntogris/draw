@@ -8,7 +8,7 @@ export default function ErrorView({
   slug?: string | null;
 }) {
   return (
-    <body className="mx-auto flex h-full min-h-screen w-full max-w-3xl flex-col items-center justify-between py-8">
+    <div className="mx-auto flex h-full min-h-screen w-full max-w-3xl flex-col items-center justify-between py-8">
       <a
         className="px-4 text-xl font-semibold dark:text-white sm:px-6 sm:text-3xl lg:px-8"
         href="/"
@@ -16,11 +16,11 @@ export default function ErrorView({
         {slug ? `draw.puntogris/${slug}` : "draw.puntogris"}
       </a>
 
-      <div className="max-w-md px-4 py-10 text-center sm:px-6 lg:px-8">
+      <div className="max-w-lg px-4 py-10 text-center sm:px-6 lg:px-8">
         <h1 className="block text-7xl font-bold text-gray-800 dark:text-white sm:text-9xl">
-          {code ? code.toString() : "Woops"}
+          {code ? code.toString() : "Oh no!"}
         </h1>
-        <h1 className="text-gray-600 dark:text-gray-400">
+        <h1 className="text-gray-600 dark:text-gray-400 mt-4">
           {code != 404 && message
             ? message
             : "Oops, access not allowed or non-existing route, contact the owner to verify if this scene is publicly accessible."}
@@ -30,6 +30,6 @@ export default function ErrorView({
       </div>
 
       <a className="text-sm text-gray-500 hover:text-blue-500 px-2" href="puntogris.com" target="_blank">by @puntogris</a>
-    </body>
+    </div>
   );
 }

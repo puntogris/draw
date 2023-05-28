@@ -1,9 +1,8 @@
-import Draw from "~/components/draw.client";
 import Spinner from "~/components/spinner";
 import { LoaderFunction, MetaFunction, json } from "@remix-run/node";
 import { useLoaderData } from "react-router";
 import { createServerClient } from "@supabase/auth-helpers-remix";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { OutletContext } from "~/utils/types";
 import { useOutletContext } from "@remix-run/react";
 import { notFound } from "remix-utils";
@@ -48,7 +47,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
 };
 
+// @ts-ignore
+const Draw = lazy(() => import("./Draw"));
+// @ts-ignore
+const DrawViewer = lazy(() => import("./DrawViewer"));
+
 export default function Index() {
+  // @ts-ignore
   const { slug, scene, isOwner } = useLoaderData();
   const { supabase } = useOutletContext<OutletContext>();
 
@@ -57,15 +62,22 @@ export default function Index() {
   // if there is we trust that unless the new scene has a diferent local uid
 
   //if we are not the owner we go ahead with the fetched scene
+
   return (
-    <Suspense
-      fallback={
-        <div className="flex h-full min-h-screen items-center justify-center">
-          <Spinner size={"lg"} />
-        </div>
-      }
-    >
-      {scene != null && <Draw id={scene.id} supabase={supabase} />}
+    <Suspense fallback={<Loading />}>
+      {isOwner ? (
+        <Draw id={scene.id} scene={scene} supabase={supabase} />
+      ) : (
+        <DrawViewer scene={scene} supabase={supabase} />
+      )}
     </Suspense>
+  );
+}
+
+function Loading() {
+  return (
+    <div className="flex h-full min-h-screen items-center justify-center">
+      <Spinner size={"lg"} />
+    </div>
   );
 }

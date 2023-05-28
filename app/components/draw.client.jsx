@@ -5,7 +5,7 @@ import { LocalData } from "~/utils/LocalData";
 import { resolvablePromise, getOrCreateLocalUUID } from "~/utils/utils";
 import isEqual from "lodash/isEqual";
 
-export default function Draw({ id, supabase }) {
+export default function Draw({ id, supabase, scene }) {
   const initialStatePromiseRef = useRef({ promise: null });
   if (!initialStatePromiseRef.current.promise) {
     initialStatePromiseRef.current.promise = resolvablePromise();
@@ -72,7 +72,7 @@ export default function Draw({ id, supabase }) {
         }
       }
       LocalData.savePreview(sceneElements, id.toString());
-    }, 60000);
+    }, 1111);
 
     return interval;
   }
