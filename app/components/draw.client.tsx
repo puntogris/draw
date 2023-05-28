@@ -24,8 +24,11 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   let sceneFiles = [];
 
   const sceneDataRef = useRef<ExcalidrawInitialDataState>({
-    elements: scene.data.elements,
-    appState: isOwner ? {...scene.data.appState, collaborators: []} : {},
+    elements: scene.data ? scene.data.elements : [],
+    appState:
+      isOwner && scene.data
+        ? { ...scene.data.appState, collaborators: [] }
+        : {},
     files: {},
   });
 
@@ -73,7 +76,10 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         }
       }
       if (sceneDataRef.current.elements) {
-        LocalData.savePreview(sceneDataRef.current.elements, id.toString());
+        LocalData.savePreview(
+          sceneDataRef.current.elements,
+          scene.id.toString()
+        );
       }
     }, UPDATE_INTERVAL_MS);
 
@@ -136,7 +142,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     if (isOwner) {
       sceneDataRef.current = {
         elements: elements,
-        appState: {...appState, collaborators: []},
+        appState: { ...appState, collaborators: [] },
         files: files,
       };
       LocalData.save(scene.id.toString(), elements, appState, files, () => {});
