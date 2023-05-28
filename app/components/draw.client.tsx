@@ -15,6 +15,7 @@ import EnvelopeIcon from "./icons/envelopeIcon";
 import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
 
 const UPDATE_INTERVAL_MS = 4000;
+const VIEWER_ALERT_DURATION_MS = 20000;
 
 type DrawProps = {
   scene: any;
@@ -65,17 +66,10 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   //   }
   // }, []);
 
-  function startInverval() {
+  function startSyncInverval() {
     const interval = setInterval(async () => {
       if (!isEqual(sceneDataRef.current, lastDataUploaded)) {
-        const { error } = await supabase
-          .from("scenes")
-          .update({
-            data: sceneDataRef.current,
-            local_uuid: localUUID,
-            updated_at: new Date().getTime(),
-          })
-          .eq("id", scene.id);
+        const { error } = await saveSceneToCloud();
 
         if (!error) {
           lastDataUploaded = sceneDataRef.current;
@@ -92,6 +86,19 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     return interval;
   }
 
+  async function saveSceneToCloud() {
+    const { error } = await supabase
+      .from("scenes")
+      .update({
+        data: sceneDataRef.current,
+        local_uuid: localUUID,
+        updated_at: new Date().getTime(),
+      })
+      .eq("id", scene.id);
+
+    return { error };
+  }
+
   function showViewerToast() {
     return toast(
       (t) => (
@@ -106,9 +113,8 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         </div>
       ),
       {
-        duration: 20000,
+        duration: VIEWER_ALERT_DURATION_MS,
         position: "top-right",
-        id: "not_owner_toast",
       }
     );
   }
@@ -117,17 +123,14 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     let intervalId: NodeJS.Timeout;
     let toastId: string;
 
-    if (!isOwner) {
-      toastId = showViewerToast();
-    }
-
-    async function startSync() {
+    function startSync() {
       const cloudLocalUUID = scene.local_uuid.toString();
+
       if (cloudLocalUUID == localUUID) {
-        // we can update, last update was from these device
         clearInterval(intervalId);
-        intervalId = startInverval();
+        intervalId = startSyncInverval();
       } else {
+        // TODO maybe we check this before starting this comp
         // date doest not match so it must be from another device or the local db was deleted
         // ask the user what to do
       }
@@ -136,6 +139,8 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
 
     if (isOwner) {
       startSync();
+    } else {
+      toastId = showViewerToast();
     }
 
     return () => {
@@ -144,21 +149,46 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     };
   }, []);
 
-  const onChange = (
+  function onChange(
     elements: readonly ExcalidrawElement[],
     appState: AppState,
     files: BinaryFiles
-  ) => {
+  ) {
     if (isOwner) {
-      const notDeletedElemets = elements.filter((e) => !e.isDeleted)
+      const notDeletedElemets = elements.filter((e) => !e.isDeleted);
       sceneDataRef.current = {
         elements: notDeletedElemets,
         appState: { ...appState, collaborators: undefined },
         files: files,
       };
-      LocalData.save(scene.id.toString(), notDeletedElemets, appState, files, () => {});
+      LocalData.save(
+        scene.id.toString(),
+        notDeletedElemets,
+        appState,
+        files,
+        () => {}
+      );
     }
-  };
+  }
+
+  async function onSaveClicked() {
+    const loadingToast = toast.loading("Saving scene...", {
+      position: "top-right",
+    });
+    const { error } = await saveSceneToCloud();
+
+    toast.dismiss(loadingToast);
+
+    if (!error) {
+      toast.success("Scene saved successfully.", {
+        position: "top-right",
+      });
+    } else {
+      toast.error("An error ocurred.", {
+        position: "top-right",
+      });
+    }
+  }
 
   return (
     <div className="h-screen">
@@ -177,7 +207,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         onChange={onChange}
       >
         <Welcome />
-        <Menu isOwner={isOwner} />
+        <Menu isOwner={isOwner} onSaveClicked={onSaveClicked} />
       </Excalidraw>
     </div>
   );
@@ -209,8 +239,15 @@ function Welcome() {
   );
 }
 
-function Menu({ isOwner }: { isOwner: boolean }) {
+function Menu({
+  isOwner,
+  onSaveClicked,
+}: {
+  isOwner: boolean;
+  onSaveClicked: () => void;
+}) {
   const navigate = useNavigate();
+
   return (
     <MainMenu>
       <MainMenu.DefaultItems.LoadScene />
@@ -223,15 +260,13 @@ function Menu({ isOwner }: { isOwner: boolean }) {
           <MainMenu.Item onSelect={() => navigate("/dashboard")}>
             Dashboard
           </MainMenu.Item>
-          <MainMenu.Item onSelect={() => navigate("/dashboard")}>
+          <MainMenu.Item onSelect={() => onSaveClicked()}>
             Save to cloud
           </MainMenu.Item>
         </>
       )}
       {!isOwner && (
-        <>
-          <MainMenu.Item onSelect={() => navigate("/")}>Sign in</MainMenu.Item>
-        </>
+        <MainMenu.Item onSelect={() => navigate("/")}>Sign in</MainMenu.Item>
       )}
       <MainMenu.Separator />
       <MainMenu.DefaultItems.ToggleTheme />
