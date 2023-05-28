@@ -1,5 +1,5 @@
 {
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx", "app/routes/(app)/index.jsx", "app/routes/index.jsx", "app/components/draw.client.jsx"],
+  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx", "app/routes/(app)/index.jsx", "app/routes/index.jsx", "app/components/draw.tsx", "app/components/draw.client.tsx"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "isolatedModules": true,

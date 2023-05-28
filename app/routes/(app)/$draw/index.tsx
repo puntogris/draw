@@ -1,8 +1,9 @@
 import Spinner from "~/components/spinner";
+import Draw from "~/components/draw.client";
 import { LoaderFunction, MetaFunction, json } from "@remix-run/node";
 import { useLoaderData } from "react-router";
 import { createServerClient } from "@supabase/auth-helpers-remix";
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import { OutletContext } from "~/utils/types";
 import { useOutletContext } from "@remix-run/react";
 import { notFound } from "remix-utils";
@@ -47,11 +48,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
 };
 
-// @ts-ignore
-const Draw = lazy(() => import("./Draw"));
-// @ts-ignore
-const DrawViewer = lazy(() => import("./DrawViewer"));
-
 export default function Index() {
   // @ts-ignore
   const { slug, scene, isOwner } = useLoaderData();
@@ -65,11 +61,14 @@ export default function Index() {
 
   return (
     <Suspense fallback={<Loading />}>
-      {isOwner ? (
-        <Draw id={scene.id} scene={scene} supabase={supabase} />
-      ) : (
-        <DrawViewer scene={scene} supabase={supabase} />
-      )}
+      {scene != null && 
+        <Draw
+          id={scene.id}
+          scene={scene}
+          supabase={supabase}
+          isOwner={isOwner}
+        />
+      }
     </Suspense>
   );
 }
