@@ -6,7 +6,7 @@ import {
 } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
-import { ActionFunction } from "@remix-run/node";
+import { ActionFunction, redirect } from "@remix-run/node";
 import { toast } from "react-hot-toast";
 
 export const meta = () => ({
@@ -35,22 +35,16 @@ export const action: ActionFunction = async ({ request }) => {
       return { error: userError.message };
     }
 
-    const { error: insertError, data: insertData } = await supabase
-      .from("scenes")
-      .insert({
-        name,
-        description,
-        uid: userData.user.id,
-        created_at: new Date().getTime(),
-        published,
-      })
-      .select();
+    const { error: insertError } = await supabase.from("scenes").insert({
+      name,
+      description,
+      uid: userData.user.id,
+      created_at: new Date().getTime(),
+      published,
+    });
 
     if (!insertError) {
-      return {
-        sceneId: insertData[0].id.toString(),
-        name: name,
-      };
+      return redirect(`/${name}`);
     }
 
     if (insertError.code == "23505") {
@@ -66,10 +60,8 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function New() {
   const actionData = useActionData();
-  const navigate = useNavigate();
   const navigation = useNavigation();
   const isLoading = navigation.state == "submitting";
-
   const [name, setName] = useState("");
 
   useEffect(() => {
@@ -92,9 +84,7 @@ export default function New() {
       toast.dismiss("create_loading");
     }
 
-    return () => {
-      toast.dismiss("create_loading");
-    };
+    return () => toast.dismiss("create_loading");
   }, [isLoading]);
 
   function validateAndSetName(name: string) {
