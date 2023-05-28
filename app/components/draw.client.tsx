@@ -6,6 +6,7 @@ import { getOrCreateLocalUUID } from "~/utils/utils";
 import { SupabaseClient } from "@supabase/auth-helpers-remix";
 import isEqual from "lodash/isEqual";
 import type { ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
+import { toast } from "react-hot-toast";
 
 const UPDATE_INTERVAL_MS = 4000;
 
@@ -79,8 +80,35 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     return interval;
   }
 
+  function showViewerToast() {
+    return toast(
+      (t) => (
+        <div className="flex gap-2 text-sm">
+          As a viewer any changes to these scene won't be saved.
+          <button
+            className="font-bold text-slate-700"
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Dismiss
+          </button>
+        </div>
+      ),
+      {
+        duration: 20000,
+        position: "top-right",
+        id: "not_owner_toast",
+      }
+    );
+    
+  }
+
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
+    let toastId: string
+
+    if (!isOwner) {
+      toastId = showViewerToast();
+    }
 
     async function startSync() {
       const cloudLocalUUID = scene.local_uuid.toString();
@@ -100,7 +128,10 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
       startSync();
     }
 
-    return () => clearInterval(intervalId);
+    return () => {
+      clearInterval(intervalId);
+      toast.dismiss(toastId);
+    };
   }, []);
 
   const onChange = (elements: any, appState: any, files: any) => {
