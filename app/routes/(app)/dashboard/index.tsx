@@ -67,13 +67,13 @@ export default function Index() {
         <>
           <SearchInput inputChange={setSearchInput} />
           <div className="mt-4 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {filteredScenes.map((entry) => (
+            {filteredScenes.map((scenes) => (
               <SceneCard
-                key={entry.id}
-                name={entry.name}
-                description={entry.description}
-                sceneId={entry.id}
-                elements={entry.elements}
+                key={scenes.id}
+                name={scenes.name}
+                description={scenes.description}
+                sceneId={scenes.id}
+                lastUpdated={scenes.updated_at || scenes.created_at}
               />
             ))}
           </div>

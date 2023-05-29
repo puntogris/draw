@@ -11,4 +11,6 @@ export type Scene = {
   preview: string;
   name: string;
   description: string;
+  updated_at: number | null,
+  created_at: number
 };

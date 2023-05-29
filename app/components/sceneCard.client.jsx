@@ -2,7 +2,7 @@ const { useNavigate } = require("@remix-run/react");
 const { useEffect, useState, useRef } = require("react");
 import { LocalData } from "~/utils/LocalData";
 
-export default function Card({ name, description, sceneId, elements }) {
+export default function SceneCard({ name, description, sceneId, lastUpdated }) {
   const [image, setImage] = useState();
   const navigate = useNavigate();
 
@@ -18,24 +18,41 @@ export default function Card({ name, description, sceneId, elements }) {
     getPreview();
   }, []);
 
+  function getLastUpdatedDate() {
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - lastUpdated;
+    const minutes = Math.floor(timeDifference / 1000 / 60);
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours > 0) {
+      return `Last updated ${hours} hs ${remainingMinutes} min ago.`;
+    } else {
+      return `Last updated ${minutes} min ago.`;
+    }
+  }
+
   return (
     <div className="flex flex-col overflow-hidden rounded border bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-slate-700/[.7]">
       <a className="flex" href={`/${name}`}>
         <img
-          className="max-h-60 w-full object-cover"
+          className="max-h-48 w-full object-cover hover:opacity-80"
           src="https://placehold.co/600"
           alt="Image Description"
         />
       </a>
       <div className="flex min-h-[100px] flex-col p-4 md:p-3">
-        <h3 className="overflow-hidden truncate font-bold text-gray-800 dark:text-white">
+        <a
+          href={`/${name}`}
+          className="overflow-hidden truncate text-sm font-semibold text-slate-800 hover:text-slate-700 dark:text-white"
+        >
           {name}
-        </h3>
-        <p className="mt-1 line-clamp-2 truncate text-sm text-gray-800 dark:text-gray-400">
+        </a>
+        <p className="mt-1 line-clamp-2 truncate text-xs text-gray-800 dark:text-gray-400">
           {description}
         </p>
         <p className="mt-auto  text-xs text-gray-500 dark:text-gray-500">
-          Last updated 5 mins ago
+          {getLastUpdatedDate()}
         </p>
       </div>
     </div>
