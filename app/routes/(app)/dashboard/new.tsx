@@ -60,6 +60,7 @@ export default function New() {
   const navigation = useNavigation();
   const isLoading = navigation.state == "submitting";
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     if (actionData?.error) {
@@ -110,10 +111,6 @@ export default function New() {
     }
   }
 
-  function clearNameInput() {
-    setName("");
-  }
-
   return (
     <div className="flex h-full w-full">
       <div className="flex w-1/2 flex-col px-16 py-10">
@@ -121,7 +118,7 @@ export default function New() {
         <p className="text-sm text-zinc-600">
           Here we go, check the usefull tips to learn more how this works.
         </p>
-        <h1 className="mt-7 font-bold text-slate-700">Scene configuration</h1>
+        <h1 className="mt-5 font-semibold text-slate-700">Scene configuration</h1>
         <h2 className="mt-1 text-sm text-zinc-600">
           You will find your new cool scene at{" "}
           <span className="font-bold text-blue-500">
@@ -140,11 +137,11 @@ export default function New() {
             />
             {name.length > 0 && (
               <button
-                onClick={clearNameInput}
+                onClick={() => setName("")}
                 className="rounded-full bg-gray-50 p-0.5 hover:bg-gray-100"
                 type="button"
               >
-                <CrossIcon size={18} style="text-slate-700" />
+                <CrossIcon size={17} style="text-slate-500" />
               </button>
             )}
             <button
@@ -158,11 +155,24 @@ export default function New() {
           <label className="mb-2 mt-4 block self-start text-sm">
             Description
           </label>
-          <input
-            name="description"
-            type="text"
-            className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
-          />
+          <div className="flex items-center rounded-md border border-gray-200 bg-white pr-4">
+            <input
+              name="description"
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="block w-full  px-4 py-3 text-sm outline-none"
+            />
+            {description.length > 0 && (
+              <button
+                onClick={() => setDescription("")}
+                className="rounded-full bg-gray-50 p-0.5 hover:bg-gray-100"
+                type="button"
+              >
+                <CrossIcon size={17} style="text-slate-500" />
+              </button>
+            )}
+          </div>
           <div className="mt-4 flex items-center justify-between gap-2">
             <div className="flex flex-col">
               <label className="text-sm">Visibility</label>
@@ -200,8 +210,8 @@ export default function New() {
           )}
         </Form>
       </div>
-      <div className="mt-16 w-1/2 border-l border-gray-200 px-16 py-10">
-        <h1 className="text-lg font-bold text-slate-700">Usefull tips</h1>
+      <div className="w-1/2 border-l border-gray-200 px-16 py-10">
+        <h1 className="mt-16 text font-bold text-slate-700">Usefull tips</h1>
         <ul className="mt-4 flex list-inside list-disc flex-col  gap-3 text-sm text-slate-600">
           <li>
             <span className="font-semibold">A unique name is required </span>
