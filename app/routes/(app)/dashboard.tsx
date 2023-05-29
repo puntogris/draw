@@ -47,7 +47,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen flex-row">
-      <aside className="flex w-80 flex-col gap-2 border-r border-gray-200 bg-white p-6">
+      <aside className="fixed flex h-full max-h-screen w-80 flex-col gap-2 border-r border-gray-200 bg-white p-6">
         <a className="mt-1 text-xl font-semibold dark:text-white" href="/">
           draw.puntogris
         </a>
@@ -95,7 +95,7 @@ export default function Dashboard() {
           </button>
         </nav>
       </aside>
-      <div className="w-full bg-slate-50">
+      <div className="ml-80 w-full bg-slate-50">
         <Outlet context={{ supabase, user }} />
       </div>
     </div>
