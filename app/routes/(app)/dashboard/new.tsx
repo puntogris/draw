@@ -118,7 +118,9 @@ export default function New() {
         <p className="text-sm text-zinc-600">
           Here we go, check the usefull tips to learn more how this works.
         </p>
-        <h1 className="mt-5 font-semibold text-slate-700">Scene configuration</h1>
+        <h1 className="mt-5 font-semibold text-slate-700">
+          Scene configuration
+        </h1>
         <h2 className="mt-1 text-sm text-zinc-600">
           You will find your new cool scene at{" "}
           <span className="font-bold text-blue-500">
@@ -187,31 +189,17 @@ export default function New() {
             />
           </div>
 
-          {isLoading ? (
-            <button
-              disabled
-              className="mt-6 flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              <span
-                className="inline-block h-4 w-4 animate-spin rounded-full border-[3px] border-current border-t-transparent text-white"
-                role="status"
-                aria-label="loading"
-              ></span>
-              Creating
-            </button>
-          ) : (
-            <button
-              className="mt-6 w-full rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-zinc-500"
-              type="submit"
-              disabled={name.length < 3}
-            >
-              Create
-            </button>
-          )}
+          <button
+            className="mt-6 w-full rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-600 disabled:bg-zinc-500"
+            type="submit"
+            disabled={name.length < 3 || isLoading}
+          >
+            {isLoading ? "Creating" : "Create"}
+          </button>
         </Form>
       </div>
       <div className="w-1/2 border-l border-gray-200 px-16 py-10">
-        <h1 className="mt-16 text font-bold text-slate-700">Usefull tips</h1>
+        <h1 className="text mt-16 font-bold text-slate-700">Usefull tips</h1>
         <ul className="mt-4 flex list-inside list-disc flex-col  gap-3 text-sm text-slate-600">
           <li>
             <span className="font-semibold">A unique name is required </span>
