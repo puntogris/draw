@@ -4,6 +4,7 @@ import { LocalData } from "~/utils/LocalData";
 
 export default function Card({ name, description, sceneId, elements }) {
   const [image, setImage] = useState();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getPreview() {
@@ -17,32 +18,20 @@ export default function Card({ name, description, sceneId, elements }) {
     getPreview();
   }, []);
 
-  const navigate = useNavigate();
-
-  async function handleSelection() {
-    const data = {
-      id: sceneId,
-      name: name,
-    };
-    localStorage.setItem("CURRENT_SCENE", JSON.stringify(data));
-    navigate("/dashboard/draw");
-  }
-
-  function test() {
-    console.log("asdasd");
-  }
   return (
-    <div className="flex flex-col rounded border bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-slate-700/[.7]">
-      <img
-        className="max-h-60 rounded-t object-cover"
-        src="https://placehold.co/400"
-        alt="Image Description"
-      />
-      <div className="flex min-h-[100px]  flex-col p-4 md:p-3">
-        <h3 className="font-bold text-gray-800 dark:text-white truncate overflow-hidden">
+    <div className="flex flex-col overflow-hidden rounded border bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-slate-700/[.7]">
+      <a className="flex" href={`/${name}`}>
+        <img
+          className="max-h-60 w-full object-cover"
+          src="https://placehold.co/600"
+          alt="Image Description"
+        />
+      </a>
+      <div className="flex min-h-[100px] flex-col p-4 md:p-3">
+        <h3 className="overflow-hidden truncate font-bold text-gray-800 dark:text-white">
           {name}
         </h3>
-        <p className="mt-1 text-sm text-gray-800 dark:text-gray-400 line-clamp-2 truncate">
+        <p className="mt-1 line-clamp-2 truncate text-sm text-gray-800 dark:text-gray-400">
           {description}
         </p>
         <p className="mt-auto  text-xs text-gray-500 dark:text-gray-500">

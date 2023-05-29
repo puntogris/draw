@@ -1,9 +1,6 @@
-import {
-  Form,
-  useActionData,
-  useNavigate,
-  useNavigation,
-} from "@remix-run/react";
+import RefreshIcon from "~/components/icons/refreshIcon";
+import CrossIcon from "~/components/icons/crossIcon";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
 import { ActionFunction, redirect } from "@remix-run/node";
@@ -100,6 +97,23 @@ export default function New() {
     }
   }
 
+  async function generateRandomName() {
+    const response = await fetch("/dashboard/generator");
+    if (response.ok) {
+      setName(await response.json());
+    } else {
+      toast.error("An error ocurred.", {
+        position: "bottom-center",
+        id: "create_loading",
+        style: { marginLeft: "15rem" },
+      });
+    }
+  }
+
+  function clearNameInput() {
+    setName("");
+  }
+
   return (
     <div className="flex h-full w-full">
       <div className="flex w-1/2 flex-col px-16 py-10">
@@ -114,16 +128,34 @@ export default function New() {
             draw.puntogris.com/{name.length == 0 ? "super-cool-id" : name}
           </span>
         </h2>
-        <Form method="post">
+        <Form method="post" className="mt-2">
           <label className="mb-2 mt-3 block self-start text-sm">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={name}
-            onChange={(e) => validateAndSetName(e.target.value)}
-            className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
-          />
-          <label className="mb-2 mt-3 block self-start text-sm">
+          <div className="flex items-center gap-4 overflow-hidden rounded-md border border-gray-200 bg-white">
+            <input
+              type="text"
+              name="name"
+              value={name}
+              onChange={(e) => validateAndSetName(e.target.value)}
+              className="block w-full px-4 py-3 text-sm outline-none"
+            />
+            {name.length > 0 && (
+              <button
+                onClick={clearNameInput}
+                className="rounded-full bg-gray-50 p-0.5 hover:bg-gray-100"
+                type="button"
+              >
+                <CrossIcon size={18} style="text-slate-700" />
+              </button>
+            )}
+            <button
+              onClick={generateRandomName}
+              type="button"
+              className="rounded-r-md border border-transparent bg-blue-500 px-4 py-3 hover:bg-blue-600"
+            >
+              <RefreshIcon size={18} style="text-white" />
+            </button>
+          </div>
+          <label className="mb-2 mt-4 block self-start text-sm">
             Description
           </label>
           <input
@@ -131,7 +163,7 @@ export default function New() {
             type="text"
             className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
           />
-          <div className="mt-3 flex items-center justify-between gap-2">
+          <div className="mt-4 flex items-center justify-between gap-2">
             <div className="flex flex-col">
               <label className="text-sm">Visibility</label>
               <label className="text-sm text-slate-700">
@@ -148,7 +180,7 @@ export default function New() {
           {isLoading ? (
             <button
               disabled
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               <span
                 className="inline-block h-4 w-4 animate-spin rounded-full border-[3px] border-current border-t-transparent text-white"
@@ -159,7 +191,7 @@ export default function New() {
             </button>
           ) : (
             <button
-              className="mt-4 w-full rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-zinc-500"
+              className="mt-6 w-full rounded-md border border-transparent bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-zinc-500"
               type="submit"
               disabled={name.length < 3}
             >
