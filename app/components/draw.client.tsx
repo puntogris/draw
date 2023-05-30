@@ -2,9 +2,7 @@ import { Excalidraw, MainMenu, WelcomeScreen } from "@excalidraw/excalidraw";
 import { useNavigate } from "@remix-run/react";
 import { useEffect, useState, useRef } from "react";
 import { LocalData } from "~/utils/LocalData";
-import { getOrCreateLocalUUID } from "~/utils/utils";
 import { SupabaseClient } from "@supabase/auth-helpers-remix";
-import isEqual from "lodash/isEqual";
 import type {
   AppState,
   BinaryFiles,
@@ -13,8 +11,10 @@ import type {
 import { toast } from "react-hot-toast";
 import EnvelopeIcon from "./icons/envelopeIcon";
 import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
+import { debounce } from "lodash";
 
-const UPDATE_INTERVAL_MS = 4000;
+const UPDATE_DEBOUNCE_MS = 3000;
+const UPDATE_MAX_WAIT_MS = 10000;
 const VIEWER_ALERT_DURATION_MS = 20000;
 
 type DrawProps = {
@@ -26,8 +26,6 @@ type DrawProps = {
 export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
 
-  const localUUID = getOrCreateLocalUUID();
-  let lastDataUploaded: ExcalidrawInitialDataState | null = null;
   let sceneFiles = [];
 
   const sceneDataRef = useRef<ExcalidrawInitialDataState>({
@@ -66,88 +64,61 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   //   }
   // }, []);
 
-  function startSyncInverval() {
-    const interval = setInterval(async () => {
-      if (!isEqual(sceneDataRef.current, lastDataUploaded)) {
-        const { error } = await saveSceneToCloud();
-
-        if (!error) {
-          lastDataUploaded = sceneDataRef.current;
-        }
-      }
-      if (sceneDataRef.current.elements) {
-        LocalData.savePreview(
-          sceneDataRef.current.elements,
-          scene.id.toString()
-        );
-      }
-    }, UPDATE_INTERVAL_MS);
-
-    return interval;
-  }
-
-  async function saveSceneToCloud() {
-    const { error } = await supabase
+  async function saveSceneServer() {
+    return await supabase
       .from("scenes")
       .update({
         data: sceneDataRef.current,
-        local_uuid: localUUID,
         updated_at: new Date().getTime(),
       })
       .eq("id", scene.id);
-
-    return { error };
   }
 
-  function showViewerToast() {
-    return toast(
-      (t) => (
-        <div className="flex gap-2 text-sm">
-          As a viewer any changes to these scene won't be saved.
-          <button
-            className="font-bold text-slate-700"
-            onClick={() => toast.dismiss(t.id)}
-          >
-            Dismiss
-          </button>
-        </div>
-      ),
-      {
-        duration: VIEWER_ALERT_DURATION_MS,
+  async function saveScene() {
+    const { error } = await saveSceneServer();
+
+    const elements = sceneDataRef.current.elements;
+
+    if (elements) {
+      LocalData.savePreview(elements, scene.id.toString());
+    }
+
+    if (error) {
+      console.log(error);
+      toast.error("Unable to save the scene, changes could be lost!", {
         position: "top-right",
-      }
-    );
+      });
+    }
   }
+
+  const saveSceneDebounced = debounce(saveScene, UPDATE_DEBOUNCE_MS, {
+    maxWait: UPDATE_MAX_WAIT_MS,
+  });
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
     let toastId: string;
 
-    function startSync() {
-      const cloudLocalUUID = scene.local_uuid.toString();
-
-      // TODO the scene UUID should already exists at this point -> new.tsx
-      if (!cloudLocalUUID || cloudLocalUUID == localUUID) {
-        clearInterval(intervalId);
-        intervalId = startSyncInverval();
-      } else {
-        // TODO maybe we check this before starting this comp
-        // date doest not match so it must be from another device or the local db was deleted
-        // ask the user what to do
-      }
-      return () => clearInterval(intervalId);
+    if (!isOwner) {
+      toastId = toast(
+        (t) => (
+          <div className="flex gap-2 text-sm">
+            As a viewer any changes to these scene won't be saved.
+            <button
+              className="font-bold text-slate-700"
+              onClick={() => toast.dismiss(t.id)}
+            >
+              Dismiss
+            </button>
+          </div>
+        ),
+        {
+          duration: VIEWER_ALERT_DURATION_MS,
+          position: "top-right",
+        }
+      );
     }
 
-    if (isOwner) {
-      startSync();
-    } else {
-      toastId = showViewerToast();
-    }
-
-    return () => {
-      clearInterval(intervalId);
-      toast.dismiss(toastId);
-    };
+    return () => toast.dismiss(toastId);
   }, []);
 
   function onChange(
@@ -157,11 +128,13 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   ) {
     if (isOwner) {
       const notDeletedElemets = elements.filter((e) => !e.isDeleted);
+
       sceneDataRef.current = {
         elements: notDeletedElemets,
         appState: { ...appState, collaborators: undefined },
         files: files,
       };
+
       LocalData.save(
         scene.id.toString(),
         notDeletedElemets,
@@ -169,6 +142,8 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         files,
         () => {}
       );
+
+      saveSceneDebounced();
     }
   }
 
@@ -176,7 +151,8 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     const loadingToast = toast.loading("Saving scene...", {
       position: "top-right",
     });
-    const { error } = await saveSceneToCloud();
+
+    const { error } = await saveSceneServer();
 
     toast.dismiss(loadingToast);
 

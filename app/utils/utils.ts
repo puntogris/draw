@@ -1,7 +1,3 @@
-import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
-import { AppState, BinaryFiles } from "@excalidraw/excalidraw/types/types";
-import { useCallback, useState } from "react";
-
 export const debounce = <T extends any[]>(
   fn: (...args: T) => void,
   timeout: number
@@ -46,18 +42,3 @@ export const resolvablePromise = <T>() => {
   (promise as any).reject = reject;
   return promise as ResolvablePromise<T>;
 };
-
-export function getOrCreateLocalUUID() {
-  try {
-    const localUUID = localStorage.getItem("draw_local_uuid");
-    if (localUUID) {
-      return localUUID;
-    } else {
-      const newUUID = crypto.randomUUID();
-      localStorage.setItem("draw_local_uuid", newUUID);
-      return newUUID;
-    }
-  } catch (error) {
-    console.log("Failed to get localStorage at getOrCreateLocalUUID()");
-  }
-}

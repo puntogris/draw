@@ -50,24 +50,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export default function Index() {
   // @ts-ignore
-  const { slug, scene, isOwner } = useLoaderData();
+  const { scene, isOwner } = useLoaderData();
   const { supabase } = useOutletContext<OutletContext>();
-
-  // we should check if we have more recent data in local storage if we are the owner
-  // if we are the owner we should check if there is smth saved locally
-  // if there is we trust that unless the new scene has a diferent local uid
-
-  //if we are not the owner we go ahead with the fetched scene
 
   return (
     <Suspense fallback={<Loading />}>
-      {scene != null && 
-        <Draw
-          scene={scene}
-          isOwner={isOwner}
-          supabase={supabase}
-        />
-      }
+      {scene != null && (
+        <Draw scene={scene} isOwner={isOwner} supabase={supabase} />
+      )}
     </Suspense>
   );
 }
