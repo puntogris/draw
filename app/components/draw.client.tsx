@@ -82,6 +82,10 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   );
 
   useEffect(() => {
+    localStorage.setItem("LOCAL_STORAGE_THEME", theme);
+  }, [theme]);
+
+  useEffect(() => {
     localStorage.setItem("LOCAL_STORAGE_LANG", lang);
   }, [lang]);
 
@@ -238,7 +242,12 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         langCode={lang}
       >
         <Welcome />
-        <Menu isOwner={isOwner} onSaveClicked={onSaveClicked} setLang={setLang}/>
+        <Menu
+          isOwner={isOwner}
+          onSaveClicked={onSaveClicked}
+          setLang={setLang}
+          theme={theme}
+        />
         {isOwner && <AppFooter status={syncStatus} theme={theme} />}
       </Excalidraw>
     </div>
@@ -274,14 +283,20 @@ function Welcome() {
 function Menu({
   isOwner,
   onSaveClicked,
-  setLang
+  setLang,
+  theme,
 }: {
   isOwner: boolean;
   onSaveClicked: () => void;
+  setLang: (value: string) => void;
+  theme: Theme;
 }) {
   const navigate = useNavigate();
   const { t, langCode } = useI18n();
-
+  const style =
+    theme == THEME.DARK
+      ? "bg-neutral-800 border-neutral-600 text-neutral-400"
+      : "bg-white border-zinc-300 text-neutral-800";
   return (
     <MainMenu>
       <MainMenu.DefaultItems.LoadScene />
@@ -307,7 +322,7 @@ function Menu({
       <MainMenu.DefaultItems.ToggleTheme />
       <MainMenu.ItemCustom>
         <select
-          className="w-full bg-neutral-800 py-1 px-2 border-neutral-600 rounded border shadow-none text-neutral-400"
+          className={`w-full rounded border px-2 py-1 shadow-none ${style}`}
           onChange={({ target }) => setLang(target.value)}
           value={langCode}
           aria-label={t("buttons.selectLanguage")}
@@ -323,7 +338,6 @@ function Menu({
     </MainMenu>
   );
 }
-
 
 function AppFooter({
   status,
