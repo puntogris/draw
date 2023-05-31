@@ -35,8 +35,9 @@ export default function Index() {
           position: "bottom-center",
         });
       } else {
-        setScenes(data as Scene[]);
-        setFilteredScenes(data as Scene[]);
+        const sorted = sortScenesByDate(data as Scene[]);
+        setScenes(sorted);
+        setFilteredScenes(sorted);
         setIsLoadingState(false);
       }
     }
@@ -47,9 +48,17 @@ export default function Index() {
 
   useEffect(() => {
     setFilteredScenes(
-      scenes.filter((scene) => scene.name.includes(searchInput))
+      sortScenesByDate(
+        scenes.filter((scene) => scene.name.includes(searchInput))
+      )
     );
   }, [searchInput]);
+
+  function sortScenesByDate(scenes: Scene[]) {
+    return scenes.sort(
+      (a, b) => (b.updated_at || b.created_at) - (a.updated_at || a.created_at)
+    );
+  }
 
   return (
     <div className="flex h-full flex-col px-16 py-10">
