@@ -15,7 +15,7 @@ import type {
 } from "@excalidraw/excalidraw/types/types";
 import { toast } from "react-hot-toast";
 import EnvelopeIcon from "./icons/envelopeIcon";
-import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
+import { ExcalidrawElement, Theme } from "@excalidraw/excalidraw/types/element/types";
 import { debounce, isEqual } from "lodash";
 import CheckIcon from "./icons/checkIcon";
 import CrossIcon from "./icons/crossIcon";
@@ -67,6 +67,15 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   //     initialStatePromiseRef.current.promise.resolve();
   //   }
   // }, []);
+
+  const [theme, setTheme] = useState<Theme>(
+    () =>
+      localStorage.getItem("LOCAL_STORAGE_THEME") || THEME.LIGHT,
+  );
+
+  useEffect(() => {
+    localStorage.setItem("LOCAL_STORAGE_THEME", theme);
+  }, [theme]);
 
   async function saveSceneServer() {
     setSyncStatus("syncing");
@@ -177,6 +186,9 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
       } else {
         //TODO, save appstate to use later so we dont copy the owners one
       }
+      setTheme(appState.theme);
+      //TODO maybe we do save the owners appstate but we use the local one to not experience any delays
+      // if we change the theme we would need 3 seconds to see the changes on the sync button
     },
     []
   );
@@ -213,13 +225,15 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
           welcomeScreen: true,
         }}
         onChange={onChange}
+        autoFocus={false}
+        theme={theme}
       >
         <Welcome />
         <Menu isOwner={isOwner} onSaveClicked={onSaveClicked} />
         {isOwner && (
           <AppFooter
             status={syncStatus}
-            theme={sceneDataRef.current.appState?.theme}
+            theme={theme}
           />
         )}
       </Excalidraw>
