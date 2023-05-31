@@ -4,6 +4,8 @@ import {
   MainMenu,
   THEME,
   WelcomeScreen,
+  languages,
+  useI18n,
 } from "@excalidraw/excalidraw";
 import { useNavigate } from "@remix-run/react";
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -15,7 +17,10 @@ import type {
 } from "@excalidraw/excalidraw/types/types";
 import { toast } from "react-hot-toast";
 import EnvelopeIcon from "./icons/envelopeIcon";
-import { ExcalidrawElement, Theme } from "@excalidraw/excalidraw/types/element/types";
+import {
+  ExcalidrawElement,
+  Theme,
+} from "@excalidraw/excalidraw/types/element/types";
 import { debounce, isEqual } from "lodash";
 import CheckIcon from "./icons/checkIcon";
 import CrossIcon from "./icons/crossIcon";
@@ -69,13 +74,16 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   // }, []);
 
   const [theme, setTheme] = useState<Theme>(
-    () =>
-      localStorage.getItem("LOCAL_STORAGE_THEME") || THEME.LIGHT,
+    () => localStorage.getItem("LOCAL_STORAGE_THEME") || THEME.LIGHT
+  );
+
+  const [lang, setLang] = useState<string>(
+    () => localStorage.getItem("LOCAL_STORAGE_LANG") || "EN"
   );
 
   useEffect(() => {
-    localStorage.setItem("LOCAL_STORAGE_THEME", theme);
-  }, [theme]);
+    localStorage.setItem("LOCAL_STORAGE_LANG", lang);
+  }, [lang]);
 
   async function saveSceneServer() {
     setSyncStatus("syncing");
@@ -225,17 +233,13 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
           welcomeScreen: true,
         }}
         onChange={onChange}
-        autoFocus={false}
+        autoFocus={true}
         theme={theme}
+        langCode={lang}
       >
         <Welcome />
-        <Menu isOwner={isOwner} onSaveClicked={onSaveClicked} />
-        {isOwner && (
-          <AppFooter
-            status={syncStatus}
-            theme={theme}
-          />
-        )}
+        <Menu isOwner={isOwner} onSaveClicked={onSaveClicked} setLang={setLang}/>
+        {isOwner && <AppFooter status={syncStatus} theme={theme} />}
       </Excalidraw>
     </div>
   );
@@ -270,17 +274,20 @@ function Welcome() {
 function Menu({
   isOwner,
   onSaveClicked,
+  setLang
 }: {
   isOwner: boolean;
   onSaveClicked: () => void;
 }) {
   const navigate = useNavigate();
+  const { t, langCode } = useI18n();
 
   return (
     <MainMenu>
       <MainMenu.DefaultItems.LoadScene />
       <MainMenu.DefaultItems.Export />
       <MainMenu.DefaultItems.SaveAsImage />
+      <MainMenu.DefaultItems.Help />
       <MainMenu.DefaultItems.ClearCanvas />
       <MainMenu.Separator />
       {isOwner && (
@@ -298,10 +305,25 @@ function Menu({
       )}
       <MainMenu.Separator />
       <MainMenu.DefaultItems.ToggleTheme />
+      <MainMenu.ItemCustom>
+        <select
+          className="w-full bg-neutral-800 py-1 px-2 border-neutral-600 rounded border shadow-none text-neutral-400"
+          onChange={({ target }) => setLang(target.value)}
+          value={langCode}
+          aria-label={t("buttons.selectLanguage")}
+        >
+          {languages.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+              {lang.label}
+            </option>
+          ))}
+        </select>
+      </MainMenu.ItemCustom>
       <MainMenu.DefaultItems.ChangeCanvasBackground />
     </MainMenu>
   );
 }
+
 
 function AppFooter({
   status,
