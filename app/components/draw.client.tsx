@@ -1,3 +1,6 @@
+import CheckIcon from "./icons/checkIcon";
+import CrossIcon from "./icons/crossIcon";
+import Spinner from "./spinner";
 import {
   Excalidraw,
   Footer,
@@ -17,17 +20,14 @@ import type {
 } from "@excalidraw/excalidraw/types/types";
 import { toast } from "react-hot-toast";
 import EnvelopeIcon from "./icons/envelopeIcon";
-import {
+import type {
   ExcalidrawElement,
   Theme,
 } from "@excalidraw/excalidraw/types/element/types";
 import { debounce, isEqual } from "lodash";
-import CheckIcon from "./icons/checkIcon";
-import CrossIcon from "./icons/crossIcon";
-import Spinner from "./spinner";
-import { DrawProps, SyncStatus } from "~/utils/types";
+import type { DrawProps, SyncStatus } from "~/utils/types";
 
-const UPDATE_DEBOUNCE_MS = 3000;
+const UPDATE_DEBOUNCE_MS = 2000;
 const UPDATE_MAX_WAIT_MS = 10000;
 const VIEWER_ALERT_DURATION_MS = 20000;
 
@@ -193,12 +193,26 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
       appState: AppState,
       files: BinaryFiles
     ) => {
-      if (isOwner) {
-        onChangeDebounce(elements, appState, files);
-      } else {
-        //TODO, save appstate to use later so we dont copy the owners one
-      }
       setTheme(appState.theme);
+
+      if (!isOwner) {
+        return;
+      }
+
+      setSyncStatus("syncing");
+
+      const data = {
+        elements: elements.filter((e) => !e.isDeleted),
+        appState: { ...appState, collaborators: undefined },
+        files: files,
+      };
+
+      if (isEqual(data, sceneDataRef.current)) {
+        setSyncStatus("synced");
+      }
+
+      onChangeDebounce(elements, appState, files);
+
       //TODO maybe we do save the owners appstate but we use the local one to not experience any delays
       // if we change the theme we would need 3 seconds to see the changes on the sync button
     },
