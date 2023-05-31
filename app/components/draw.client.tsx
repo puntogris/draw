@@ -2,6 +2,7 @@ import {
   Excalidraw,
   Footer,
   MainMenu,
+  THEME,
   WelcomeScreen,
 } from "@excalidraw/excalidraw";
 import { useNavigate } from "@remix-run/react";
@@ -216,39 +217,12 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         <Welcome />
         <Menu isOwner={isOwner} onSaveClicked={onSaveClicked} />
         {isOwner && (
-          <Footer>
-            <div className="relative w-full">
-              <button className="absolute right-2 top-0 h-[36px] rounded-md border border-zinc-300 px-4">
-                <SyncStatus status={syncStatus} />
-              </button>
-            </div>
-          </Footer>
+          <AppFooter
+            status={syncStatus}
+            theme={sceneDataRef.current.appState?.theme}
+          />
         )}
       </Excalidraw>
-    </div>
-  );
-}
-
-function SyncStatus({ status }: { status: SyncStatus }) {
-  let syncIcon;
-  let syncText;
-
-  switch (status) {
-    case "synced":
-      syncIcon = <CheckIcon size={20} style="text-green-600" />;
-      syncText = "Synced";
-      break;
-    case "error":
-      syncIcon = <CrossIcon size={20} style="text-red-600" />;
-      syncText = "Error";
-      break;
-    case "syncing":
-      syncIcon = <Spinner size="xs" />;
-      syncText = "Syncing";
-  }
-  return (
-    <div className="flex items-center gap-2">
-      {syncIcon} <div className="text-sm">{syncText}</div>
     </div>
   );
 }
@@ -312,5 +286,46 @@ function Menu({
       <MainMenu.DefaultItems.ToggleTheme />
       <MainMenu.DefaultItems.ChangeCanvasBackground />
     </MainMenu>
+  );
+}
+
+function AppFooter({
+  status,
+  theme,
+}: {
+  status: SyncStatus;
+  theme: string | undefined;
+}) {
+  let syncIcon;
+  let syncText;
+
+  const style =
+    theme == THEME.DARK
+      ? "bg-neutral-800 border-zinc-700"
+      : "bg-white border-zinc-300";
+
+  switch (status) {
+    case "synced":
+      syncIcon = <CheckIcon size={20} style="text-green-600" />;
+      syncText = "Synced";
+      break;
+    case "error":
+      syncIcon = <CrossIcon size={20} style="text-red-600" />;
+      syncText = "Error";
+      break;
+    case "syncing":
+      syncIcon = <Spinner size="xs" />;
+      syncText = "Syncing";
+  }
+  return (
+    <Footer>
+      <div className="relative w-full">
+        <div
+          className={`absolute right-2 top-0 flex h-[36px] items-center gap-2 rounded-md border px-4 ${style}`}
+        >
+          {syncIcon} <div className="text-sm">{syncText}</div>
+        </div>
+      </div>
+    </Footer>
   );
 }
