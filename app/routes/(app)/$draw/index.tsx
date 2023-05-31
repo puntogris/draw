@@ -3,10 +3,9 @@ import Draw from "~/components/draw.client";
 import { LoaderFunction, MetaFunction, json } from "@remix-run/node";
 import { useLoaderData } from "react-router";
 import { createServerClient } from "@supabase/auth-helpers-remix";
-import { Suspense } from "react";
 import { OutletContext } from "~/utils/types";
 import { useOutletContext } from "@remix-run/react";
-import { notFound } from "remix-utils";
+import { ClientOnly, notFound } from "remix-utils";
 
 export const meta: MetaFunction<typeof loader> = ({ params }) => {
   return {
@@ -54,11 +53,13 @@ export default function Index() {
   const { supabase } = useOutletContext<OutletContext>();
 
   return (
-    <Suspense fallback={<Loading />}>
-      {scene != null && (
-        <Draw scene={scene} isOwner={isOwner} supabase={supabase} />
-      )}
-    </Suspense>
+    <ClientOnly fallback={<Loading />}>
+      {() =>
+        scene != null && (
+          <Draw scene={scene} isOwner={isOwner} supabase={supabase} />
+        )
+      }
+    </ClientOnly>
   );
 }
 

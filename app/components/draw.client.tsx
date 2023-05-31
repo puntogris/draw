@@ -77,8 +77,8 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     () => localStorage.getItem("LOCAL_STORAGE_THEME") || THEME.LIGHT
   );
 
-  const [lang, setLang] = useState<string>(
-    () => localStorage.getItem("LOCAL_STORAGE_LANG") || "EN"
+  const [langCode, setLangCode] = useState<string>(
+    () => localStorage.getItem("LOCAL_STORAGE_LANG_CODE") || "EN"
   );
 
   useEffect(() => {
@@ -86,8 +86,8 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   }, [theme]);
 
   useEffect(() => {
-    localStorage.setItem("LOCAL_STORAGE_LANG", lang);
-  }, [lang]);
+    localStorage.setItem("LOCAL_STORAGE_LANG_CODE", langCode);
+  }, [langCode]);
 
   async function saveSceneServer() {
     setSyncStatus("syncing");
@@ -239,13 +239,13 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         onChange={onChange}
         autoFocus={true}
         theme={theme}
-        langCode={lang}
+        langCode={langCode}
       >
         <Welcome />
         <Menu
           isOwner={isOwner}
           onSaveClicked={onSaveClicked}
-          setLang={setLang}
+          setLangCode={setLangCode}
           theme={theme}
         />
         {isOwner && <AppFooter status={syncStatus} theme={theme} />}
@@ -283,12 +283,12 @@ function Welcome() {
 function Menu({
   isOwner,
   onSaveClicked,
-  setLang,
+  setLangCode,
   theme,
 }: {
   isOwner: boolean;
   onSaveClicked: () => void;
-  setLang: (value: string) => void;
+  setLangCode: (value: string) => void;
   theme: Theme;
 }) {
   const navigate = useNavigate();
@@ -323,7 +323,7 @@ function Menu({
       <MainMenu.ItemCustom>
         <select
           className={`w-full rounded border px-2 py-1 shadow-none ${style}`}
-          onChange={({ target }) => setLang(target.value)}
+          onChange={({ target }) => setLangCode(target.value)}
           value={langCode}
           aria-label={t("buttons.selectLanguage")}
         >
