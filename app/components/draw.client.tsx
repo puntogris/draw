@@ -1,8 +1,12 @@
-import { Excalidraw, MainMenu, WelcomeScreen } from "@excalidraw/excalidraw";
+import {
+  Excalidraw,
+  Footer,
+  MainMenu,
+  WelcomeScreen,
+} from "@excalidraw/excalidraw";
 import { useNavigate } from "@remix-run/react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { LocalData } from "~/utils/LocalData";
-import { SupabaseClient } from "@supabase/auth-helpers-remix";
 import type {
   AppState,
   BinaryFiles,
@@ -11,17 +15,15 @@ import type {
 import { toast } from "react-hot-toast";
 import EnvelopeIcon from "./icons/envelopeIcon";
 import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
-import { debounce } from "lodash";
+import { debounce, isEqual } from "lodash";
+import CheckIcon from "./icons/checkIcon";
+import CrossIcon from "./icons/crossIcon";
+import Spinner from "./spinner";
+import { DrawProps, SyncStatus } from "~/utils/types";
 
 const UPDATE_DEBOUNCE_MS = 3000;
 const UPDATE_MAX_WAIT_MS = 10000;
 const VIEWER_ALERT_DURATION_MS = 20000;
-
-type DrawProps = {
-  scene: any;
-  isOwner: boolean;
-  supabase: SupabaseClient;
-};
 
 export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
@@ -30,12 +32,13 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
 
   const sceneDataRef = useRef<ExcalidrawInitialDataState>({
     elements: scene.data ? scene.data.elements : [],
-    appState:
-      isOwner && scene.data
-        ? { ...scene.data.appState, collaborators: undefined }
-        : {},
+    appState: scene.data
+      ? { ...scene.data.appState, collaborators: undefined }
+      : {},
     files: {},
   });
+
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>("synced");
 
   // TODO files sync is pending
   // useEffect(() => {
@@ -65,13 +68,23 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   // }, []);
 
   async function saveSceneServer() {
-    return await supabase
+    setSyncStatus("syncing");
+
+    const { error } = await supabase
       .from("scenes")
       .update({
         data: sceneDataRef.current,
         updated_at: new Date().getTime(),
       })
       .eq("id", scene.id);
+
+    if (error) {
+      setSyncStatus("error");
+    } else {
+      setSyncStatus("synced");
+    }
+
+    return { error };
   }
 
   async function saveScene() {
@@ -84,16 +97,11 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     }
 
     if (error) {
-      console.log(error);
       toast.error("Unable to save the scene, changes could be lost!", {
         position: "top-right",
       });
     }
   }
-
-  const saveSceneDebounced = debounce(saveScene, UPDATE_DEBOUNCE_MS, {
-    maxWait: UPDATE_MAX_WAIT_MS,
-  });
 
   useEffect(() => {
     let toastId: string;
@@ -101,7 +109,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     if (!isOwner) {
       toastId = toast(
         (t) => (
-          <div className="flex gap-2 text-sm">
+          <div className="flex gap-2">
             As a viewer any changes to these scene won't be saved.
             <button
               className="font-bold text-slate-700"
@@ -121,19 +129,25 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     return () => toast.dismiss(toastId);
   }, []);
 
-  function onChange(
-    elements: readonly ExcalidrawElement[],
-    appState: AppState,
-    files: BinaryFiles
-  ) {
-    if (isOwner) {
+  const onChangeDebounce = debounce(
+    async (
+      elements: readonly ExcalidrawElement[],
+      appState: AppState,
+      files: BinaryFiles
+    ) => {
       const notDeletedElemets = elements.filter((e) => !e.isDeleted);
 
-      sceneDataRef.current = {
+      const data = {
         elements: notDeletedElemets,
         appState: { ...appState, collaborators: undefined },
         files: files,
       };
+
+      if (isEqual(data, sceneDataRef.current)) {
+        return;
+      }
+
+      sceneDataRef.current = data;
 
       LocalData.save(
         scene.id.toString(),
@@ -143,9 +157,28 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         () => {}
       );
 
-      saveSceneDebounced();
+      await saveScene();
+    },
+    UPDATE_DEBOUNCE_MS,
+    {
+      maxWait: UPDATE_MAX_WAIT_MS,
     }
-  }
+  );
+
+  const onChange = useCallback(
+    (
+      elements: readonly ExcalidrawElement[],
+      appState: AppState,
+      files: BinaryFiles
+    ) => {
+      if (isOwner) {
+        onChangeDebounce(elements, appState, files);
+      } else {
+        //TODO, save appstate to use later so we dont copy the owners one
+      }
+    },
+    []
+  );
 
   async function onSaveClicked() {
     const loadingToast = toast.loading("Saving scene...", {
@@ -175,9 +208,6 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
         UIOptions={{
           canvasActions: {
             toggleTheme: true,
-            export: {
-              onExportToBackend(exportedElements, appState, files, canvas) {},
-            },
           },
           welcomeScreen: true,
         }}
@@ -185,7 +215,40 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
       >
         <Welcome />
         <Menu isOwner={isOwner} onSaveClicked={onSaveClicked} />
+        {isOwner && (
+          <Footer>
+            <div className="relative w-full">
+              <button className="absolute right-2 top-0 h-[36px] rounded-md border border-zinc-300 px-4">
+                <SyncStatus status={syncStatus} />
+              </button>
+            </div>
+          </Footer>
+        )}
       </Excalidraw>
+    </div>
+  );
+}
+
+function SyncStatus({ status }: { status: SyncStatus }) {
+  let syncIcon;
+  let syncText;
+
+  switch (status) {
+    case "synced":
+      syncIcon = <CheckIcon size={20} style="text-green-600" />;
+      syncText = "Synced";
+      break;
+    case "error":
+      syncIcon = <CrossIcon size={20} style="text-red-600" />;
+      syncText = "Error";
+      break;
+    case "syncing":
+      syncIcon = <Spinner size="xs" />;
+      syncText = "Syncing";
+  }
+  return (
+    <div className="flex items-center gap-2">
+      {syncIcon} <div className="text-sm">{syncText}</div>
     </div>
   );
 }
