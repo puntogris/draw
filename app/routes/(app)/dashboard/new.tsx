@@ -112,8 +112,8 @@ export default function New() {
   }
 
   return (
-    <div className="flex h-full w-full">
-      <div className="flex w-1/2 flex-col px-16 py-10">
+    <div className="w-ful flex h-full flex-col xl:flex-row">
+      <div className="flex w-full flex-col px-16 py-10 xl:w-7/12">
         <h1 className="text-xl font-bold">Create a new scene</h1>
         <p className="text-sm text-zinc-600">
           Here we go, check the usefull tips to learn more how this works.
@@ -198,9 +198,9 @@ export default function New() {
           </button>
         </Form>
       </div>
-      <div className="w-1/2 border-l border-gray-200 px-16 py-10">
-        <h1 className="text mt-16 font-bold text-slate-700">Usefull tips</h1>
-        <ul className="mt-4 flex list-inside list-disc flex-col  gap-3 text-sm text-slate-600">
+      <div className="w-full border-l border-gray-200 px-16 pb-10 xl:w-5/12 xl:py-10">
+        <h1 className="text font-bold text-slate-700 xl:mt-16">Usefull tips</h1>
+        <ul className="mt-4 flex list-inside list-disc flex-col gap-3 text-sm text-slate-600">
           <li>
             <span className="font-semibold">A unique name is required </span>
             as it will be the ID of the scene, as this is intended for personal
