@@ -104,7 +104,7 @@ export default function Draw({
 
         const { data, error } = await supabase.storage
           .from("scenes")
-          .download(`${scene.name}/${id}`);
+          .download(`${scene.uid}/${scene.name}/${id}`);
 
         if (error) {
           // show a notification and add a feature to try to sync from the menu
@@ -216,8 +216,8 @@ export default function Draw({
 
     for (let [fileId, file] of Object.entries(sceneFiles)) {
       if (!serverFilesId.includes(fileId) && elementsFilesId.includes(fileId)) {
-        const { data, error } = await supabase.storage
-          .from(`scenes/${scene.name}`)
+        const { error } = await supabase.storage
+          .from(`scenes/${scene.uid}/${scene.name}`)
           .upload(fileId, decode(file.dataURL.split("base64,")[1]), {
             contentType: file.mimeType,
             upsert: true,

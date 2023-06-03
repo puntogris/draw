@@ -18,7 +18,7 @@ export const meta: MetaFunction<typeof loader> = ({ params }) => {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const id = params.draw;
+  const name = params.draw;
   const response = new Response();
 
   const supabase = createServerClient(
@@ -32,7 +32,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const { data: scene } = await supabase
     .from("scenes")
     .select()
-    .eq("name", id)
+    .eq("name", name)
     .single();
 
   if (scene) {
@@ -43,16 +43,16 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     if (isOwner) {
       const { data: filesData } = await supabase.storage
         .from("scenes")
-        .list(scene.name);
+        .list(`${scene.uid}/${scene.name}`);
 
-        if(filesData) {
-          serverFilesId = filesData.map(f => f.name)
-        }
+      if (filesData) {
+        serverFilesId = filesData.map((f) => f.name);
+      }
     }
 
     return json(
       {
-        slug: id,
+        slug: name,
         scene,
         isOwner: isOwner,
         serverFilesId,
@@ -60,7 +60,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       { headers: response.headers }
     );
   } else {
-    throw notFound({ slug: id });
+    throw notFound({ slug: name });
   }
 };
 
@@ -73,7 +73,12 @@ export default function Index() {
     <ClientOnly fallback={<Loading />}>
       {() =>
         scene != null && (
-          <Draw scene={scene} isOwner={isOwner} supabase={supabase} serverFilesId={serverFilesId} />
+          <Draw
+            scene={scene}
+            isOwner={isOwner}
+            supabase={supabase}
+            serverFilesId={serverFilesId}
+          />
         )
       }
     </ClientOnly>

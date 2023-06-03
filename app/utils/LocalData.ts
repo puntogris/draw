@@ -4,10 +4,10 @@ import {
   BinaryFileData,
   BinaryFiles,
 } from "@excalidraw/excalidraw/types/types";
-import { debounce } from "./utils";
 import { createStore, getMany, setMany, set, get } from "idb-keyval";
 import { blobToBase64Async, compress, decompress } from "./compression";
 import { exportToBlob } from "@excalidraw/excalidraw";
+import { debounce } from "lodash";
 
 const filesStore = createStore("draw-db", "draw_files_store");
 const previewsStore = createStore("draw-db-previews", "draw_previews_store");
@@ -63,6 +63,7 @@ export class LocalData {
   }
 
   static async savePreview(elements: readonly ExcalidrawElement[], id: string) {
+    // @ts-ignore
     const blob = await exportToBlob({ elements: elements, exportPadding: 40 });
     const preview = await blobToBase64Async(blob);
     await set(id, compress(preview), previewsStore);
