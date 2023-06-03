@@ -6,6 +6,8 @@ import { createServerClient } from "@supabase/auth-helpers-remix";
 import { OutletContext } from "~/utils/types";
 import { useOutletContext } from "@remix-run/react";
 import { ClientOnly, notFound } from "remix-utils";
+import { useEffect, useState } from "react";
+import { LocalData } from "~/utils/LocalData";
 
 export const meta: MetaFunction<typeof loader> = ({ params }) => {
   return {
@@ -51,6 +53,14 @@ export default function Index() {
   // @ts-ignore
   const { scene, isOwner } = useLoaderData();
   const { supabase } = useOutletContext<OutletContext>();
+  const [files, setFiles] = useState();
+
+  // useEffect(() => {
+  //   const fetchFiles = async () => {
+  //     await LocalData.getFiles(scene.data.elements );
+  //   };
+  //   fetchFiles();
+  // }, []);
 
   return (
     <ClientOnly fallback={<Loading />}>

@@ -1,3 +1,5 @@
+import { useCallback, useState } from "react";
+
 export const debounce = <T extends any[]>(
   fn: (...args: T) => void,
   timeout: number
@@ -41,4 +43,10 @@ export const resolvablePromise = <T>() => {
   (promise as any).resolve = resolve;
   (promise as any).reject = reject;
   return promise as ResolvablePromise<T>;
+};
+
+export const useCallbackRefState = <T>() => {
+  const [refValue, setRefValue] = useState<T | null>(null);
+  const refCallback = useCallback((value: T | null) => setRefValue(value), []);
+  return [refValue, refCallback] as const;
 };

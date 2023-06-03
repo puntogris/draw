@@ -16,62 +16,58 @@ import { LocalData } from "~/utils/LocalData";
 import type {
   AppState,
   BinaryFiles,
+  ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
 } from "@excalidraw/excalidraw/types/types";
 import { toast } from "react-hot-toast";
 import EnvelopeIcon from "./icons/envelopeIcon";
 import type {
   ExcalidrawElement,
+  ExcalidrawImageElement,
   Theme,
 } from "@excalidraw/excalidraw/types/element/types";
 import { debounce, isEqual } from "lodash";
 import type { DrawProps, SyncStatus } from "~/utils/types";
+import { decode } from "base64-arraybuffer";
 
 const UPDATE_DEBOUNCE_MS = 2000;
 const UPDATE_MAX_WAIT_MS = 10000;
 const VIEWER_ALERT_DURATION_MS = 20000;
 
 export default function Draw({ scene, isOwner, supabase }: DrawProps) {
-  const [excalidrawAPI, setExcalidrawAPI] = useState(null);
+  const excalidrawApiRef = useRef<ExcalidrawImperativeAPI | null>(null);
 
-  let sceneFiles = [];
+  const excalidrawRef = useCallback((api: ExcalidrawImperativeAPI) => {
+    excalidrawApiRef.current = api;
+  }, []);
 
   const sceneDataRef = useRef<ExcalidrawInitialDataState>({
     elements: scene.data ? scene.data.elements : [],
-    appState: scene.data
-      ? { ...scene.data.appState, collaborators: undefined }
-      : {},
-    files: {},
+    appState: scene.data ? { ...scene.data.appState, collaborators: [] } : {},
+    files: scene.files,
   });
 
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("synced");
 
-  // TODO files sync is pending
-  // useEffect(() => {
-  //   if(sceneElements) {
-  //     const filesIds = sceneElements
-  //     .filter((e) => e.type == "image")
-  //     .map((e) => e.fileId);
+  useEffect(() => {
+    if (sceneDataRef.current.elements) {
+      const filesIds = sceneDataRef.current.elements
+        .filter((e) => e.type == "image" && e.fileId !== null)
+        .map((e) => (e as ExcalidrawImageElement).fileId!);
 
-  //   LocalData.getFiles(filesIds).then((files) => {
-  //     //TODO mb just add the files here to the scene
-  //     // or do this again in the catch in case something fails getting the files we should show the scene anyways
-  //     const filesData = {};
-  //     files.forEach((f) => {
-  //       filesData[f.id] = f;
-  //     });
-  //     const scene = {
-  //       elements: sceneElements,
-  //       files: filesData,
-  //       appState: {...sceneAppState, collaborators: [] },
-  //     };
-  //     sceneFiles = filesData;
-  //     initialStatePromiseRef.current.promise.resolve(scene);
-  //   });
-  //   } else {
-  //     initialStatePromiseRef.current.promise.resolve();
-  //   }
-  // }, []);
+      LocalData.getFiles(filesIds).then((files) => {
+        const filesData = files.reduce((data, file) => {
+          if (file) {
+            data[file.id] = files;
+          }
+          return data;
+        }, {});
+
+        sceneDataRef.current.files = filesData;
+        excalidrawApiRef.current?.addFiles(files);
+      });
+    }
+  }, []);
 
   const [theme, setTheme] = useState<Theme>(
     () => localStorage.getItem("LOCAL_STORAGE_THEME") || THEME.LIGHT
@@ -187,6 +183,39 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     }
   );
 
+  let f = [];
+
+  // how files should work?
+  // we should not download the files each time we go to a scene
+  // so we should check in local db if we have the file
+  // if we dont we go to download it
+
+  // some options
+  // if we want to dowload ahead of time, we will need to know what files we have locally
+  // we could replicate this using a db that mimics what we have locally, so we check that and dowload only that
+  // this will make it all server side
+  // we could delete local storage and this will break
+  // in thoses rare cases we could fetch what we still are missing
+
+  // also we could as soon as we get the scene we check local storage and check what we are missing,
+  // download what we need
+  // this will make it simpler but we do add another trip to the db to get files
+
+  async function uploadFiles(files: BinaryFiles) {
+    for (let [key, entry] of Object.entries(files)) {
+      if (!f.includes(key)) {
+        console.log(v);
+        f.push(key);
+        await supabase.storage
+          .from(`scenes/${scene.id}`)
+          .upload(key, decode(entry.dataURL.split("base64,")[1]), {
+            contentType: entry.mimeType,
+            upsert: true,
+          });
+      }
+    }
+  }
+
   const onChange = useCallback(
     (
       elements: readonly ExcalidrawElement[],
@@ -198,6 +227,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
       if (!isOwner) {
         return;
       }
+      // sync files
 
       setSyncStatus("syncing");
 
@@ -242,7 +272,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   return (
     <div className="h-screen">
       <Excalidraw
-        ref={setExcalidrawAPI}
+        ref={excalidrawRef}
         initialData={sceneDataRef.current}
         UIOptions={{
           canvasActions: {

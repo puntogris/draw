@@ -42,6 +42,8 @@ export class LocalData {
       if (e.type == "image" && !e.isDeleted && e.fileId) {
         const file = files[e.fileId];
         if (file) {
+          console.log("saving file")
+          //TODO we should not save files we already saved?
           const data: BinaryFileData = {
             ...file,
             lastRetrieved: Date.now(),
@@ -50,7 +52,7 @@ export class LocalData {
         }
       }
     });
-    setMany(filesToSave, filesStore);
+    await setMany(filesToSave, filesStore);
   }
 
   /** Saves DataState, including files. Bails if saving is paused */
