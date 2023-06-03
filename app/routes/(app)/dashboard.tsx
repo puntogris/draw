@@ -12,6 +12,9 @@ import DashboardIcon from "~/components/icons/dashboardIcon";
 import PlusIcon from "~/components/icons/plusIcon";
 import SettingsIcon from "~/components/icons/slidersIcon";
 import SignOutIcon from "~/components/icons/signOutIcon";
+import { Theme, useTheme } from "remix-themes";
+import SunIcon from "~/components/icons/sunIcon";
+import MoonIcon from "~/components/icons/moonIcon";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const response = new Response();
@@ -36,6 +39,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Dashboard() {
+  const [theme, setTheme] = useTheme();
   const { supabase } = useOutletContext<OutletContext>();
   const { user } = useLoaderData();
   const navigate = useNavigate();
@@ -86,13 +90,31 @@ export default function Dashboard() {
             <SettingsIcon size={20} />
             Settings
           </NavLink>
-          <button
-            onClick={signOut}
-            className="mt-auto flex items-center gap-3 rounded px-2.5 py-2 text-sm hover:bg-slate-200"
-          >
-            <SignOutIcon size={20} />
-            Sign out
-          </button>
+          <div className="mt-auto flex flex-col gap-2">
+            <button
+              className="flex items-center gap-3 rounded px-2.5 py-2 text-sm hover:bg-slate-200"
+              type="button"
+              onClick={() =>
+                setTheme((prev) =>
+                  prev === Theme.DARK ? Theme.LIGHT : Theme.DARK
+                )
+              }
+            >
+              {theme === Theme.DARK ? (
+                <SunIcon size={20} />
+              ) : (
+                <MoonIcon size={20} />
+              )}
+              Toggle theme
+            </button>
+            <button
+              onClick={signOut}
+              className="flex items-center gap-3 rounded px-2.5 py-2 text-sm hover:bg-slate-200"
+            >
+              <SignOutIcon size={20} />
+              Sign out
+            </button>
+          </div>
         </nav>
       </aside>
       <div className="ml-80 w-full bg-slate-50">

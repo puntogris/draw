@@ -22,6 +22,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
+    "remix-themes": "^1.2.1",
     "remix-utils": "^6.0.0"
   },
   "devDependencies": {

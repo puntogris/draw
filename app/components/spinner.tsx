@@ -8,7 +8,7 @@ export default function Spinner({
   switch (size) {
     case "xs":
       dimen = "h-3 w-3 border-[1px]";
-      break
+      break;
     case "sm":
       dimen = "h-6 w-6 border-[3px]";
       break;

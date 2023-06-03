@@ -18,6 +18,8 @@ import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import stylesheet from "~/tailwind.css";
 import ErrorView from "./components/errorView";
+import { ThemeProvider, useTheme } from "remix-themes";
+import { themeSessionResolver } from "./session.server";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -29,20 +31,21 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
-export const loader: LoaderFunction = () => {
+export const loader: LoaderFunction = async ({ request }) => {
   const env = {
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
   };
-  return { env };
+  const { getTheme } = await themeSessionResolver(request);
+  return { env, theme: getTheme() };
 };
 
-export default function App() {
+function App() {
   const { env } = useLoaderData();
   const [supabase] = useState(() =>
     createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
   );
-
+  const [theme] = useTheme();
   useEffect(() => {
     if (!localStorage.getItem("draw_local_uuid")) {
       localStorage.setItem("draw_local_uuid", crypto.randomUUID());
@@ -50,7 +53,7 @@ export default function App() {
   }, []);
 
   return (
-    <html lang="en" className="light">
+    <html lang="en" data-theme={theme ?? ""}>
       <head>
         <Meta />
         <Links />
@@ -63,6 +66,15 @@ export default function App() {
         <LiveReload />
       </body>
     </html>
+  );
+}
+
+export default function AppWithProviders() {
+  const data = useLoaderData();
+  return (
+    <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
+      <App />
+    </ThemeProvider>
   );
 }
 

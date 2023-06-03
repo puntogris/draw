@@ -20,7 +20,7 @@ export default function ErrorView({
         <h1 className="block text-7xl font-bold text-gray-800 dark:text-white sm:text-9xl">
           {code ? code.toString() : "Oh no!"}
         </h1>
-        <h1 className="text-gray-600 dark:text-gray-400 mt-4">
+        <h1 className="mt-4 text-gray-600 dark:text-gray-400">
           {code != 404 && message
             ? message
             : "Oops, access not allowed or non-existing route, contact the owner to verify if this scene is publicly accessible."}
@@ -29,7 +29,13 @@ export default function ErrorView({
         <p className="text-gray-600 dark:text-gray-400"></p>
       </div>
 
-      <a className="text-sm text-gray-500 hover:text-blue-500 px-2" href="puntogris.com" target="_blank">by @puntogris</a>
+      <a
+        className="px-2 text-sm text-gray-500 hover:text-blue-500"
+        href="puntogris.com"
+        target="_blank"
+      >
+        by @puntogris
+      </a>
     </div>
   );
 }
