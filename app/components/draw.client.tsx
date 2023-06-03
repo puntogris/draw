@@ -15,6 +15,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { LocalData } from "~/utils/LocalData";
 import type {
   AppState,
+  BinaryFileData,
   BinaryFiles,
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
@@ -23,12 +24,14 @@ import { toast } from "react-hot-toast";
 import EnvelopeIcon from "./icons/envelopeIcon";
 import type {
   ExcalidrawElement,
-  ExcalidrawImageElement,
+  FileId,
   Theme,
 } from "@excalidraw/excalidraw/types/element/types";
 import { debounce, isEqual } from "lodash";
 import type { DrawProps, SyncStatus } from "~/utils/types";
 import { decode } from "base64-arraybuffer";
+import { ResolvablePromise } from "@excalidraw/excalidraw/types/utils";
+import { resolvablePromise, getDataURLFromBlob } from "~/utils/utils";
 
 const UPDATE_DEBOUNCE_MS = 2000;
 const UPDATE_MAX_WAIT_MS = 10000;
@@ -41,6 +44,14 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     excalidrawApiRef.current = api;
   }, []);
 
+  const initialStatePromiseRef = useRef<{
+    promise: ResolvablePromise<ExcalidrawInitialDataState | null>;
+  }>({ promise: null! });
+  if (!initialStatePromiseRef.current.promise) {
+    initialStatePromiseRef.current.promise =
+      resolvablePromise<ExcalidrawInitialDataState | null>();
+  }
+
   const sceneDataRef = useRef<ExcalidrawInitialDataState>({
     elements: scene.data ? scene.data.elements : [],
     appState: scene.data ? { ...scene.data.appState, collaborators: [] } : {},
@@ -50,23 +61,65 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("synced");
 
   useEffect(() => {
-    if (sceneDataRef.current.elements) {
-      const filesIds = sceneDataRef.current.elements
-        .filter((e) => e.type == "image" && e.fileId !== null)
-        .map((e) => (e as ExcalidrawImageElement).fileId!);
+    const fetchFiles = async () => {
+      if (!sceneDataRef.current.elements) {
+        return;
+      }
+      const neededFilesId: FileId[] = [];
 
-      LocalData.getFiles(filesIds).then((files) => {
-        const filesData = files.reduce((data, file) => {
-          if (file) {
-            data[file.id] = files;
+      sceneDataRef.current.elements
+        .filter((e) => !e.isDeleted)
+        .forEach((e) => {
+          if (
+            e.type == "image" &&
+            e.fileId !== null &&
+            !neededFilesId.includes(e.fileId)
+          ) {
+            neededFilesId.push(e.fileId);
           }
-          return data;
-        }, {});
+        });
 
-        sceneDataRef.current.files = filesData;
-        excalidrawApiRef.current?.addFiles(files);
+      const localFiles = await LocalData.getFiles(neededFilesId);
+
+      const sceneFiles: BinaryFiles = {};
+
+      localFiles.forEach((f) => {
+        sceneFiles[f.id] = f;
       });
-    }
+
+      const retrievedIds = localFiles.map((file) => file && file.id);
+
+      const missingIds = neededFilesId.filter(
+        (id) => !retrievedIds.includes(id)
+      );
+
+      for (const idIndex in missingIds) {
+        const id = missingIds[idIndex];
+
+        const { data, error } = await supabase.storage
+          .from("scenes")
+          .download(`${scene.name}/${id}`);
+
+        if (error) {
+          // show a notification and add a feature to try to sync from the menu
+        } else {
+          const file = {
+            mimeType: data.type,
+            id: id,
+            dataURL: await getDataURLFromBlob(data),
+            created: new Date().getTime(),
+            lastRetrieved: new Date().getTime(),
+          } as BinaryFileData;
+
+          sceneFiles[id] = file;
+          await LocalData.saveFile(file);
+        }
+      }
+
+      sceneDataRef.current.files = sceneFiles;
+      initialStatePromiseRef.current.promise.resolve(sceneDataRef.current);
+    };
+    fetchFiles();
   }, []);
 
   const [theme, setTheme] = useState<Theme>(
@@ -154,6 +207,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
       files: BinaryFiles
     ) => {
       const notDeletedElemets = elements.filter((e) => !e.isDeleted);
+      //await uploadFiles(files)
 
       const data = {
         elements: notDeletedElemets,
@@ -167,13 +221,13 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
 
       sceneDataRef.current = data;
 
-      LocalData.save(
-        scene.id.toString(),
-        notDeletedElemets,
-        appState,
-        files,
-        () => {}
-      );
+      // LocalData.save(
+      //   scene.id.toString(),
+      //   notDeletedElemets,
+      //   appState,
+      //   files,
+      //   () => {}
+      // );
 
       await saveScene();
     },
@@ -203,16 +257,12 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
 
   async function uploadFiles(files: BinaryFiles) {
     for (let [key, entry] of Object.entries(files)) {
-      if (!f.includes(key)) {
-        console.log(v);
-        f.push(key);
-        await supabase.storage
-          .from(`scenes/${scene.id}`)
-          .upload(key, decode(entry.dataURL.split("base64,")[1]), {
-            contentType: entry.mimeType,
-            upsert: true,
-          });
-      }
+      const { data, error } = await supabase.storage
+        .from(`scenes/${scene.name}`)
+        .upload(key, decode(entry.dataURL.split("base64,")[1]), {
+          contentType: entry.mimeType,
+          upsert: true,
+        });
     }
   }
 
@@ -273,7 +323,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     <div className="h-screen">
       <Excalidraw
         ref={excalidrawRef}
-        initialData={sceneDataRef.current}
+        initialData={initialStatePromiseRef.current.promise}
         UIOptions={{
           canvasActions: {
             toggleTheme: true,

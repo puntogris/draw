@@ -42,7 +42,7 @@ export class LocalData {
       if (e.type == "image" && !e.isDeleted && e.fileId) {
         const file = files[e.fileId];
         if (file) {
-          console.log("saving file")
+          console.log("saving file");
           //TODO we should not save files we already saved?
           const data: BinaryFileData = {
             ...file,
@@ -53,6 +53,10 @@ export class LocalData {
       }
     });
     await setMany(filesToSave, filesStore);
+  }
+
+  static async saveFile(file: BinaryFileData) {
+    await set(file.id, file, filesStore);
   }
 
   /** Saves DataState, including files. Bails if saving is paused */
@@ -67,8 +71,8 @@ export class LocalData {
     this._save(id, elements, appState, files, onFilesSaved);
   };
 
-  static getFiles(ids: string[]) {
-    return getMany(ids, filesStore);
+  static async getFiles(ids: string[]) {
+    return (await getMany<BinaryFileData>(ids, filesStore)).filter((f) => f);
   }
 
   static async savePreview(elements: readonly ExcalidrawElement[], id: string) {

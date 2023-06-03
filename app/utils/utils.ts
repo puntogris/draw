@@ -50,3 +50,14 @@ export const useCallbackRefState = <T>() => {
   const refCallback = useCallback((value: T | null) => setRefValue(value), []);
   return [refValue, refCallback] as const;
 };
+
+export async function getDataURLFromBlob(blob: Blob) {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onerror = (e) => reject(fileReader.error);
+    fileReader.onloadend = (e) => {
+      resolve(fileReader.result);
+    };
+    fileReader.readAsDataURL(blob);
+  });
+}

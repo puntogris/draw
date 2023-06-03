@@ -25,7 +25,7 @@ export const loader = async ({ request }) => {
       throw error.message;
     }
 
-    return {};
+    return redirect("/dashboard", { headers: response.headers });
   } catch (e) {
     console.error(e);
     return json({ error: e.toString() }, { headers: response.headers });
