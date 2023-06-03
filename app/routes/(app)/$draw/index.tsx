@@ -36,11 +36,26 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     .single();
 
   if (scene) {
+    const isOwner = scene.uid == sessionData?.session?.user?.id;
+
+    let serverFilesId: string[] = [];
+
+    if (isOwner) {
+      const { data: filesData } = await supabase.storage
+        .from("scenes")
+        .list(scene.name);
+
+        if(filesData) {
+          serverFilesId = filesData.map(f => f.name)
+        }
+    }
+
     return json(
       {
         slug: id,
         scene,
-        isOwner: scene.uid == sessionData?.session?.user?.id,
+        isOwner: isOwner,
+        serverFilesId,
       },
       { headers: response.headers }
     );
@@ -51,22 +66,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export default function Index() {
   // @ts-ignore
-  const { scene, isOwner } = useLoaderData();
+  const { scene, isOwner, serverFilesId } = useLoaderData();
   const { supabase } = useOutletContext<OutletContext>();
-  const [files, setFiles] = useState();
-
-  // useEffect(() => {
-  //   const fetchFiles = async () => {
-  //     await LocalData.getFiles(scene.data.elements );
-  //   };
-  //   fetchFiles();
-  // }, []);
 
   return (
     <ClientOnly fallback={<Loading />}>
       {() =>
         scene != null && (
-          <Draw scene={scene} isOwner={isOwner} supabase={supabase} />
+          <Draw scene={scene} isOwner={isOwner} supabase={supabase} serverFilesId={serverFilesId} />
         )
       }
     </ClientOnly>

@@ -13,7 +13,7 @@ const filesStore = createStore("draw-db", "draw_files_store");
 const previewsStore = createStore("draw-db-previews", "draw_previews_store");
 
 export class LocalData {
-  private static _save = debounce(
+  static save = debounce(
     async (
       id: string,
       elements: readonly ExcalidrawElement[],
@@ -42,7 +42,6 @@ export class LocalData {
       if (e.type == "image" && !e.isDeleted && e.fileId) {
         const file = files[e.fileId];
         if (file) {
-          console.log("saving file");
           //TODO we should not save files we already saved?
           const data: BinaryFileData = {
             ...file,
@@ -58,18 +57,6 @@ export class LocalData {
   static async saveFile(file: BinaryFileData) {
     await set(file.id, file, filesStore);
   }
-
-  /** Saves DataState, including files. Bails if saving is paused */
-  static save = (
-    id: string,
-    elements: readonly ExcalidrawElement[],
-    appState: AppState,
-    files: BinaryFiles,
-    onFilesSaved: () => void
-  ) => {
-    // we need to make the `isSavePaused` check synchronously (undebounced)
-    this._save(id, elements, appState, files, onFilesSaved);
-  };
 
   static async getFiles(ids: string[]) {
     return (await getMany<BinaryFileData>(ids, filesStore)).filter((f) => f);

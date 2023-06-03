@@ -24,6 +24,7 @@ import { toast } from "react-hot-toast";
 import EnvelopeIcon from "./icons/envelopeIcon";
 import type {
   ExcalidrawElement,
+  ExcalidrawImageElement,
   FileId,
   Theme,
 } from "@excalidraw/excalidraw/types/element/types";
@@ -37,7 +38,12 @@ const UPDATE_DEBOUNCE_MS = 2000;
 const UPDATE_MAX_WAIT_MS = 10000;
 const VIEWER_ALERT_DURATION_MS = 20000;
 
-export default function Draw({ scene, isOwner, supabase }: DrawProps) {
+export default function Draw({
+  scene,
+  isOwner,
+  supabase,
+  serverFilesId,
+}: DrawProps) {
   const excalidrawApiRef = useRef<ExcalidrawImperativeAPI | null>(null);
 
   const excalidrawRef = useCallback((api: ExcalidrawImperativeAPI) => {
@@ -200,6 +206,34 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
     return () => toast.dismiss(toastId);
   }, []);
 
+  async function syncFiles(
+    sceneFiles: BinaryFiles,
+    elements: ExcalidrawElement[]
+  ) {
+    const elementsFilesId = elements
+      .filter((e) => e.type == "image")
+      .map((e) => (e as ExcalidrawImageElement).fileId) as string[];
+
+    for (let [fileId, file] of Object.entries(sceneFiles)) {
+      if (!serverFilesId.includes(fileId) && elementsFilesId.includes(fileId)) {
+        const { data, error } = await supabase.storage
+          .from(`scenes/${scene.name}`)
+          .upload(fileId, decode(file.dataURL.split("base64,")[1]), {
+            contentType: file.mimeType,
+            upsert: true,
+          });
+
+        serverFilesId.push(fileId);
+
+        if (error) {
+          //handle error
+        } else {
+          // we could save it locally, but it already should be there
+        }
+      }
+    }
+  }
+
   const onChangeDebounce = debounce(
     async (
       elements: readonly ExcalidrawElement[],
@@ -207,7 +241,7 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
       files: BinaryFiles
     ) => {
       const notDeletedElemets = elements.filter((e) => !e.isDeleted);
-      //await uploadFiles(files)
+      await syncFiles(files, notDeletedElemets);
 
       const data = {
         elements: notDeletedElemets,
@@ -221,13 +255,14 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
 
       sceneDataRef.current = data;
 
-      // LocalData.save(
-      //   scene.id.toString(),
-      //   notDeletedElemets,
-      //   appState,
-      //   files,
-      //   () => {}
-      // );
+      // TODO we should not save files we already saved
+      LocalData.save(
+        scene.id.toString(),
+        notDeletedElemets,
+        appState,
+        files,
+        () => {}
+      );
 
       await saveScene();
     },
@@ -236,35 +271,6 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
       maxWait: UPDATE_MAX_WAIT_MS,
     }
   );
-
-  let f = [];
-
-  // how files should work?
-  // we should not download the files each time we go to a scene
-  // so we should check in local db if we have the file
-  // if we dont we go to download it
-
-  // some options
-  // if we want to dowload ahead of time, we will need to know what files we have locally
-  // we could replicate this using a db that mimics what we have locally, so we check that and dowload only that
-  // this will make it all server side
-  // we could delete local storage and this will break
-  // in thoses rare cases we could fetch what we still are missing
-
-  // also we could as soon as we get the scene we check local storage and check what we are missing,
-  // download what we need
-  // this will make it simpler but we do add another trip to the db to get files
-
-  async function uploadFiles(files: BinaryFiles) {
-    for (let [key, entry] of Object.entries(files)) {
-      const { data, error } = await supabase.storage
-        .from(`scenes/${scene.name}`)
-        .upload(key, decode(entry.dataURL.split("base64,")[1]), {
-          contentType: entry.mimeType,
-          upsert: true,
-        });
-    }
-  }
 
   const onChange = useCallback(
     (
@@ -277,7 +283,6 @@ export default function Draw({ scene, isOwner, supabase }: DrawProps) {
       if (!isOwner) {
         return;
       }
-      // sync files
 
       setSyncStatus("syncing");
 

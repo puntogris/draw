@@ -19,6 +19,7 @@ export type DrawProps = {
   scene: any;
   isOwner: boolean;
   supabase: SupabaseClient;
+  serverFilesId: string[];
 };
 
 export type SyncStatus = "synced" | "error" | "syncing";
