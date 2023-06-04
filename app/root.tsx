@@ -53,7 +53,7 @@ function App() {
   }, []);
 
   return (
-    <html lang="en" data-theme={theme ?? ""}>
+    <html lang="en" data-theme="dark">
       <head>
         <Meta />
         <Links />

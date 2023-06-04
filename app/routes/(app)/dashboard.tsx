@@ -15,6 +15,7 @@ import SignOutIcon from "~/components/icons/signOutIcon";
 import { Theme, useTheme } from "remix-themes";
 import SunIcon from "~/components/icons/sunIcon";
 import MoonIcon from "~/components/icons/moonIcon";
+import { toast } from "react-hot-toast";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const response = new Response();
@@ -44,8 +45,13 @@ export default function Dashboard() {
   const { user } = useLoaderData();
   const navigate = useNavigate();
 
-  function signOut() {
-    supabase.auth.signOut();
+  async function signOut() {
+    const toastId = toast.loading("Signing out...", {
+      position: "bottom-center",
+
+    })
+    await supabase.auth.signOut();
+    toast.dismiss(toastId)
     navigate("/");
   }
 
