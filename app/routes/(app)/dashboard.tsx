@@ -58,7 +58,7 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen flex-row">
       <aside className="fixed flex h-full max-h-screen w-80 flex-col gap-2 border-r border-gray-200 bg-white p-6">
-        <a className="mt-1 text-xl font-semibold dark:text-white" href="/">
+        <a className="mt-1 text-xl font-semibold dark:text-slate-50" href="/">
           draw.puntogris
         </a>
         <nav className="mt-5 flex h-full flex-col gap-2">

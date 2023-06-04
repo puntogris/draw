@@ -102,7 +102,7 @@ export default function Index() {
         onClick={() =>
           setTheme((prev) => (prev === Theme.DARK ? Theme.LIGHT : Theme.DARK))
         }
-        className="fixed right-4 top-8 flex gap-2 rounded-md p-2 text-sm font-medium text-gray-900 transition-colors hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
+        className="fixed right-4 top-8 flex gap-2 rounded-md p-2 text-sm font-medium text-gray-900 transition-colors hover:bg-slate-200 dark:text-slate-200 dark:hover:bg-gray-800"
       >
         {theme === Theme.DARK ? (
           <>
