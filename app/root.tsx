@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import stylesheet from "~/tailwind.css";
 import ErrorView from "./components/errorView";
-import { ThemeProvider, useTheme } from "remix-themes";
+import { Theme, ThemeProvider, useTheme } from "remix-themes";
 import { themeSessionResolver } from "./session.server";
 
 export const links: LinksFunction = () => [
@@ -53,7 +53,7 @@ function App() {
   }, []);
 
   return (
-    <html lang="en" data-theme="dark">
+    <html lang="en" data-theme={theme ?? ""}>
       <head>
         <Meta />
         <Links />
