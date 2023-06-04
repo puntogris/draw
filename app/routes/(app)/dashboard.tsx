@@ -48,25 +48,24 @@ export default function Dashboard() {
   async function signOut() {
     const toastId = toast.loading("Signing out...", {
       position: "bottom-center",
-
-    })
+    });
     await supabase.auth.signOut();
-    toast.dismiss(toastId)
+    toast.dismiss(toastId);
     navigate("/");
   }
 
   return (
-    <div className="flex min-h-screen flex-row">
-      <aside className="fixed flex h-full max-h-screen w-80 flex-col gap-2 border-r border-gray-200 bg-white p-6">
+    <div className="flex min-h-screen flex-row divide-x divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-950">
+      <aside className="fixed flex h-full max-h-screen w-80 flex-col gap-2 p-6">
         <a className="mt-1 text-xl font-semibold dark:text-slate-50" href="/">
           draw.puntogris
         </a>
-        <nav className="mt-5 flex h-full flex-col gap-2">
+        <nav className="mt-5 flex h-full flex-col gap-2 font-medium">
           <NavLink
             to="/dashboard/new"
             className={({ isActive }) =>
-              "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100".concat(
-                isActive ? " bg-slate-100" : ""
+              "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800".concat(
+                isActive ? " bg-slate-100 dark:bg-gray-800" : ""
               )
             }
           >
@@ -76,8 +75,8 @@ export default function Dashboard() {
           <NavLink
             to="/dashboard"
             className={({ isActive }) =>
-              "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100".concat(
-                isActive ? " bg-slate-100" : ""
+              "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800".concat(
+                isActive ? " bg-slate-100 dark:bg-gray-800" : ""
               )
             }
             end
@@ -88,8 +87,8 @@ export default function Dashboard() {
           <NavLink
             to="/dashboard/settings"
             className={({ isActive }) =>
-              "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100".concat(
-                isActive ? " bg-slate-100" : ""
+              "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800".concat(
+                isActive ? " bg-slate-100 dark:bg-gray-800" : ""
               )
             }
           >
@@ -98,7 +97,7 @@ export default function Dashboard() {
           </NavLink>
           <div className="mt-auto flex flex-col gap-2">
             <button
-              className="flex items-center gap-3 rounded px-2.5 py-2 text-sm hover:bg-slate-200"
+              className="flex items-center gap-3 rounded px-2.5 py-2 text-sm hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
               type="button"
               onClick={() =>
                 setTheme((prev) =>
@@ -115,7 +114,7 @@ export default function Dashboard() {
             </button>
             <button
               onClick={signOut}
-              className="flex items-center gap-3 rounded px-2.5 py-2 text-sm hover:bg-slate-200"
+              className="flex items-center gap-3 rounded px-2.5 py-2 text-sm hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
             >
               <SignOutIcon size={20} />
               Sign out
@@ -123,7 +122,7 @@ export default function Dashboard() {
           </div>
         </nav>
       </aside>
-      <div className="ml-80 w-full bg-slate-50">
+      <div className="ml-80 w-full">
         <Outlet context={{ supabase, user }} />
       </div>
     </div>
