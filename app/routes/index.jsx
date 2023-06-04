@@ -1,10 +1,5 @@
 import { json, redirect } from "@remix-run/node";
-import {
-  Form,
-  useActionData,
-  useNavigation,
-  useOutletContext,
-} from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -22,7 +17,10 @@ export const loader = async ({ request }) => {
     const { error, data } = await supabase.auth.getSession();
 
     if (error || !data.session) {
-      throw error.message;
+      return json(
+        { error: "User not signed in." },
+        { headers: response.headers }
+      );
     }
 
     return redirect("/dashboard", { headers: response.headers });
@@ -92,7 +90,7 @@ export default function Index() {
   return (
     <div className="bg-gray-100">
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center gap-8 px-4 md:flex-row md:gap-4">
-        <div className="md:w-1/2 flex w-full flex-col items-center justify-center px-4 md:px-0">
+        <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2 md:px-0">
           <h1 className="block text-3xl font-bold text-gray-800 sm:text-4xl md:text-5xl lg:text-6xl">
             draw.puntogris
           </h1>
@@ -125,7 +123,7 @@ export default function Index() {
         </div>
         <Form
           method="post"
-          className="md:w-1/2 flex w-full max-w-sm flex-col items-center justify-center rounded-md bg-white p-8 shadow-sm"
+          className="flex w-full max-w-sm flex-col items-center justify-center rounded-md bg-white p-8 shadow-sm md:w-1/2"
         >
           <h1 className="block self-center text-2xl font-bold text-gray-800">
             Sign in
@@ -137,7 +135,7 @@ export default function Index() {
             type="email"
             id="email"
             name="email"
-            className="autofill:shadow-[inset_0_0_0px_1000px_rgb(250,250,250)] block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
+            className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(250,250,250)]"
             required
           />
           <label
@@ -150,7 +148,7 @@ export default function Index() {
             type="password"
             id="password"
             name="password"
-            className="autofill:shadow-[inset_0_0_0px_1000px_rgb(250,250,250)] block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none"
+            className="block w-full rounded-md border border-gray-200 px-4 py-3 text-sm outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(250,250,250)]"
             required
           />
           <button
