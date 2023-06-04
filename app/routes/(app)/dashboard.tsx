@@ -88,7 +88,7 @@ export default function Dashboard() {
             to="/dashboard/settings"
             className={({ isActive }) =>
               "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800".concat(
-                isActive ? " bg-slate-100 dark:bg-gray-800" : ""
+                isActive ? " bg-slate-100 dark:bg-slate-800" : ""
               )
             }
           >

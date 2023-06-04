@@ -118,7 +118,7 @@ export default function Index() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-50 sm:text-4xl md:text-5xl lg:text-6xl">
           draw.puntogris
         </h1>
-        <div className="mt-3 items-center space-x-1 text-center text-slate-500 md:max-w-md md:text-start">
+        <div className="mt-3 items-center space-x-1 text-center text-slate-600 dark:text-slate-400 md:max-w-md md:text-start">
           <span>Drawing site using</span>
           <a
             className="font-semibold text-blue-500 hover:underline dark:text-blue-400"
@@ -153,13 +153,13 @@ export default function Index() {
           <h1 className="self-center text-2xl font-bold text-gray-800 dark:text-slate-50">
             Sign in
           </h1>
-          <h1 className="self-center text-base text-slate-500">
+          <h1 className="self-center text-base  text-slate-600 dark:text-slate-400">
             Enter your credentials below to enter the app
           </h1>
           <div className="w-full">
             <label
               htmlFor="email"
-              className="mb-2 mt-3 block self-start text-sm text-slate-500"
+              className="mb-2 mt-3 block self-start text-sm text-slate-600 dark:text-slate-400"
             >
               Email address
             </label>
@@ -174,7 +174,7 @@ export default function Index() {
           <div className="w-full">
             <label
               htmlFor="password"
-              className="mb-2 mt-2 block self-start text-sm text-slate-500"
+              className="mb-2 mt-2 block self-start text-sm text-slate-600 dark:text-slate-400"
             >
               Password
             </label>
