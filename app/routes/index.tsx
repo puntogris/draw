@@ -11,6 +11,8 @@ import { toast } from "react-hot-toast";
 import { Theme, useTheme } from "remix-themes";
 import MoonIcon from "~/components/icons/moonIcon";
 import SunIcon from "~/components/icons/sunIcon";
+import background from "../../public/background.webp";
+import favicon from "../../public/favicon.ico";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const response = new Response();
@@ -102,7 +104,7 @@ export default function Index() {
         onClick={() =>
           setTheme((prev) => (prev === Theme.DARK ? Theme.LIGHT : Theme.DARK))
         }
-        className="fixed right-4 top-8 flex gap-2 rounded-md p-2 text-sm font-medium text-gray-900 transition-colors hover:bg-slate-200 dark:text-slate-200 dark:hover:bg-gray-800"
+        className="fixed right-4 top-8 z-20 flex gap-2 rounded-md p-2 text-sm font-medium text-gray-900 transition-colors hover:bg-slate-200 dark:text-slate-200 dark:hover:bg-gray-800"
       >
         {theme === Theme.DARK ? (
           <>
@@ -114,38 +116,55 @@ export default function Index() {
           </>
         )}
       </button>
-      <div className="flex flex-grow flex-col items-center justify-center px-4">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-50 sm:text-4xl md:text-5xl lg:text-6xl">
-          draw.puntogris
-        </h1>
-        <div className="mt-3 items-center space-x-1 text-center text-slate-600 dark:text-slate-400 md:max-w-md md:text-start">
-          <span>Drawing site using</span>
+      <div className="flex flex-grow flex-col p-8">
+        <img
+          className="absolute inset-0 h-full w-full object-cover lg:w-1/2"
+          src={background}
+        />
+        <div className="absolute inset-0 h-full w-full bg-black bg-opacity-50 lg:w-1/2" />
+        <a
+          className="z-10 flex w-fit items-center gap-3"
+          href="https://puntogris.com/"
+          target="_blank"
+        >
+          <img src={favicon} alt="logo" width={30} height={30} />
+          <h1 className="text-xl font-semibold text-slate-50 hover:text-slate-200">
+            draw.puntogris
+          </h1>
+        </a>
+        <div className="z-10 mt-auto items-center space-y-1 pb-6 text-center font-medium text-slate-200 md:text-start">
+          <span>Drawing site made using</span>
           <a
-            className="font-semibold text-blue-500 hover:underline dark:text-blue-400"
+            className="font-semibold text-blue-400 hover:underline"
             href="https://github.com/excalidraw/excalidraw"
             target="_blank"
           >
+            {" "}
             Exalidraw
           </a>{" "}
           and
           <a
-            className="font-semibold text-blue-500 hover:underline dark:text-blue-400"
+            className="font-semibold text-blue-400 hover:underline"
             href="https://supabase.com/"
             target="_blank"
           >
-            Supabase
+            {" "}
+            Supabase.
           </a>
-          . This is mostly for personal use but if you would like an account,
-          you can reach me at:
-          <a
-            href="mailto:dev@puntogris.com"
-            className="font-semibold text-blue-500 hover:underline dark:text-blue-400"
-          >
-            dev@puntogris.com
-          </a>
+          <p>This is mostly for personal use.</p>
+          <p>
+            If you would like an account, you can reach me at:
+            <a
+              href="mailto:dev@puntogris.com"
+              className="font-semibold text-blue-400 hover:underline"
+            >
+              {" "}
+              dev@puntogris.com
+            </a>
+          </p>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center gap-8 px-4 md:flex-row md:gap-4">
+      <div className="z-10 flex flex-col items-center justify-center gap-8 px-4 dark:bg-gray-950 md:flex-row md:gap-4">
         <Form
           method="post"
           className="flex w-full max-w-md flex-col items-center justify-center gap-2 p-8"
