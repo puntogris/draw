@@ -62,8 +62,8 @@ export default function Index() {
 
   return (
     <div className="flex h-full flex-col px-16 py-10">
-      <h1 className="text-xl font-bold">Dashboard</h1>
-      <p className="text-sm text-zinc-600">
+      <h1 className="text-xl font-bold dark:text-slate-50">Dashboard</h1>
+      <p className="text-sm text-slate-600 dark:text-slate-400">
         These are your scenes and they will be automatically synced.
       </p>
       {!isLoadingState && scenes.length == 0 && <EmptyDataView />}
@@ -94,10 +94,10 @@ export default function Index() {
 
 function SearchInput({ inputChange }: { inputChange: Dispatch<string> }) {
   return (
-    <div className="mt-6 flex items-center gap-3 rounded-md border bg-white px-4  text-sm dark:border-gray-700">
+    <div className="mt-6 flex items-center gap-3 rounded-md border px-4 text-sm dark:border-gray-700">
       <SearchIcon />
       <input
-        className="w-full py-3 outline-none"
+        className="w-full border-gray-200 bg-transparent py-3 outline-none dark:border-gray-700 dark:text-slate-50"
         placeholder="Search for scenes"
         onChange={(e) => inputChange(e.target.value)}
       />
@@ -109,7 +109,7 @@ function EmptyDataView() {
   return (
     <div className="flex h-full flex-col items-center justify-center p-4 md:p-5">
       <EmptyContentIcon />
-      <p className="mt-5 text-sm text-gray-500 dark:text-gray-500">
+      <p className="mt-5 text-sm text-slate-600 dark:text-slate-400">
         No data to show, create a new to start using the app.
       </p>
     </div>
