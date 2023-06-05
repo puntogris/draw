@@ -18,7 +18,12 @@ import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import stylesheet from "~/tailwind.css";
 import ErrorView from "./components/errorView";
-import { Theme, ThemeProvider, useTheme } from "remix-themes";
+import {
+  PreventFlashOnWrongTheme,
+  Theme,
+  ThemeProvider,
+  useTheme,
+} from "remix-themes";
 import { themeSessionResolver } from "./session.server";
 
 export const links: LinksFunction = () => [
@@ -41,7 +46,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 function App() {
-  const { env } = useLoaderData();
+  const { env, theme: serverTheme } = useLoaderData();
   const [supabase] = useState(() =>
     createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
   );
@@ -56,6 +61,7 @@ function App() {
     <html lang="en" data-theme={theme ?? ""}>
       <head>
         <Meta />
+        <PreventFlashOnWrongTheme ssrTheme={Boolean(serverTheme)} />
         <Links />
       </head>
       <body>
