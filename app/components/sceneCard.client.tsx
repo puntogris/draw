@@ -1,10 +1,11 @@
-const { useNavigate } = require("@remix-run/react");
-const { useEffect, useState, useRef } = require("react");
+import TrashIcon from "./icons/trashIcon";
+import ShareIcon from "./icons/shareIcon";
+import PencilIcon from "./icons/pencilIcon";
+import { useEffect, useRef, useState } from "react";
 import { LocalData } from "~/utils/LocalData";
 
 export default function SceneCard({ name, description, sceneId, lastUpdated }) {
-  const [image, setImage] = useState();
-  const navigate = useNavigate();
+  const [image, setImage] = useState<string>();
 
   useEffect(() => {
     async function getPreview() {
@@ -33,21 +34,24 @@ export default function SceneCard({ name, description, sceneId, lastUpdated }) {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden rounded border border-gray-200 dark:border-gray-800 shadow-sm">
+    <div className="flex flex-col rounded border border-gray-200 shadow-sm dark:border-gray-800">
       <a className="flex" href={`/${name}`}>
         <img
-          className="max-h-48 w-full object-cover hover:opacity-80"
+          className="max-h-48 w-full rounded-t object-cover hover:opacity-80"
           src="https://placehold.co/600"
           alt="Image Description"
         />
       </a>
       <div className="flex min-h-[100px] flex-col p-4 md:p-3">
-        <a
-          href={`/${name}`}
-          className="overflow-hidden truncate text-sm font-semibold text-slate-800 hover:text-slate-700 dark:text-slate-50"
-        >
-          {name}
-        </a>
+        <div className="z-30 flex justify-between gap-3">
+          <a
+            href={`/${name}`}
+            className="overflow-hidden truncate text-sm font-semibold text-slate-800 hover:text-slate-700 dark:text-slate-50"
+          >
+            {name}
+          </a>
+          <Dropdown />
+        </div>
         <p className="mt-1 line-clamp-2 truncate text-xs text-slate-600 dark:text-slate-400">
           {description}
         </p>
@@ -86,7 +90,7 @@ function Dropdown() {
       <button
         type="button"
         onClick={toggleDropdown}
-        className="p-2 text-gray-900 hover:rounded-full hover:bg-black hover:bg-opacity-5"
+        className="p-2 text-gray-900 hover:rounded-full hover:bg-black hover:bg-opacity-5 dark:text-slate-50"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -105,25 +109,21 @@ function Dropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-2 w-40 space-y-2  rounded-lg bg-white p-2 opacity-100 shadow-md transition-opacity duration-1000">
-          <a
-            className="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-            href="#"
-          >
-            Delete
-          </a>
-          <a
-            className="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-            href="#"
-          >
-            Share
-          </a>
-          <a
-            className="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-            href="#"
-          >
-            Edit
-          </a>
+        <div className="absolute z-40 mt-2 w-40 rounded-lg border border-gray-200 bg-white opacity-100 transition-opacity duration-1000 dark:border-gray-800 dark:bg-gray-950">
+          <div className="border-b border-gray-200 px-3 py-2 text-sm font-semibold text-gray-800 dark:border-gray-800 dark:text-gray-300">
+            Actions
+          </div>
+          <div className="p-1">
+            <button className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+              <ShareIcon size={16} /> Share
+            </button>
+            <button className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+              <PencilIcon size={16} /> Edit
+            </button>
+            <button className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+              <TrashIcon size={16} /> Delete
+            </button>
+          </div>
         </div>
       )}
     </div>
