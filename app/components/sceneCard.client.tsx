@@ -41,7 +41,7 @@ export default function SceneCard({
   }
 
   return (
-    <div className="flex flex-col rounded border border-gray-200 shadow-sm dark:border-gray-800">
+    <div className="flex flex-col rounded border border-gray-200 dark:border-gray-800">
       <a className="flex" href={`/${name}`}>
         <img
           className="max-h-48 w-full rounded-t object-cover hover:opacity-80"
