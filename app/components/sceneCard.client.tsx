@@ -3,8 +3,9 @@ import ShareIcon from "./icons/shareIcon";
 import PencilIcon from "./icons/pencilIcon";
 import { useEffect, useRef, useState } from "react";
 import { LocalData } from "~/utils/LocalData";
+import { SceneCardProps } from "~/utils/types";
 
-export default function SceneCard({ name, description, sceneId, lastUpdated }) {
+export default function SceneCard({ name, description, sceneId, lastUpdated }: SceneCardProps) {
   const [image, setImage] = useState<string>();
 
   useEffect(() => {

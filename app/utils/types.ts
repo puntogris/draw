@@ -22,4 +22,11 @@ export type DrawProps = {
   serverFilesId: string[];
 };
 
+export type SceneCardProps = {
+  name: string;
+  description: string;
+  sceneId: number;
+  lastUpdated: number;
+};
+
 export type SyncStatus = "synced" | "error" | "syncing";
