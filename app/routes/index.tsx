@@ -172,7 +172,7 @@ export default function Index() {
           <h1 className="self-center text-2xl font-bold text-gray-800 dark:text-slate-50">
             Sign in
           </h1>
-          <h1 className="self-center text-base  text-slate-600 dark:text-slate-400">
+          <h1 className="self-center text-base text-slate-600 dark:text-slate-400">
             Enter your credentials below to enter the app
           </h1>
           <div className="w-full">

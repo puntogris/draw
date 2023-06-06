@@ -57,7 +57,10 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen flex-row divide-x divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-950">
       <aside className="fixed flex h-full max-h-screen w-80 flex-col gap-2 p-6">
-        <a className="mt-1 text-xl font-semibold dark:text-slate-50" href="/">
+        <a
+          className="mt-1 text-xl font-semibold text-gray-900 dark:text-slate-50"
+          href="/"
+        >
           draw.puntogris
         </a>
         <nav className="mt-5 flex h-full flex-col gap-2 font-medium">
@@ -97,7 +100,7 @@ export default function Dashboard() {
           </NavLink>
           <div className="mt-auto flex flex-col gap-2">
             <button
-              className="flex items-center gap-3 rounded px-2.5 py-2 text-sm hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
+              className="flex items-center gap-3 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
               type="button"
               onClick={() =>
                 setTheme((prev) =>
@@ -114,7 +117,7 @@ export default function Dashboard() {
             </button>
             <button
               onClick={signOut}
-              className="flex items-center gap-3 rounded px-2.5 py-2 text-sm hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
+              className="flex items-center gap-3 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
             >
               <SignOutIcon size={20} />
               Sign out

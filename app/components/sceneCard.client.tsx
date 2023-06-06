@@ -33,7 +33,7 @@ export default function SceneCard({ name, description, sceneId, lastUpdated }) {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden rounded border bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-slate-700/[.7]">
+    <div className="flex flex-col overflow-hidden rounded border border-gray-200 dark:border-gray-800 shadow-sm">
       <a className="flex" href={`/${name}`}>
         <img
           className="max-h-48 w-full object-cover hover:opacity-80"
@@ -44,14 +44,14 @@ export default function SceneCard({ name, description, sceneId, lastUpdated }) {
       <div className="flex min-h-[100px] flex-col p-4 md:p-3">
         <a
           href={`/${name}`}
-          className="overflow-hidden truncate text-sm font-semibold text-slate-800 hover:text-slate-700 dark:text-white"
+          className="overflow-hidden truncate text-sm font-semibold text-slate-800 hover:text-slate-700 dark:text-slate-50"
         >
           {name}
         </a>
-        <p className="mt-1 line-clamp-2 truncate text-xs text-gray-800 dark:text-gray-400">
+        <p className="mt-1 line-clamp-2 truncate text-xs text-slate-600 dark:text-slate-400">
           {description}
         </p>
-        <p className="mt-auto  text-xs text-gray-500 dark:text-gray-500">
+        <p className="mt-auto text-xs text-slate-600 dark:text-slate-400">
           {getLastUpdatedDate()}
         </p>
       </div>

@@ -114,7 +114,7 @@ export default function New() {
   return (
     <div className="w-ful flex h-full flex-col divide-x divide-gray-200 dark:divide-gray-800 xl:flex-row">
       <div className="flex w-full flex-col px-16 py-10 xl:w-7/12">
-        <h1 className="text-xl font-bold dark:text-slate-50">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-slate-50">
           Create a new scene
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
