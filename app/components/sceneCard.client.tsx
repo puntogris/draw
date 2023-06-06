@@ -74,10 +74,6 @@ function Dropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
   const handleOutsideClick = (event: MouseEvent) => {
     if (
       dropdownRef.current &&
@@ -89,17 +85,14 @@ function Dropdown() {
 
   useEffect(() => {
     document.addEventListener("click", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
+    return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
 
   return (
     <div className="relative mt-1" ref={dropdownRef}>
       <button
         type="button"
-        onClick={toggleDropdown}
+        onClick={() => setIsOpen(!isOpen)}
         className="rounded-full p-0.5 text-gray-900 hover:bg-slate-100 dark:text-slate-50 dark:hover:bg-gray-900"
       >
         <MoreIcon />
