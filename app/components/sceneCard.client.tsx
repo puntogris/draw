@@ -1,11 +1,17 @@
 import TrashIcon from "./icons/trashIcon";
 import ShareIcon from "./icons/shareIcon";
 import PencilIcon from "./icons/pencilIcon";
+import MoreIcon from "./icons/moreIcon";
 import { useEffect, useRef, useState } from "react";
 import { LocalData } from "~/utils/LocalData";
 import { SceneCardProps } from "~/utils/types";
 
-export default function SceneCard({ name, description, sceneId, lastUpdated }: SceneCardProps) {
+export default function SceneCard({
+  name,
+  description,
+  sceneId,
+  lastUpdated,
+}: SceneCardProps) {
   const [image, setImage] = useState<string>();
 
   useEffect(() => {
@@ -43,8 +49,8 @@ export default function SceneCard({ name, description, sceneId, lastUpdated }: S
           alt="Image Description"
         />
       </a>
-      <div className="flex min-h-[100px] flex-col p-4 md:p-3">
-        <div className="z-30 flex justify-between gap-3">
+      <div className="flex min-h-[100px] flex-col pb-3 pl-3 pr-1 pt-2">
+        <div className="flex items-center justify-between gap-3">
           <a
             href={`/${name}`}
             className="overflow-hidden truncate text-sm font-semibold text-slate-800 hover:text-slate-700 dark:text-slate-50"
@@ -66,14 +72,17 @@ export default function SceneCard({ name, description, sceneId, lastUpdated }: S
 
 function Dropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleOutsideClick = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
       setIsOpen(false);
     }
   };
@@ -87,30 +96,17 @@ function Dropdown() {
   }, []);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative mt-1" ref={dropdownRef}>
       <button
         type="button"
         onClick={toggleDropdown}
-        className="p-2 text-gray-900 hover:rounded-full hover:bg-black hover:bg-opacity-5 dark:text-slate-50"
+        className="rounded-full p-0.5 text-gray-900 hover:bg-slate-100 dark:text-slate-50 dark:hover:bg-gray-900"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="h-6 w-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
-          />
-        </svg>
+        <MoreIcon />
       </button>
 
       {isOpen && (
-        <div className="absolute z-40 mt-2 w-40 rounded-lg border border-gray-200 bg-white opacity-100 transition-opacity duration-1000 dark:border-gray-800 dark:bg-gray-950">
+        <div className="absolute mt-1 w-40 rounded-md border border-gray-200 bg-white opacity-100 transition-opacity duration-1000 dark:border-gray-800 dark:bg-gray-950">
           <div className="border-b border-gray-200 px-3 py-2 text-sm font-semibold text-gray-800 dark:border-gray-800 dark:text-gray-300">
             Actions
           </div>
