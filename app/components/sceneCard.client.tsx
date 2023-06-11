@@ -32,20 +32,22 @@ export default function SceneCard({
     const timeDifference = currentTime - lastUpdated;
     const minutes = Math.floor(timeDifference / 1000 / 60);
     const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
 
-    if (hours > 0) {
-      return `Last updated ${hours} hs ${remainingMinutes} min ago.`;
-    } else {
-      return `Last updated ${minutes} min ago.`;
+    switch (true) {
+      case hours >= 24:
+        const days = Math.floor(hours / 24);
+        const remainingHours = hours % 24;
+        return `Last updated ${days}d ${remainingHours}h ago.`;
+      case hours > 0:
+        const remainingMinutes = minutes % 60;
+        return `Last updated ${hours}h ${remainingMinutes}m ago.`;
+      default:
+        return `Last updated ${minutes}m ago.`;
     }
   }
 
   function onItemClicked(item: string) {
-    onSceneCardEvent({
-      item: item,
-      name: name,
-    });
+    onSceneCardEvent({ item, name });
   }
 
   return (
