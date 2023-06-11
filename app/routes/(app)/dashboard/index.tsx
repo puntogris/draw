@@ -1,12 +1,7 @@
 import { useOutletContext } from "@remix-run/react";
 import { Dispatch, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import {
-  DashboardOutletContext,
-  OutletContext,
-  Scene,
-  SceneCardEvent,
-} from "~/utils/types";
+import { DashboardOutletContext, Scene, SceneCardEvent } from "~/utils/types";
 import SceneCard from "~/components/sceneCard.client";
 import Spinner from "~/components/spinner";
 import EmptyContentIcon from "~/components/icons/emptyContentIcon";
@@ -24,6 +19,7 @@ export default function Index() {
   const [scenes, setScenes] = useState<Scene[]>([]);
   const [filteredScenes, setFilteredScenes] = useState<Scene[]>([]);
   const [searchInput, setSearchInput] = useState("");
+  const [showSceneDrawer, setShowSceneDrawer] = useState(false);
 
   useEffect(() => {
     async function fetchScenes() {
@@ -71,6 +67,7 @@ export default function Index() {
         copyLinkToClipboard(name);
         break;
       case "edit":
+        setShowSceneDrawer(true);
         break;
       case "delete":
         break;
@@ -87,6 +84,10 @@ export default function Index() {
 
   return (
     <div className="flex h-full flex-col px-16 py-10">
+      <EditDrawer
+        show={showSceneDrawer}
+        onClose={() => setShowSceneDrawer(false)}
+      />
       <h1 className="text-xl font-bold text-gray-900 dark:text-slate-50">
         Dashboard
       </h1>
@@ -119,6 +120,33 @@ export default function Index() {
     </div>
   );
 }
+
+const EditDrawer = ({
+  show,
+  onClose,
+}: {
+  show: boolean;
+  onClose: () => void;
+}) => {
+  return (
+    <>
+      {show && (
+        <div
+          className="fixed inset-0 z-30 bg-gray-950 bg-opacity-80 backdrop-blur-sm"
+          onClick={onClose}
+        ></div>
+      )}
+      <div
+        className={`fixed right-0 top-0 z-40 h-full w-[35vw] border-l border-gray-200 bg-gray-950 p-10 text-white duration-300 ease-in-out dark:border-gray-700 ${
+          show ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <h3 className="text-4xl font-semibold text-white">Edit scene</h3>
+        <button onClick={onClose}>close</button>
+      </div>
+    </>
+  );
+};
 
 function SearchInput({ inputChange }: { inputChange: Dispatch<string> }) {
   return (
