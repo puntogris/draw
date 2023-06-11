@@ -27,6 +27,12 @@ export type SceneCardProps = {
   description: string;
   sceneId: number;
   lastUpdated: number;
+  onSceneCardEvent: (event: SceneCardEvent) => void;
 };
+
+export type SceneCardEvent = {
+  item: string;
+  name: string;
+}
 
 export type SyncStatus = "synced" | "error" | "syncing";

@@ -1,7 +1,12 @@
 import { useOutletContext } from "@remix-run/react";
 import { Dispatch, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { DashboardOutletContext, OutletContext, Scene } from "~/utils/types";
+import {
+  DashboardOutletContext,
+  OutletContext,
+  Scene,
+  SceneCardEvent,
+} from "~/utils/types";
 import SceneCard from "~/components/sceneCard.client";
 import Spinner from "~/components/spinner";
 import EmptyContentIcon from "~/components/icons/emptyContentIcon";
@@ -60,9 +65,31 @@ export default function Index() {
     );
   }
 
+  function onSceneCardEvent({ item, name }: SceneCardEvent) {
+    switch (item) {
+      case "share":
+        copyLinkToClipboard(name);
+        break;
+      case "edit":
+        break;
+      case "delete":
+        break;
+    }
+  }
+
+  function copyLinkToClipboard(name: string) {
+    navigator.clipboard.writeText(`https://draw.puntogris.com/${name}`);
+    toast.success("Link copied to clipboard!", {
+      position: "bottom-center",
+      style: { marginLeft: "15rem" },
+    });
+  }
+
   return (
     <div className="flex h-full flex-col px-16 py-10">
-      <h1 className="text-xl font-bold dark:text-slate-50 text-gray-900">Dashboard</h1>
+      <h1 className="text-xl font-bold text-gray-900 dark:text-slate-50">
+        Dashboard
+      </h1>
       <p className="text-sm text-slate-600 dark:text-slate-400">
         These are your scenes and they will be automatically synced.
       </p>
@@ -83,6 +110,7 @@ export default function Index() {
                 description={scenes.description}
                 sceneId={scenes.id}
                 lastUpdated={scenes.updated_at || scenes.created_at}
+                onSceneCardEvent={onSceneCardEvent}
               />
             ))}
           </div>

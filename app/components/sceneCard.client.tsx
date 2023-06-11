@@ -12,6 +12,7 @@ export default function SceneCard({
   description,
   sceneId,
   lastUpdated,
+  onSceneCardEvent,
 }: SceneCardProps) {
   const [image, setImage] = useState<string>();
 
@@ -41,6 +42,13 @@ export default function SceneCard({
     }
   }
 
+  function onItemClicked(item: string) {
+    onSceneCardEvent({
+      item: item,
+      name: name,
+    });
+  }
+
   return (
     <div className="flex flex-col rounded border border-gray-200 dark:border-gray-800">
       <a className="flex" href={`/${name}`}>
@@ -58,7 +66,7 @@ export default function SceneCard({
           >
             {name}
           </a>
-          <Dropdown name={name} />
+          <Dropdown onItemClicked={onItemClicked} />
         </div>
         <p className="mt-1 line-clamp-2 truncate text-xs text-slate-600 dark:text-slate-400">
           {description}
@@ -71,7 +79,11 @@ export default function SceneCard({
   );
 }
 
-function Dropdown({ name }: { name: string }) {
+function Dropdown({
+  onItemClicked,
+}: {
+  onItemClicked: (item: string) => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -89,17 +101,8 @@ function Dropdown({ name }: { name: string }) {
     return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
 
-  function copyLinkToClipboard() {
-    navigator.clipboard.writeText(`https://draw.puntogris.com/${name}`);
-    toast.success("Link copied to clipboard!", {
-      position: "bottom-center",
-      style: { marginLeft: "15rem" },
-    });
-    setIsOpen(false);
-  }
-
   return (
-    <div className="relative mt-1 z-20" ref={dropdownRef}>
+    <div className="relative z-20 mt-1" ref={dropdownRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -115,15 +118,30 @@ function Dropdown({ name }: { name: string }) {
           </div>
           <div className="p-1">
             <button
-              onClick={copyLinkToClipboard}
+              onClick={() => {
+                setIsOpen(false);
+                onItemClicked("share");
+              }}
               className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
             >
               <ShareIcon size={16} /> Share link
             </button>
-            <button className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                onItemClicked("edit");
+              }}
+              className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+            >
               <PencilIcon size={16} /> Edit
             </button>
-            <button className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                onItemClicked("delete");
+              }}
+              className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+            >
               <TrashIcon size={16} /> Delete
             </button>
           </div>
