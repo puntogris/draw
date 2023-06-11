@@ -6,6 +6,7 @@ import SceneCard from "~/components/sceneCard.client";
 import Spinner from "~/components/spinner";
 import EmptyContentIcon from "~/components/icons/emptyContentIcon";
 import SearchIcon from "~/components/icons/searchIcon";
+import EditDrawer from "~/components/editDrawer";
 
 export const meta = () => ({
   charset: "utf-8",
@@ -20,6 +21,7 @@ export default function Index() {
   const [filteredScenes, setFilteredScenes] = useState<Scene[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [showSceneDrawer, setShowSceneDrawer] = useState(false);
+  const [selectedScene, setSelectedScene] = useState<Scene | null>(null);
 
   useEffect(() => {
     async function fetchScenes() {
@@ -67,6 +69,10 @@ export default function Index() {
         copyLinkToClipboard(name);
         break;
       case "edit":
+        const selected = scenes.find((s) => s.name == name);
+        if (selected) {
+          setSelectedScene(selected);
+        }
         setShowSceneDrawer(true);
         break;
       case "delete":
@@ -82,11 +88,27 @@ export default function Index() {
     });
   }
 
+  function onCloseDrawer(scene: Scene | null) {
+    setSelectedScene(null);
+    setShowSceneDrawer(false);
+    if (scene) {
+      const index = scenes.findIndex((s)=> s.id == scene.id)
+      if (index != -1) {
+        scenes[index] = scene
+        const sorted = sortScenesByDate(scenes);
+        setScenes(sorted);
+        setFilteredScenes(sorted);
+        setSearchInput(searchInput)
+      }
+    }
+  }
+
   return (
     <div className="flex h-full flex-col px-16 py-10">
       <EditDrawer
         show={showSceneDrawer}
-        onClose={() => setShowSceneDrawer(false)}
+        onClose={onCloseDrawer}
+        scene={selectedScene}
       />
       <h1 className="text-xl font-bold text-gray-900 dark:text-slate-50">
         Dashboard
@@ -120,33 +142,6 @@ export default function Index() {
     </div>
   );
 }
-
-const EditDrawer = ({
-  show,
-  onClose,
-}: {
-  show: boolean;
-  onClose: () => void;
-}) => {
-  return (
-    <>
-      {show && (
-        <div
-          className="fixed inset-0 z-30 bg-gray-950 bg-opacity-80 backdrop-blur-sm"
-          onClick={onClose}
-        ></div>
-      )}
-      <div
-        className={`fixed right-0 top-0 z-40 h-full w-[35vw] border-l border-gray-200 bg-gray-950 p-10 text-white duration-300 ease-in-out dark:border-gray-700 ${
-          show ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <h3 className="text-4xl font-semibold text-white">Edit scene</h3>
-        <button onClick={onClose}>close</button>
-      </div>
-    </>
-  );
-};
 
 function SearchInput({ inputChange }: { inputChange: Dispatch<string> }) {
   return (

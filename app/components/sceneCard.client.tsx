@@ -5,7 +5,6 @@ import MoreIcon from "./icons/moreIcon";
 import { useEffect, useRef, useState } from "react";
 import { LocalData } from "~/utils/LocalData";
 import { SceneCardProps } from "~/utils/types";
-import { toast } from "react-hot-toast";
 
 export default function SceneCard({
   name,

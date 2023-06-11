@@ -14,7 +14,7 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import { createBrowserClient } from "@supabase/auth-helpers-remix";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import stylesheet from "~/tailwind.css";
 import ErrorView from "./components/errorView";
@@ -51,11 +51,6 @@ function App() {
     createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
   );
   const [theme] = useTheme();
-  useEffect(() => {
-    if (!localStorage.getItem("draw_local_uuid")) {
-      localStorage.setItem("draw_local_uuid", crypto.randomUUID());
-    }
-  }, []);
 
   return (
     <html lang="en" data-theme={theme ?? ""}>
@@ -78,7 +73,7 @@ function App() {
 export default function AppWithProviders() {
   const data = useLoaderData();
   return (
-    <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
+    <ThemeProvider specifiedTheme={data.theme} themeAction="/api/set-theme">
       <App />
     </ThemeProvider>
   );

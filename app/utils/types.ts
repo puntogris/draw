@@ -13,6 +13,7 @@ export type Scene = {
   description: string;
   updated_at: number | null;
   created_at: number;
+  published: boolean
 };
 
 export type DrawProps = {
@@ -34,5 +35,11 @@ export type SceneCardEvent = {
   item: string;
   name: string;
 }
+
+export type EditDrawerProps = {
+  show: boolean;
+  scene: Scene | null;
+  onClose: (scene: Scene | null) => void;
+};
 
 export type SyncStatus = "synced" | "error" | "syncing";

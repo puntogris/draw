@@ -99,7 +99,7 @@ export default function New() {
   }
 
   async function generateRandomName() {
-    const response = await fetch("/dashboard/generator");
+    const response = await fetch("/api/scene/generate-name");
     if (response.ok) {
       setName(await response.json());
     } else {
@@ -155,9 +155,8 @@ export default function New() {
             <button
               onClick={generateRandomName}
               type="button"
-              className="flex items-center gap-2 rounded-md border border-transparent bg-gray-950 px-3 text-sm text-slate-50 hover:bg-gray-800 dark:bg-slate-50 dark:text-gray-950 hover:dark:bg-slate-200"
+              className="flex items-center gap-2 rounded-md border border-transparent bg-gray-950 px-3 text-sm font-medium text-slate-50 hover:bg-gray-800 dark:bg-slate-50 dark:text-gray-950 hover:dark:bg-slate-200"
             >
-              Random
               <ShuffleIcon size={18} style="dark:text-gray-950 text-slate-50" />
             </button>
           </div>
@@ -188,7 +187,7 @@ export default function New() {
                 Visibility
               </label>
               <label className="text-sm text-slate-600 dark:text-slate-400">
-                This will make public this ID, it can be changed later.
+                This will make the ID public, it can be changed later.
               </label>
             </div>
             <input
@@ -221,10 +220,6 @@ export default function New() {
             All scenes are
             <span className="font-semibold"> private by default</span> and only
             you can access them.
-          </li>
-          <li>
-            By the time being, you can't change the name once it's created.
-            <span className="font-semibold"> (coming soon ™)</span>
           </li>
           <li>
             Your scene will be saved locally and in the cloud. It will sync
