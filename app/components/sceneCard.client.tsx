@@ -5,6 +5,7 @@ import MoreIcon from "./icons/moreIcon";
 import { useEffect, useRef, useState } from "react";
 import { LocalData } from "~/utils/LocalData";
 import { SceneCardProps } from "~/utils/types";
+import { toast } from "react-hot-toast";
 
 export default function SceneCard({
   name,
@@ -57,7 +58,7 @@ export default function SceneCard({
           >
             {name}
           </a>
-          <Dropdown />
+          <Dropdown name={name} />
         </div>
         <p className="mt-1 line-clamp-2 truncate text-xs text-slate-600 dark:text-slate-400">
           {description}
@@ -70,7 +71,7 @@ export default function SceneCard({
   );
 }
 
-function Dropdown() {
+function Dropdown({ name }: { name: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -88,6 +89,15 @@ function Dropdown() {
     return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
 
+  function copyLinkToClipboard() {
+    navigator.clipboard.writeText(`https://draw.puntogris.com/${name}`);
+    toast.success("Link copied to clipboard!", {
+      position: "bottom-center",
+      style: { marginLeft: "15rem" },
+    });
+    setIsOpen(false);
+  }
+
   return (
     <div className="relative mt-1" ref={dropdownRef}>
       <button
@@ -104,8 +114,11 @@ function Dropdown() {
             Actions
           </div>
           <div className="p-1">
-            <button className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300">
-              <ShareIcon size={16} /> Share
+            <button
+              onClick={copyLinkToClipboard}
+              className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+            >
+              <ShareIcon size={16} /> Share link
             </button>
             <button className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300">
               <PencilIcon size={16} /> Edit
