@@ -99,7 +99,7 @@ function Dropdown({ name }: { name: string }) {
   }
 
   return (
-    <div className="relative mt-1" ref={dropdownRef}>
+    <div className="relative mt-1 z-20" ref={dropdownRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
