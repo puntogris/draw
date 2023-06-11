@@ -85,16 +85,16 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
     <>
       {show && (
         <div
-          className="fixed inset-0 z-30 bg-gray-950 bg-opacity-80 backdrop-blur-sm"
+          className="fixed inset-0 z-30 bg-white dark:bg-gray-950 bg-opacity-50 dark:bg-opacity-80 backdrop-blur-sm"
           onClick={() => onClose(null)}
         ></div>
       )}
       <div
-        className={`fixed right-0 top-0 z-40 h-full w-[35vw] border-l border-gray-200 bg-gray-950 p-10 text-white duration-300 ease-in-out dark:border-gray-700 ${
+        className={`fixed right-0 top-0 z-40 h-full w-[35vw] border-l bg-white border-gray-200 dark:bg-gray-950 p-10 text-white duration-300 ease-in-out dark:border-gray-700 ${
           show ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <h3 className="text-xl font-semibold text-white">Edit scene</h3>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-slate-50">Edit scene</h3>
         <h2 className="text-sm text-slate-600 dark:text-slate-400">
           Make changes to your scene here. Click save when you're done.
         </h2>
@@ -108,7 +108,7 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
               name="name"
               value={name}
               onChange={(e) => validateAndSetName(e.target.value)}
-              className="block w-full bg-transparent px-4 py-3 text-sm outline-none"
+              className="block w-full bg-transparent px-4 py-3 text-sm outline-none text-gray-900"
             />
             {name.length > 0 && (
               <button
@@ -137,7 +137,7 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="block w-full bg-transparent px-4 py-3 text-sm outline-none dark:text-slate-50"
+            className="block w-full bg-transparent px-4 py-3 text-sm outline-none dark:text-slate-50 text-gray-900"
           />
           {description.length > 0 && (
             <button
