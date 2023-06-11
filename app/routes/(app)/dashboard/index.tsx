@@ -7,6 +7,7 @@ import Spinner from "~/components/spinner";
 import EmptyContentIcon from "~/components/icons/emptyContentIcon";
 import SearchIcon from "~/components/icons/searchIcon";
 import EditDrawer from "~/components/editDrawer";
+import DeleteSceneDialog from "~/components/deleteDialog";
 
 export const meta = () => ({
   charset: "utf-8",
@@ -21,7 +22,7 @@ export default function Index() {
   const [filteredScenes, setFilteredScenes] = useState<Scene[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [showSceneDrawer, setShowSceneDrawer] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(true);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedScene, setSelectedScene] = useState<Scene | null>(null);
 
   useEffect(() => {
@@ -105,12 +106,44 @@ export default function Index() {
     }
   }
 
+  async function onDeleteConfirmation(confirmed: boolean) {
+    setShowDeleteDialog(false);
+
+    if (!confirmed) {
+      return;
+    }
+    const loadingToast = toast.loading("Deleting scene.", {
+      position: "bottom-center",
+    });
+
+    const response = await fetch("/api/scene/delete", {
+      method: "delete",
+      body: JSON.stringify({ id: selectedScene?.id }),
+    });
+
+    toast.dismiss(loadingToast);
+
+    const data = await response.json();
+
+    if (response.ok) {
+      toast.success("Scene deleted.", { position: "bottom-center" });
+
+      const sorted = sortScenesByDate(
+        scenes.filter((s) => s.id != selectedScene?.id)
+      );
+      setScenes(sorted);
+      setFilteredScenes(sorted);
+    } else if (data.error) {
+      toast.error(data.error, { position: "bottom-center" });
+    }
+  }
+
   return (
     <div className="flex h-full flex-col px-16 py-10">
       <DeleteSceneDialog
+        name={selectedScene?.name}
         isOpen={showDeleteDialog}
-        onClose={() => setShowDeleteDialog(false)}
-        scene={selectedScene}
+        onClose={onDeleteConfirmation}
       />
       <EditDrawer
         show={showSceneDrawer}
@@ -149,47 +182,6 @@ export default function Index() {
     </div>
   );
 }
-
-const DeleteSceneDialog = ({ isOpen, onClose, scene }) => {
-  useEffect(() => {
-    if (!scene) {
-      onClose(null);
-    }
-  }, [scene]);
-
-  return (
-    <>
-      {isOpen && (
-        <div
-          className="fixed left-0 top-0 z-40 flex h-full w-full items-center justify-center bg-white bg-opacity-50 backdrop-blur-sm dark:bg-gray-950 dark:bg-opacity-80"
-          onClick={onClose}
-        >
-          <div
-            className="max-w-xl rounded-lg border border-gray-200 bg-white p-8 dark:border-gray-800 dark:bg-gray-950"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-slate-50">
-              Delete scene
-            </h2>
-            <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
-              Careful! You are about to delete the scene{" "}
-              <span className="font-bold text-blue-500 dark:text-blue-400">
-                {scene?.name ?? ""}.
-              </span>{" "}
-               This action is irreversible.
-            </p>
-            <button
-              className="ml-auto flex rounded-lg bg-gray-950 p-2 px-3 text-sm font-medium text-slate-50 hover:bg-gray-800 dark:bg-slate-50 dark:text-gray-950 dark:hover:bg-slate-200"
-              onClick={onClose}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
 
 function SearchInput({ inputChange }: { inputChange: Dispatch<string> }) {
   return (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { EditDrawerProps } from "~/utils/types";
+import { Scene } from "~/utils/types";
 import CrossIcon from "./icons/crossIcon";
 import ShuffleIcon from "./icons/shuffleIcon";
 
@@ -9,6 +9,12 @@ export const meta = () => ({
   title: "draw - new scene",
   viewport: "width=device-width,initial-scale=1",
 });
+
+export type EditDrawerProps = {
+  show: boolean;
+  scene: Scene | null;
+  onClose: (scene: Scene | null) => void;
+};
 
 export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
   const [name, setName] = useState("");

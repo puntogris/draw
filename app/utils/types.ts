@@ -36,10 +36,4 @@ export type SceneCardEvent = {
   name: string;
 }
 
-export type EditDrawerProps = {
-  show: boolean;
-  scene: Scene | null;
-  onClose: (scene: Scene | null) => void;
-};
-
 export type SyncStatus = "synced" | "error" | "syncing";
