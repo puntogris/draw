@@ -29,7 +29,7 @@ export default function Index() {
     async function fetchScenes() {
       const { data, error } = await supabase
         .from("scenes")
-        .select()
+        .select("id,uid,name,description,updated_at,created_at,published")
         .eq("uid", user.id)
         .order("created_at", { ascending: false });
 

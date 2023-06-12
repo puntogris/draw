@@ -32,7 +32,7 @@ export const action: ActionFunction = async ({ request }) => {
       })
       .eq("id", id)
       .eq("uid", userData.user.id)
-      .select();
+      .select("id,uid,name,description,updated_at,created_at,published");
 
     if (!updateError && updateData[0]) {
       return json({ scene: updateData[0] });

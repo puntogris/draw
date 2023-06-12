@@ -23,7 +23,7 @@ export const action: ActionFunction = async ({ request }) => {
       .delete()
       .eq("id", id)
       .eq("uid", userData.user.id)
-      .select();
+      .select("id,uid,name,description,updated_at,created_at,published");
 
     if (!updateError && deleteData[0]) {
       return deleteData[0];
