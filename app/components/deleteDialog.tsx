@@ -27,11 +27,13 @@ function DeleteSceneDialog({ isOpen, name, onClose }: DeleteDialogProps) {
             <h2 className="mb-1 text-lg font-semibold text-gray-900 dark:text-slate-50">
               Delete scene
             </h2>
-            <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
+            <p className="mb-1 text-sm text-slate-600 dark:text-slate-400">
               Careful! You are about to delete the scene{" "}
               <span className="font-bold text-blue-500 dark:text-blue-400">
                 {name ?? ""}.
-              </span>{" "}
+              </span>
+            </p>
+            <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
               This action is irreversible.
             </p>
             <button

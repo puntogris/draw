@@ -13,7 +13,13 @@ export const meta = () => ({
 export type EditDrawerProps = {
   show: boolean;
   scene: Scene | null;
-  onClose: (scene: Scene | null) => void;
+  onClose: (scene: EditDrawerCloseProps | null) => void;
+};
+
+export type EditDrawerCloseProps = {
+  newName: string;
+  newDescription: string;
+  newPublished: boolean;
 };
 
 export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
@@ -51,56 +57,35 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
     } else {
       toast.error("An error ocurred.", {
         position: "bottom-center",
-        id: "create_loading",
         style: { marginLeft: "15rem" },
       });
     }
   }
 
-  //TODO this could be done from the parent and use optimistic UI
   async function onSaveChanges() {
-    const loadingToast = toast.loading("Updating scene info.", {
-      position: "bottom-center",
+    onClose({
+      newName: name,
+      newDescription: description,
+      newPublished: published,
     });
-    const response = await fetch("/api/scene/update", {
-      method: "post",
-      body: JSON.stringify({
-        name,
-        description,
-        published,
-        id: scene?.id,
-      }),
-    });
-
-    toast.dismiss(loadingToast);
-
-    const res = await response.json();
-    if (response.ok && !res.error) {
-      toast.success("Updated correctly.", {
-        position: "bottom-center",
-      });
-      onClose(await response.json());
-    } else {
-      toast.error(res.error, {
-        position: "bottom-center",
-      });
-    }
   }
 
   return (
     <>
       {show && (
         <div
-          className="fixed inset-0 z-30 bg-white dark:bg-gray-950 bg-opacity-50 dark:bg-opacity-80 backdrop-blur-sm"
+          className="fixed inset-0 z-30 bg-white bg-opacity-50 backdrop-blur-sm dark:bg-gray-950 dark:bg-opacity-80"
           onClick={() => onClose(null)}
         ></div>
       )}
       <div
-        className={`fixed right-0 top-0 z-40 h-full w-[35vw] border-l bg-white border-gray-200 dark:bg-gray-950 p-10 text-white duration-300 ease-in-out dark:border-gray-700 ${
+        className={`fixed right-0 top-0 z-40 h-full w-[35vw] border-l border-gray-200 bg-white p-10 text-white duration-300 ease-in-out dark:border-gray-700 dark:bg-gray-950 ${
           show ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-slate-50">Edit scene</h3>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-slate-50">
+          Edit scene
+        </h3>
         <h2 className="text-sm text-slate-600 dark:text-slate-400">
           Make changes to your scene here. Click save when you're done.
         </h2>
@@ -114,7 +99,7 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
               name="name"
               value={name}
               onChange={(e) => validateAndSetName(e.target.value)}
-              className="block w-full bg-transparent px-4 py-3 text-sm outline-none text-gray-900"
+              className="block w-full bg-transparent px-4 py-3 text-sm text-gray-900 outline-none dark:text-slate-50"
             />
             {name.length > 0 && (
               <button
@@ -143,7 +128,7 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="block w-full bg-transparent px-4 py-3 text-sm outline-none dark:text-slate-50 text-gray-900"
+            className="block w-full bg-transparent px-4 py-3 text-sm text-gray-900 outline-none dark:text-slate-50"
           />
           {description.length > 0 && (
             <button

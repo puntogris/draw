@@ -6,7 +6,7 @@ import SceneCard from "~/components/sceneCard.client";
 import Spinner from "~/components/spinner";
 import EmptyContentIcon from "~/components/icons/emptyContentIcon";
 import SearchIcon from "~/components/icons/searchIcon";
-import EditDrawer from "~/components/editDrawer";
+import EditDrawer, { EditDrawerCloseProps } from "~/components/editDrawer";
 import DeleteSceneDialog from "~/components/deleteDialog";
 
 export const meta = () => ({
@@ -91,25 +91,57 @@ export default function Index() {
     });
   }
 
-  function onCloseDrawer(scene: Scene | null) {
-    setSelectedScene(null);
+  async function onCloseEditDrawer(props: EditDrawerCloseProps | null) {
     setShowSceneDrawer(false);
-    if (scene) {
-      const index = scenes.findIndex((s) => s.id == scene.id);
-      if (index != -1) {
-        scenes[index] = scene;
-        const sorted = sortScenesByDate(scenes);
-        setScenes(sorted);
-        setFilteredScenes(sorted);
-        setSearchInput(searchInput);
-      }
+
+    if (!props || !selectedScene) {
+      setSelectedScene(null);
+      return;
     }
+
+    const loadingToast = toast.loading("Updating scene info.", {
+      position: "bottom-center",
+    });
+
+    const response = await fetch("/api/scene/update", {
+      method: "post",
+      body: JSON.stringify({
+        id: selectedScene.id,
+        name: props.newName,
+        description: props.newDescription,
+        published: props.newPublished,
+      }),
+    });
+
+    toast.dismiss(loadingToast);
+
+    const res = await response.json();
+
+    if (response.ok && !res.error) {
+      toast.success("Updated correctly.", { position: "bottom-center" });
+
+      const scene = res.scene;
+      if (scene) {
+        const index = scenes.findIndex((s) => s.id == scene.id);
+        if (index != -1) {
+          scenes[index] = scene;
+          const sorted = sortScenesByDate(scenes);
+          setScenes(sorted);
+          setFilteredScenes(sorted);
+          setSearchInput(searchInput);
+        }
+      }
+    } else {
+      toast.error(res.error, { position: "bottom-center" });
+    }
+    setSelectedScene(null);
   }
 
-  async function onDeleteConfirmation(confirmed: boolean) {
+  async function onCloseDeleteDialog(confirmed: boolean) {
     setShowDeleteDialog(false);
 
-    if (!confirmed) {
+    if (!confirmed || !selectedScene) {
+      setSelectedScene(null);
       return;
     }
     const loadingToast = toast.loading("Deleting scene.", {
@@ -118,7 +150,7 @@ export default function Index() {
 
     const response = await fetch("/api/scene/delete", {
       method: "delete",
-      body: JSON.stringify({ id: selectedScene?.id }),
+      body: JSON.stringify({ id: selectedScene.id }),
     });
 
     toast.dismiss(loadingToast);
@@ -136,6 +168,7 @@ export default function Index() {
     } else if (data.error) {
       toast.error(data.error, { position: "bottom-center" });
     }
+    setSelectedScene(null);
   }
 
   return (
@@ -143,11 +176,11 @@ export default function Index() {
       <DeleteSceneDialog
         name={selectedScene?.name}
         isOpen={showDeleteDialog}
-        onClose={onDeleteConfirmation}
+        onClose={onCloseDeleteDialog}
       />
       <EditDrawer
         show={showSceneDrawer}
-        onClose={onCloseDrawer}
+        onClose={onCloseEditDrawer}
         scene={selectedScene}
       />
       <h1 className="text-xl font-bold text-gray-900 dark:text-slate-50">

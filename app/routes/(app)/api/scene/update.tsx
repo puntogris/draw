@@ -1,4 +1,4 @@
-import { ActionFunction } from "@remix-run/node";
+import { ActionFunction, json } from "@remix-run/node";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 
 export const action: ActionFunction = async ({ request }) => {
@@ -35,18 +35,18 @@ export const action: ActionFunction = async ({ request }) => {
       .select();
 
     if (!updateError && updateData[0]) {
-      return updateData[0];
+      return json({ scene: updateData[0] });
     } else if (!updateError) {
-      return {};
+      return json({});
     }
 
     if (updateError.code == "23505") {
       return { error: "There is already a scene with this ID." };
     }
 
-    return { error: updateError.message };
+    return json({ error: updateError.message });
   } catch (e) {
     console.error(e);
-    return { error: "Internal error." };
+    return json({ error: "Internal error." });
   }
 };

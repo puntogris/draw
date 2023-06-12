@@ -12,13 +12,11 @@ export const action: ActionFunction = async ({ request }) => {
       process.env.SUPABASE_ANON_KEY!,
       { request, response }
     );
-        console.log("1")
     const { error: userError, data: userData } = await supabase.auth.getUser();
 
     if (userError) {
       return { error: userError.message };
     }
-    console.log("2")
 
     const { error: updateError, data: deleteData } = await supabase
       .from("scenes")
@@ -27,7 +25,6 @@ export const action: ActionFunction = async ({ request }) => {
       .eq("uid", userData.user.id)
       .select();
 
-      console.log("asd")
     if (!updateError && deleteData[0]) {
       return deleteData[0];
     } else if (!updateError) {
