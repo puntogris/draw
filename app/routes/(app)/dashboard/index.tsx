@@ -37,7 +37,7 @@ export default function Index() {
         setIsLoadingState(false);
         toast.error("An error ocurred calling the server.", {
           id: "fetch_error",
-          position: "bottom-center",
+          position: "top-right",
         });
       } else {
         const sorted = sortScenesByDate(data as Scene[]);
@@ -85,10 +85,7 @@ export default function Index() {
 
   function copyLinkToClipboard(name: string) {
     navigator.clipboard.writeText(`https://draw.puntogris.com/${name}`);
-    toast.success("Link copied to clipboard!", {
-      position: "bottom-center",
-      style: { marginLeft: "15rem" },
-    });
+    toast.success("Link copied to clipboard!", { position: "top-right" });
   }
 
   async function onCloseEditDrawer(props: EditDrawerCloseProps | null) {
@@ -100,7 +97,7 @@ export default function Index() {
     }
 
     const loadingToast = toast.loading("Updating scene info.", {
-      position: "bottom-center",
+      position: "top-right",
     });
 
     const response = await fetch("/api/scene/update", {
@@ -118,7 +115,7 @@ export default function Index() {
     const res = await response.json();
 
     if (response.ok && !res.error) {
-      toast.success("Updated correctly.", { position: "bottom-center" });
+      toast.success("Updated correctly.", { position: "top-right" });
 
       const scene = res.scene;
       if (scene) {
@@ -132,7 +129,7 @@ export default function Index() {
         }
       }
     } else {
-      toast.error(res.error, { position: "bottom-center" });
+      toast.error(res.error, { position: "top-right" });
     }
     setSelectedScene(null);
   }
@@ -145,7 +142,7 @@ export default function Index() {
       return;
     }
     const loadingToast = toast.loading("Deleting scene.", {
-      position: "bottom-center",
+      position: "top-right",
     });
 
     const response = await fetch("/api/scene/delete", {
@@ -158,7 +155,7 @@ export default function Index() {
     const data = await response.json();
 
     if (response.ok) {
-      toast.success("Scene deleted.", { position: "bottom-center" });
+      toast.success("Scene deleted.", { position: "top-right" });
 
       const sorted = sortScenesByDate(
         scenes.filter((s) => s.id != selectedScene?.id)
@@ -166,7 +163,7 @@ export default function Index() {
       setScenes(sorted);
       setFilteredScenes(sorted);
     } else if (data.error) {
-      toast.error(data.error, { position: "bottom-center" });
+      toast.error(data.error, { position: "top-right" });
     }
     setSelectedScene(null);
   }

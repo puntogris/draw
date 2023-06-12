@@ -64,19 +64,15 @@ export default function New() {
 
   useEffect(() => {
     if (actionData?.error) {
-      toast.error(actionData.error, {
-        position: "bottom-center",
-        style: { marginLeft: "15rem" },
-      });
+      toast.error(actionData.error, { position: "top-right" });
     }
   }, [actionData]);
 
   useEffect(() => {
     if (isLoading) {
       toast.loading("Creating new scene", {
-        position: "bottom-center",
+        position: "top-right",
         id: "create_loading",
-        style: { marginLeft: "15rem" },
       });
     } else {
       toast.dismiss("create_loading");
@@ -103,11 +99,7 @@ export default function New() {
     if (response.ok) {
       setName(await response.json());
     } else {
-      toast.error("An error ocurred.", {
-        position: "bottom-center",
-        id: "create_loading",
-        style: { marginLeft: "15rem" },
-      });
+      toast.error("Failed generating a name.", { position: "top-right" });
     }
   }
 
