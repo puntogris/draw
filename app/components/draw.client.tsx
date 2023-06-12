@@ -64,85 +64,89 @@ export default function Draw({
     files: scene.files,
   });
 
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>("synced");
-
-  useEffect(() => {
-    const fetchFiles = async () => {
-      if (!sceneDataRef.current.elements) {
-        return;
-      }
-      const neededFilesId: FileId[] = [];
-
-      sceneDataRef.current.elements
-        .filter((e) => !e.isDeleted)
-        .forEach((e) => {
-          if (
-            e.type == "image" &&
-            e.fileId !== null &&
-            !neededFilesId.includes(e.fileId)
-          ) {
-            neededFilesId.push(e.fileId);
-          }
-        });
-
-      const localFiles = await LocalData.getFiles(neededFilesId);
-
-      const sceneFiles: BinaryFiles = {};
-
-      localFiles.forEach((f) => {
-        sceneFiles[f.id] = f;
-      });
-
-      const retrievedIds = localFiles.map((file) => file && file.id);
-
-      const missingIds = neededFilesId.filter(
-        (id) => !retrievedIds.includes(id)
-      );
-
-      for (const idIndex in missingIds) {
-        const id = missingIds[idIndex];
-
-        const { data, error } = await supabase.storage
-          .from("scenes")
-          .download(`${scene.uid}/${scene.name}/${id}`);
-
-        if (error) {
-          // show a notification and add a feature to try to sync from the menu
-        } else {
-          const file = {
-            mimeType: data.type,
-            id: id,
-            dataURL: await getDataURLFromBlob(data),
-            created: new Date().getTime(),
-            lastRetrieved: new Date().getTime(),
-          } as BinaryFileData;
-
-          sceneFiles[id] = file;
-          await LocalData.saveFile(file);
-        }
-      }
-
-      sceneDataRef.current.files = sceneFiles;
-      initialStatePromiseRef.current.promise.resolve(sceneDataRef.current);
-    };
-    fetchFiles();
-  }, []);
-
   const [theme, setTheme] = useState<Theme>(
-    () => localStorage.getItem("LOCAL_STORAGE_THEME") || THEME.LIGHT
+    () => localStorage.getItem("draw_theme") || THEME.LIGHT
   );
 
   const [langCode, setLangCode] = useState<string>(
-    () => localStorage.getItem("LOCAL_STORAGE_LANG_CODE") || "EN"
+    () => localStorage.getItem("draw_lang_code") || "EN"
   );
 
   useEffect(() => {
-    localStorage.setItem("LOCAL_STORAGE_THEME", theme);
+    localStorage.setItem("draw_theme", theme);
   }, [theme]);
 
   useEffect(() => {
-    localStorage.setItem("LOCAL_STORAGE_LANG_CODE", langCode);
+    localStorage.setItem("draw_lang_code", langCode);
   }, [langCode]);
+
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>("synced");
+
+  useEffect(() => {
+    const initScene = async () => {
+      const elements = sceneDataRef.current.elements;
+      if (elements && elements.length > 0) {
+        await syncFiles(elements);
+      }
+      initialStatePromiseRef.current.promise.resolve(sceneDataRef.current);
+    };
+    initScene();
+  }, []);
+
+  async function syncFiles(elements: readonly ExcalidrawElement[]) {
+    if (!sceneDataRef.current.elements) {
+      return;
+    }
+    const neededFilesId: FileId[] = [];
+
+    elements
+      .filter((e) => !e.isDeleted)
+      .forEach((e) => {
+        if (
+          e.type == "image" &&
+          e.fileId !== null &&
+          !neededFilesId.includes(e.fileId)
+        ) {
+          neededFilesId.push(e.fileId);
+        }
+      });
+
+    const localFiles = await LocalData.getFiles(neededFilesId);
+
+    const sceneFiles: BinaryFiles = {};
+
+    localFiles.forEach((f) => {
+      sceneFiles[f.id] = f;
+    });
+
+    const retrievedIds = localFiles.map((file) => file && file.id);
+
+    const missingIds = neededFilesId.filter((id) => !retrievedIds.includes(id));
+
+    for (const idIndex in missingIds) {
+      const id = missingIds[idIndex];
+
+      const { data, error } = await supabase.storage
+        .from("scenes")
+        .download(`${scene.uid}/${scene.name}/${id}`);
+
+      if (error) {
+        // show a notification and add a feature to try to sync from the menu
+      } else {
+        const file = {
+          mimeType: data.type,
+          id: id,
+          dataURL: await getDataURLFromBlob(data),
+          created: new Date().getTime(),
+          lastRetrieved: new Date().getTime(),
+        } as BinaryFileData;
+
+        sceneFiles[id] = file;
+        await LocalData.saveFile(file);
+      }
+    }
+    sceneDataRef.current.files = sceneFiles;
+  }
 
   async function saveSceneServer() {
     setSyncStatus("syncing");
@@ -166,7 +170,6 @@ export default function Draw({
 
   async function saveScene() {
     const { error } = await saveSceneServer();
-
     const elements = sceneDataRef.current.elements;
 
     if (elements) {
@@ -206,7 +209,7 @@ export default function Draw({
     return () => toast.dismiss(toastId);
   }, []);
 
-  async function syncFiles(
+  async function uploadSceneFiles(
     sceneFiles: BinaryFiles,
     elements: ExcalidrawElement[]
   ) {
@@ -241,7 +244,7 @@ export default function Draw({
       files: BinaryFiles
     ) => {
       const notDeletedElemets = elements.filter((e) => !e.isDeleted);
-      await syncFiles(files, notDeletedElemets);
+      await uploadSceneFiles(files, notDeletedElemets);
 
       const data = {
         elements: notDeletedElemets,
