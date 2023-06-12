@@ -6,7 +6,7 @@ import {
 } from "@excalidraw/excalidraw/types/types";
 import { createStore, getMany, setMany, set, get } from "idb-keyval";
 import { blobToBase64Async, compress, decompress } from "./compression";
-import { exportToBlob } from "@excalidraw/excalidraw";
+import { exportToBlob, exportToCanvas } from "@excalidraw/excalidraw";
 import { debounce } from "lodash";
 
 const filesStore = createStore("draw-db", "draw_files_store");
@@ -62,9 +62,21 @@ export class LocalData {
     return (await getMany<BinaryFileData>(ids, filesStore)).filter((f) => f);
   }
 
-  static async savePreview(elements: readonly ExcalidrawElement[], id: string) {
-    // @ts-ignore
-    const blob = await exportToBlob({ elements: elements, exportPadding: 40 });
+  static async savePreview(
+    elements: readonly ExcalidrawElement[],
+    files: BinaryFiles | null,
+    id: string,
+    isDarkThemeOn: boolean
+  ) {
+    const blob = await exportToBlob({
+      elements: elements,
+      exportPadding: 100,
+      files: files,
+      mimeType: "image/webp",
+      appState: {
+        exportWithDarkMode: isDarkThemeOn
+      }
+    });
     const preview = await blobToBase64Async(blob);
     await set(id, compress(preview), previewsStore);
   }

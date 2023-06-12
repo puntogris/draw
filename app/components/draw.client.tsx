@@ -170,10 +170,15 @@ export default function Draw({
 
   async function saveScene() {
     const { error } = await saveSceneServer();
-    const elements = sceneDataRef.current.elements;
+    const { elements, files, appState } = sceneDataRef.current;
 
     if (elements) {
-      LocalData.savePreview(elements, scene.id.toString());
+      LocalData.savePreview(
+        elements,
+        files || null,
+        scene.id.toString(),
+        appState?.theme == THEME.DARK
+      );
     }
 
     if (error) {

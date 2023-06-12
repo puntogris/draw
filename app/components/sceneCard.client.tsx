@@ -21,6 +21,7 @@ export default function SceneCard({
       if (preview) {
         setImage("data:image/png;base64," + preview);
       } else {
+        setImage("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NIKFn4HwAFIgJ12Vld0wAAAABJRU5ErkJggg==");
         // create preview
       }
     }
@@ -51,11 +52,11 @@ export default function SceneCard({
   }
 
   return (
-    <div className="flex flex-col rounded border border-gray-200 dark:border-gray-800">
+    <div className="flex flex-col rounded-sm border border-gray-200 dark:border-gray-800">
       <a className="flex" href={`/${name}`}>
         <img
-          className="max-h-48 w-full rounded-t object-cover hover:opacity-80"
-          src="https://placehold.co/600"
+          className="h-48 w-full rounded-t-sm object-cover hover:opacity-80 opacity-90"
+          src={image}
           alt="Image Description"
         />
       </a>
