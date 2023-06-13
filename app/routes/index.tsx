@@ -50,7 +50,7 @@ export const action: ActionFunction = async ({ request }) => {
     process.env.SUPABASE_ANON_KEY!,
     { request, response }
   );
-
+asd
   const { error } = await supabase.auth.signUp({
     email: values.email.toString(),
     password: values.password.toString(),
