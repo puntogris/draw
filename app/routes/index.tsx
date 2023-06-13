@@ -51,7 +51,7 @@ export const action: ActionFunction = async ({ request }) => {
     { request, response }
   );
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signUp({
     email: values.email.toString(),
     password: values.password.toString(),
   });
