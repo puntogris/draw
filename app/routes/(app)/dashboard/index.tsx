@@ -112,12 +112,9 @@ export default function Index() {
 
     toast.dismiss(loadingToast);
 
-    const res = await response.json();
-
-    if (response.ok && !res.error) {
+    if (response.ok) {
       toast.success("Updated correctly.", { position: "top-right" });
-
-      const scene = res.scene;
+      const scene = await response.json();
       if (scene) {
         const index = scenes.findIndex((s) => s.id == scene.id);
         if (index != -1) {
@@ -129,7 +126,8 @@ export default function Index() {
         }
       }
     } else {
-      toast.error(res.error, { position: "top-right" });
+      const error = await response.text();
+      toast.error(error, { position: "top-right" });
     }
     setSelectedScene(null);
   }
@@ -152,18 +150,16 @@ export default function Index() {
 
     toast.dismiss(loadingToast);
 
-    const data = await response.json();
-
     if (response.ok) {
       toast.success("Scene deleted.", { position: "top-right" });
-
       const sorted = sortScenesByDate(
         scenes.filter((s) => s.id != selectedScene?.id)
       );
       setScenes(sorted);
       setFilteredScenes(sorted);
-    } else if (data.error) {
-      toast.error(data.error, { position: "top-right" });
+    } else {
+      const error = await response.text();
+      toast.error(error, { position: "top-right" });
     }
     setSelectedScene(null);
   }

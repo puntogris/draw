@@ -2,11 +2,7 @@ import { ActionFunction, json } from "@remix-run/node";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 
 export const action: ActionFunction = async ({ request }) => {
-  const body = await request.json();
-  const name = body.name;
-  const description = body.description;
-  const published = body.published;
-  const id = body.id;
+  const { id, name, description, published } = await request.json();
   const response = new Response();
 
   try {
@@ -19,7 +15,7 @@ export const action: ActionFunction = async ({ request }) => {
     const { error: userError, data: userData } = await supabase.auth.getUser();
 
     if (userError) {
-      return { error: userError.message };
+      return json(userError.message, { status: 401 });
     }
 
     const { error: updateError, data: updateData } = await supabase
@@ -34,19 +30,15 @@ export const action: ActionFunction = async ({ request }) => {
       .eq("uid", userData.user.id)
       .select("id,uid,name,description,updated_at,created_at,published");
 
-    if (!updateError && updateData[0]) {
-      return json({ scene: updateData[0] });
-    } else if (!updateError) {
-      return json({});
+    if (updateError?.code == "23505") {
+      return json("There is already a scene with this ID.", { status: 500 });
+    } else if (updateError) {
+      return json(updateError.message, { status: 500 });
+    } else {
+      return json(updateData[0], { status: 200 });
     }
-
-    if (updateError.code == "23505") {
-      return { error: "There is already a scene with this ID." };
-    }
-
-    return json({ error: updateError.message });
   } catch (e) {
     console.error(e);
-    return json({ error: "Internal error." });
+    return json("Internal error.", { status: 500 });
   }
 };
