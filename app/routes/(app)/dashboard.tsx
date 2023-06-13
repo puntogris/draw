@@ -35,7 +35,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     return json({ user: data.user }, { headers: response.headers });
   } catch (e) {
     console.error(e);
-    return redirect("/");
+    return redirect("/", { headers: response.headers });
   }
 };
 

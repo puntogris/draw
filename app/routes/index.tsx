@@ -24,9 +24,9 @@ export const loader: LoaderFunction = async ({ request }) => {
       { request, response }
     );
 
-    const { error, data } = await supabase.auth.getSession();
+    const { error, data } = await supabase.auth.getUser();
 
-    if (error || !data.session) {
+    if (error || !data.user) {
       return json(
         { error: error ? error.message : "User not signed in." },
         { headers: response.headers }
@@ -43,17 +43,17 @@ export const loader: LoaderFunction = async ({ request }) => {
 export const action: ActionFunction = async ({ request }) => {
   const response = new Response();
   const body = await request.formData();
-  const values = Object.fromEntries(body);
+  const { email, password } = Object.fromEntries(body);
 
   const supabase = createServerClient(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_ANON_KEY!,
     { request, response }
   );
-asd
-  const { error } = await supabase.auth.signUp({
-    email: values.email.toString(),
-    password: values.password.toString(),
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.toString(),
+    password: password.toString(),
   });
 
   if (!error) {
