@@ -5,7 +5,7 @@ import {
   useNavigate,
   useOutletContext,
 } from "@remix-run/react";
-import { json, LoaderFunction, redirect } from "@remix-run/node";
+import { json, LoaderArgs, LoaderFunction, redirect } from "@remix-run/node";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { OutletContext } from "~/utils/types";
 import DashboardIcon from "~/components/icons/dashboardIcon";
@@ -17,7 +17,7 @@ import SunIcon from "~/components/icons/sunIcon";
 import MoonIcon from "~/components/icons/moonIcon";
 import { toast } from "react-hot-toast";
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ params, request }: LoaderArgs) {
   const response = new Response();
   try {
     const supabase = createServerClient(
@@ -37,12 +37,12 @@ export const loader: LoaderFunction = async ({ request }) => {
     console.error(e);
     return redirect("/", { headers: response.headers });
   }
-};
+}
 
 export default function Dashboard() {
   const [theme, setTheme] = useTheme();
   const { supabase } = useOutletContext<OutletContext>();
-  const { user } = useLoaderData();
+  const { user } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
 
   async function signOut() {

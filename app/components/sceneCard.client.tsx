@@ -21,7 +21,9 @@ export default function SceneCard({
       if (preview) {
         setImage("data:image/png;base64," + preview);
       } else {
-        setImage("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NIKFn4HwAFIgJ12Vld0wAAAABJRU5ErkJggg==");
+        setImage(
+          "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NIKFn4HwAFIgJ12Vld0wAAAABJRU5ErkJggg=="
+        );
         // create preview
       }
     }
@@ -55,7 +57,7 @@ export default function SceneCard({
     <div className="flex flex-col rounded-sm border border-gray-200 dark:border-gray-800">
       <a className="flex" href={`/${name}`}>
         <img
-          className="h-48 w-full rounded-t-sm object-cover hover:opacity-80 opacity-90"
+          className="h-48 w-full rounded-t-sm object-cover opacity-90 hover:opacity-80"
           src={image}
           alt="Image Description"
         />

@@ -107,13 +107,13 @@ export default function Index() {
         className="fixed right-4 top-8 z-20 flex gap-2 rounded-md p-2 text-sm font-medium text-gray-900 transition-colors hover:bg-slate-200 dark:text-slate-200 dark:hover:bg-gray-800"
       >
         {theme === Theme.DARK ? (
-          <>
+          <div>
             Light theme <SunIcon size={20} />
-          </>
+          </div>
         ) : (
-          <>
+          <div>
             Dark theme <MoonIcon size={20} />
-          </>
+          </div>
         )}
       </button>
       <div className="flex flex-grow flex-col p-8">
@@ -128,9 +128,9 @@ export default function Index() {
           target="_blank"
         >
           <img src={favicon} alt="logo" width={30} height={30} />
-          <h1 className="text-xl font-semibold text-slate-50 hover:text-slate-200">
+          <div className="text-xl font-semibold text-slate-50 hover:text-slate-200">
             draw.puntogris
-          </h1>
+          </div>
         </a>
         <div className="z-10 mt-auto items-center space-y-1 pb-6 text-center font-medium text-slate-200 md:text-start">
           <span>Drawing site made using</span>
@@ -151,8 +151,8 @@ export default function Index() {
             {" "}
             Supabase.
           </a>
-          <p>This is mostly for personal use.</p>
-          <p>
+          <div>This is mostly for personal use.</div>
+          <div>
             If you would like an account, you can reach me at:
             <a
               href="mailto:dev@puntogris.com"
@@ -161,7 +161,7 @@ export default function Index() {
               {" "}
               dev@puntogris.com
             </a>
-          </p>
+          </div>
         </div>
       </div>
       <div className="z-10 flex flex-col items-center justify-center gap-8 px-4 dark:bg-gray-950 md:flex-row md:gap-4">

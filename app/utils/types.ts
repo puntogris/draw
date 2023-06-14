@@ -13,7 +13,7 @@ export type Scene = {
   description: string;
   updated_at: number | null;
   created_at: number;
-  published: boolean
+  published: boolean;
 };
 
 export type DrawProps = {
@@ -34,6 +34,6 @@ export type SceneCardProps = {
 export type SceneCardEvent = {
   item: string;
   name: string;
-}
+};
 
 export type SyncStatus = "synced" | "error" | "syncing";

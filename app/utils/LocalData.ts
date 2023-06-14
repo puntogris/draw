@@ -6,11 +6,11 @@ import {
 } from "@excalidraw/excalidraw/types/types";
 import { createStore, getMany, setMany, set, get } from "idb-keyval";
 import { blobToBase64Async, compress, decompress } from "./compression";
-import { exportToBlob, exportToCanvas } from "@excalidraw/excalidraw";
+import { exportToBlob } from "@excalidraw/excalidraw";
 import { debounce } from "lodash";
 
-const filesStore = createStore("draw-db", "draw_files_store");
-const previewsStore = createStore("draw-db-previews", "draw_previews_store");
+const filesStore = createStore("draw_files_db", "draw_files_store");
+const previewsStore = createStore("draw_previews_db", "draw_previews_store");
 
 export class LocalData {
   static save = debounce(
@@ -74,8 +74,8 @@ export class LocalData {
       files: files,
       mimeType: "image/webp",
       appState: {
-        exportWithDarkMode: isDarkThemeOn
-      }
+        exportWithDarkMode: isDarkThemeOn,
+      },
     });
     const preview = await blobToBase64Async(blob);
     await set(id, compress(preview), previewsStore);

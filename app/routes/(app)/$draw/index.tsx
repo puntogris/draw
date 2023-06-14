@@ -1,13 +1,11 @@
 import Spinner from "~/components/spinner";
 import Draw from "~/components/draw.client";
-import { LoaderFunction, MetaFunction, json } from "@remix-run/node";
-import { useLoaderData } from "react-router";
+import { LoaderArgs, MetaFunction, json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { OutletContext } from "~/utils/types";
 import { useOutletContext } from "@remix-run/react";
 import { ClientOnly, notFound } from "remix-utils";
-import { useEffect, useState } from "react";
-import { LocalData } from "~/utils/LocalData";
 
 export const meta: MetaFunction<typeof loader> = ({ params }) => {
   return {
@@ -17,8 +15,8 @@ export const meta: MetaFunction<typeof loader> = ({ params }) => {
   };
 };
 
-export const loader: LoaderFunction = async ({ request, params }) => {
-  const name = params.draw;
+export async function loader({ params, request }: LoaderArgs) {
+  const slug = params.draw;
   const response = new Response();
 
   const supabase = createServerClient(
@@ -32,7 +30,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const { data: scene } = await supabase
     .from("scenes")
     .select()
-    .eq("name", name)
+    .eq("name", slug)
     .single();
 
   if (scene) {
@@ -52,35 +50,31 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
     return json(
       {
-        slug: name,
         scene,
-        isOwner: isOwner,
+        isOwner,
         serverFilesId,
       },
       { headers: response.headers }
     );
   } else {
-    throw notFound({ slug: name });
+    throw notFound({ slug });
   }
-};
+}
 
 export default function Index() {
-  // @ts-ignore
-  const { scene, isOwner, serverFilesId } = useLoaderData();
+  const { scene, isOwner, serverFilesId } = useLoaderData<typeof loader>();
   const { supabase } = useOutletContext<OutletContext>();
 
   return (
     <ClientOnly fallback={<Loading />}>
-      {() =>
-        scene != null && (
-          <Draw
-            scene={scene}
-            isOwner={isOwner}
-            supabase={supabase}
-            serverFilesId={serverFilesId}
-          />
-        )
-      }
+      {() => (
+        <Draw
+          scene={scene}
+          isOwner={isOwner}
+          supabase={supabase}
+          serverFilesId={serverFilesId}
+        />
+      )}
     </ClientOnly>
   );
 }
