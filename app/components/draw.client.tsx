@@ -26,13 +26,13 @@ import type {
   ExcalidrawElement,
   ExcalidrawImageElement,
   FileId,
-  Theme,
 } from "@excalidraw/excalidraw/types/element/types";
 import { debounce, isEqual } from "lodash";
 import type { DrawProps, SyncStatus } from "~/utils/types";
 import { decode } from "base64-arraybuffer";
 import { ResolvablePromise } from "@excalidraw/excalidraw/types/utils";
 import { resolvablePromise, getDataURLFromBlob } from "~/utils/utils";
+import { Theme as GlobalTheme, useTheme } from "remix-themes";
 
 const UPDATE_DEBOUNCE_MS = 2000;
 const UPDATE_MAX_WAIT_MS = 10000;
@@ -64,17 +64,11 @@ export default function Draw({
     files: scene.files,
   });
 
-  const [theme, setTheme] = useState<Theme>(
-    () => localStorage.getItem("draw_theme") || THEME.LIGHT
-  );
+  const [theme, setTheme] = useTheme();
 
   const [langCode, setLangCode] = useState<string>(
     () => localStorage.getItem("draw_lang_code") || "EN"
   );
-
-  useEffect(() => {
-    localStorage.setItem("draw_theme", theme);
-  }, [theme]);
 
   useEffect(() => {
     localStorage.setItem("draw_lang_code", langCode);
@@ -286,7 +280,9 @@ export default function Draw({
       appState: AppState,
       files: BinaryFiles
     ) => {
-      setTheme(appState.theme);
+      setTheme(
+        appState.theme == THEME.DARK ? GlobalTheme.DARK : GlobalTheme.LIGHT
+      );
 
       if (!isOwner) {
         return;
@@ -345,7 +341,7 @@ export default function Draw({
         }}
         onChange={onChange}
         autoFocus={true}
-        theme={theme}
+        theme={theme?.toString()}
         langCode={langCode}
       >
         <Welcome />
@@ -353,9 +349,8 @@ export default function Draw({
           isOwner={isOwner}
           onSaveClicked={onSaveClicked}
           setLangCode={setLangCode}
-          theme={theme}
         />
-        {isOwner && <AppFooter status={syncStatus} theme={theme} />}
+        {isOwner && <AppFooter status={syncStatus} />}
       </Excalidraw>
     </div>
   );
@@ -391,19 +386,14 @@ function Menu({
   isOwner,
   onSaveClicked,
   setLangCode,
-  theme,
 }: {
   isOwner: boolean;
   onSaveClicked: () => void;
   setLangCode: (value: string) => void;
-  theme: Theme;
 }) {
   const navigate = useNavigate();
   const { t, langCode } = useI18n();
-  const style =
-    theme == THEME.DARK
-      ? "bg-neutral-800 border-neutral-600 text-neutral-400"
-      : "bg-white border-zinc-300 text-neutral-800";
+
   return (
     <MainMenu>
       <MainMenu.DefaultItems.LoadScene />
@@ -429,7 +419,7 @@ function Menu({
       <MainMenu.DefaultItems.ToggleTheme />
       <MainMenu.ItemCustom>
         <select
-          className={`w-full rounded border px-2 py-1 shadow-none ${style}`}
+          className="w-full rounded border border-zinc-300 bg-white px-2 py-1 text-neutral-800 shadow-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
           onChange={({ target }) => setLangCode(target.value)}
           value={langCode}
           aria-label={t("buttons.selectLanguage")}
@@ -446,20 +436,9 @@ function Menu({
   );
 }
 
-function AppFooter({
-  status,
-  theme,
-}: {
-  status: SyncStatus;
-  theme: string | undefined;
-}) {
+function AppFooter({ status }: { status: SyncStatus }) {
   let syncIcon;
   let syncText;
-
-  const style =
-    theme == THEME.DARK
-      ? "bg-neutral-800 border-zinc-700"
-      : "bg-white border-zinc-300";
 
   switch (status) {
     case "synced":
@@ -477,9 +456,7 @@ function AppFooter({
   return (
     <Footer>
       <div className="relative w-full">
-        <div
-          className={`absolute right-2 top-0 flex h-[36px] items-center gap-2 rounded-md border px-4 ${style}`}
-        >
+        <div className="absolute right-2 top-0 flex h-[36px] items-center gap-2 rounded-md border border-zinc-300 bg-white px-4 dark:border-zinc-700 dark:bg-neutral-800">
           {syncIcon} <div className="text-sm">{syncText}</div>
         </div>
       </div>

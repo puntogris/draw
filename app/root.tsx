@@ -20,6 +20,7 @@ import stylesheet from "~/tailwind.css";
 import ErrorView from "./components/errorView";
 import {
   PreventFlashOnWrongTheme,
+  Theme,
   ThemeProvider,
   useTheme,
 } from "remix-themes";
@@ -70,9 +71,9 @@ function App() {
 }
 
 export default function AppWithProviders() {
-  const { theme } = useLoaderData();
+  const data = useLoaderData();
   return (
-    <ThemeProvider specifiedTheme={theme} themeAction="/api/set-theme">
+    <ThemeProvider specifiedTheme={data.theme} themeAction="/api/set-theme">
       <App />
     </ThemeProvider>
   );
