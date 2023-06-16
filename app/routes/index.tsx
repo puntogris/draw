@@ -107,13 +107,13 @@ export default function Index() {
         className="fixed right-4 top-8 z-20 flex gap-2 rounded-md p-2 text-sm font-medium text-gray-900 transition-colors hover:bg-slate-200 dark:text-slate-200 dark:hover:bg-gray-800"
       >
         {theme === Theme.DARK ? (
-          <div>
+          <>
             Light theme <SunIcon size={20} />
-          </div>
+          </>
         ) : (
-          <div>
+          <>
             Dark theme <MoonIcon size={20} />
-          </div>
+          </>
         )}
       </button>
       <div className="flex flex-grow flex-col p-8">
