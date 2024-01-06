@@ -331,7 +331,7 @@ export default function Draw({
   return (
     <div className="h-screen">
       <Excalidraw
-        ref={excalidrawRef}
+        excalidrawAPI={excalidrawRef}
         initialData={initialStatePromiseRef.current.promise}
         UIOptions={{
           canvasActions: {
@@ -341,7 +341,7 @@ export default function Draw({
         }}
         onChange={onChange}
         autoFocus={true}
-        theme={theme?.toString()}
+        theme={theme == THEME.LIGHT ? THEME.LIGHT : THEME.DARK}
         langCode={langCode}
       >
         <Welcome />
