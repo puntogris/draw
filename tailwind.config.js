@@ -9,6 +9,9 @@ module.exports = {
       fontFamily: {
         sans: ["Inter", ...defaultTheme.fontFamily.sans],
       },
+      colors: {
+        "exalidraw-surface-low": "var(--color-surface-low)",
+      },
     },
   },
   plugins: [],

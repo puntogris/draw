@@ -419,7 +419,7 @@ function Menu({
       <MainMenu.DefaultItems.ToggleTheme />
       <MainMenu.ItemCustom>
         <select
-          className="w-full rounded border border-zinc-300 bg-white px-2 py-1 text-neutral-800 shadow-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
+          className="w-full rounded border border-zinc-100 bg-white px-2 py-1 text-sm text-neutral-800 shadow-none dark:border-neutral-700 dark:bg-exalidraw-surface-low dark:text-white"
           onChange={({ target }) => setLangCode(target.value)}
           value={langCode}
           aria-label={t("buttons.selectLanguage")}
@@ -456,7 +456,7 @@ function AppFooter({ status }: { status: SyncStatus }) {
   return (
     <Footer>
       <div className="relative w-full">
-        <div className="absolute right-2 top-0 flex h-[36px] items-center gap-2 rounded-md border border-zinc-300 bg-white px-4 dark:border-zinc-700 dark:bg-neutral-800">
+        <div className="absolute right-2 top-0 flex h-[36px] items-center gap-2 rounded-md bg-exalidraw-surface-low px-4">
           {syncIcon} <div className="text-sm">{syncText}</div>
         </div>
       </div>
