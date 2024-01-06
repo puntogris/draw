@@ -360,7 +360,11 @@ function Welcome() {
   return (
     <WelcomeScreen>
       <WelcomeScreen.Center>
-        <WelcomeScreen.Center.Logo>draw.puntogris</WelcomeScreen.Center.Logo>
+        <WelcomeScreen.Center.Logo>
+          <h1 className="text-indigo-800 dark:text-indigo-300">
+            draw.puntogris
+          </h1>
+        </WelcomeScreen.Center.Logo>
         <WelcomeScreen.Center.Heading>
           Your scene will be automatically synced to the cloud.
         </WelcomeScreen.Center.Heading>
@@ -373,6 +377,7 @@ function Welcome() {
           <WelcomeScreen.Center.MenuItemLink
             icon={<EnvelopeIcon size={16} />}
             href="https://puntogris.com"
+            target="_blank"
           >
             Contact me
           </WelcomeScreen.Center.MenuItemLink>
