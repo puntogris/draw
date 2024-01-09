@@ -22,7 +22,7 @@ export async function loader({ params, request }: LoaderArgs) {
   const supabase = createServerClient(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_ANON_KEY!,
-    { request, response }
+    { request, response },
   );
 
   const { data: sessionData } = await supabase.auth.getSession();
@@ -54,7 +54,7 @@ export async function loader({ params, request }: LoaderArgs) {
         isOwner,
         serverFilesId,
       },
-      { headers: response.headers }
+      { headers: response.headers },
     );
   } else {
     throw notFound({ slug });

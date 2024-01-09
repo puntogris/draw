@@ -54,14 +54,14 @@ export default function Index() {
   useEffect(() => {
     setFilteredScenes(
       sortScenesByDate(
-        scenes.filter((scene) => scene.name.includes(searchInput))
-      )
+        scenes.filter((scene) => scene.name.includes(searchInput)),
+      ),
     );
   }, [searchInput]);
 
   function sortScenesByDate(scenes: Scene[]) {
     return scenes.sort(
-      (a, b) => (b.updated_at || b.created_at) - (a.updated_at || a.created_at)
+      (a, b) => (b.updated_at || b.created_at) - (a.updated_at || a.created_at),
     );
   }
 
@@ -153,7 +153,7 @@ export default function Index() {
     if (response.ok) {
       toast.success("Scene deleted.", { position: "top-right" });
       const sorted = sortScenesByDate(
-        scenes.filter((s) => s.id != selectedScene?.id)
+        scenes.filter((s) => s.id != selectedScene?.id),
       );
       setScenes(sorted);
       setFilteredScenes(sorted);

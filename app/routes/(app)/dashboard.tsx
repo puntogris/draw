@@ -23,7 +23,7 @@ export async function loader({ params, request }: LoaderArgs) {
     const supabase = createServerClient(
       process.env.SUPABASE_URL!,
       process.env.SUPABASE_ANON_KEY!,
-      { request, response }
+      { request, response },
     );
 
     const { error, data } = await supabase.auth.getUser();
@@ -68,7 +68,7 @@ export default function Dashboard() {
             to="/dashboard/new"
             className={({ isActive }) =>
               "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800".concat(
-                isActive ? " bg-slate-100 dark:bg-gray-800" : ""
+                isActive ? " bg-slate-100 dark:bg-gray-800" : "",
               )
             }
           >
@@ -79,7 +79,7 @@ export default function Dashboard() {
             to="/dashboard"
             className={({ isActive }) =>
               "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800".concat(
-                isActive ? " bg-slate-100 dark:bg-gray-800" : ""
+                isActive ? " bg-slate-100 dark:bg-gray-800" : "",
               )
             }
             end
@@ -91,7 +91,7 @@ export default function Dashboard() {
             to="/dashboard/settings"
             className={({ isActive }) =>
               "flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800".concat(
-                isActive ? " bg-slate-100 dark:bg-slate-800" : ""
+                isActive ? " bg-slate-100 dark:bg-slate-800" : "",
               )
             }
           >
@@ -104,7 +104,7 @@ export default function Dashboard() {
               type="button"
               onClick={() =>
                 setTheme((prev) =>
-                  prev === Theme.DARK ? Theme.LIGHT : Theme.DARK
+                  prev === Theme.DARK ? Theme.LIGHT : Theme.DARK,
                 )
               }
             >

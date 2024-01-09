@@ -21,19 +21,25 @@ export const loader: LoaderFunction = async ({ request }) => {
     const supabase = createServerClient(
       process.env.SUPABASE_URL!,
       process.env.SUPABASE_ANON_KEY!,
-      { request, response }
+      { request, response },
     );
 
     const { error, data } = await supabase.auth.getUser();
 
     if (error || !data.user) {
       return json(
-        { error: error ? error.message : "User not signed in." },
-        { headers: response.headers }
+        {
+          error: error ? error.message : "User not signed in.",
+        },
+        {
+          headers: response.headers,
+        },
       );
     }
 
-    return redirect("/dashboard", { headers: response.headers });
+    return redirect("/dashboard", {
+      headers: response.headers,
+    });
   } catch (e: any) {
     console.error(e);
     return json({ error: e.toString() }, { headers: response.headers });
@@ -48,7 +54,7 @@ export const action: ActionFunction = async ({ request }) => {
   const supabase = createServerClient(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_ANON_KEY!,
-    { request, response }
+    { request, response },
   );
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -57,7 +63,9 @@ export const action: ActionFunction = async ({ request }) => {
   });
 
   if (!error) {
-    return redirect("/dashboard", { headers: response.headers });
+    return redirect("/dashboard", {
+      headers: response.headers,
+    });
   } else {
     return { error: error.message };
   }
@@ -73,7 +81,9 @@ export default function Index() {
 
   useEffect(() => {
     if (actionData?.error) {
-      toast.error(actionData.error, { position: "top-right" });
+      toast.error(actionData.error, {
+        position: "top-right",
+      });
     }
   }, [actionData]);
 
@@ -104,7 +114,7 @@ export default function Index() {
         onClick={() =>
           setTheme((prev) => (prev === Theme.DARK ? Theme.LIGHT : Theme.DARK))
         }
-        className="fixed right-4 top-8 z-20 flex gap-2 rounded-md p-2 text-sm font-medium text-gray-900 transition-colors hover:bg-slate-200 dark:text-slate-200 dark:hover:bg-gray-800"
+        className="fixed right-4 top-8 z-20 flex gap-2 rounded-md p-2 text-sm font-medium text-slate-200 transition-colors hover:bg-gray-800 dark:text-slate-200 lg:text-gray-900 lg:hover:bg-slate-200 dark:lg:text-slate-200 dark:lg:hover:bg-gray-800"
       >
         {theme === Theme.DARK ? (
           <>
@@ -164,7 +174,7 @@ export default function Index() {
           </div>
         </div>
       </div>
-      <div className="z-10 flex flex-col items-center justify-center gap-8 px-4 dark:bg-gray-950 md:flex-row md:gap-4">
+      <div className="z-10 flex flex-col items-center justify-center gap-8 bg-white px-4 dark:bg-gray-950 md:flex-row md:gap-4">
         <Form
           method="post"
           className="flex w-full max-w-md flex-col items-center justify-center gap-2 p-8"
