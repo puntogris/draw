@@ -23,7 +23,7 @@ export const action: ActionFunction = async ({ request }) => {
     const supabase = createServerClient(
       process.env.SUPABASE_URL!,
       process.env.SUPABASE_ANON_KEY!,
-      { request, response }
+      { request, response },
     );
 
     const { error: userError, data: userData } = await supabase.auth.getUser();
@@ -132,7 +132,7 @@ export default function New() {
                 name="name"
                 value={name}
                 onChange={(e) => validateAndSetName(e.target.value)}
-                className="block w-full bg-transparent px-4 py-3 text-sm outline-none"
+                className="block w-full bg-transparent px-4 py-3 text-sm text-gray-900 outline-none dark:text-slate-50"
               />
               {name.length > 0 && (
                 <button
@@ -161,7 +161,7 @@ export default function New() {
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="block w-full bg-transparent px-4 py-3 text-sm outline-none dark:text-slate-50"
+              className="block w-full bg-transparent px-4 py-3 text-sm text-gray-900 outline-none dark:text-slate-50"
             />
             {description.length > 0 && (
               <button
