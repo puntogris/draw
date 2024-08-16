@@ -5,7 +5,7 @@ import {
   useNavigate,
   useOutletContext,
 } from "@remix-run/react";
-import { json, LoaderArgs, LoaderFunction, redirect } from "@remix-run/node";
+import { json, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { OutletContext } from "~/utils/types";
 import DashboardIcon from "~/components/icons/dashboardIcon";
@@ -17,7 +17,15 @@ import SunIcon from "~/components/icons/sunIcon";
 import MoonIcon from "~/components/icons/moonIcon";
 import { toast } from "react-hot-toast";
 
-export async function loader({ params, request }: LoaderArgs) {
+export function meta() {
+  return [
+    { title: "draw - settings" },
+    { charset: "utf-8" },
+    { viewport: "width=device-width,initial-scale=1" },
+  ];
+}
+
+export async function loader({ params, request }: LoaderFunctionArgs) {
   const response = new Response();
   try {
     const supabase = createServerClient(

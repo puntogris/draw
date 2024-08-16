@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 import { ActionFunction, redirect } from "@remix-run/node";
 import { toast } from "react-hot-toast";
 
-export const meta = () => ({
-  charset: "utf-8",
-  title: "draw - new scene",
-  viewport: "width=device-width,initial-scale=1",
-});
+export function meta() {
+  return [
+    { title: "draw - new" },
+    { charset: "utf-8" },
+    { viewport: "width=device-width,initial-scale=1" },
+  ];
+}
 
 export const action: ActionFunction = async ({ request }) => {
   const body = await request.formData();
@@ -56,7 +58,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function New() {
-  const actionData = useActionData();
+  const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isLoading = navigation.state == "submitting";
   const [name, setName] = useState("");
@@ -95,7 +97,7 @@ export default function New() {
   }
 
   async function generateRandomName() {
-    const response = await fetch("/api/scene/generate-name");
+    const response = await fetch("/scene/generate-name");
     if (response.ok) {
       setName(await response.json());
     } else {

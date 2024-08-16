@@ -1,22 +1,17 @@
-import type {
-  LinksFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {
+  isRouteErrorResponse,
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch,
   useLoaderData,
+  useRouteError,
 } from "@remix-run/react";
 import { createBrowserClient } from "@supabase/auth-helpers-remix";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
-import stylesheet from "~/tailwind.css";
 import ErrorView from "./components/errorView";
 import {
   PreventFlashOnWrongTheme,
@@ -25,35 +20,41 @@ import {
   useTheme,
 } from "remix-themes";
 import { themeSessionResolver } from "./session.server";
+import "./tailwind.css";
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: stylesheet },
+  { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
 ];
 
-export const meta: MetaFunction = () => ({
-  charset: "utf-8",
-  title: "draw.puntogris",
-  viewport: "width=device-width,initial-scale=1",
-});
+export function meta() {
+  return [
+    { title: "draw.puntogris" },
+    { charset: "utf-8" },
+    { viewport: "width=device-width,initial-scale=1" },
+  ];
+}
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderFunctionArgs) {
   const env = {
-    SUPABASE_URL: process.env.SUPABASE_URL,
-    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+    SUPABASE_URL: process.env.SUPABASE_URL!,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!,
   };
-  const { getTheme } = await themeSessionResolver(request);
-  return { env, theme: getTheme() };
-};
+  const themeResolver = await themeSessionResolver(request);
+  return {
+    env,
+    theme: themeResolver.getTheme(),
+  };
+}
 
 function App() {
-  const { env, theme: serverTheme } = useLoaderData();
+  const { env, theme: serverTheme } = useLoaderData<typeof loader>();
   const [supabase] = useState(() =>
-    createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
+    createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY),
   );
   const [theme] = useTheme();
 
   return (
-    <html lang="en" data-theme={theme ?? ""}>
+    <html lang="en" data-theme={theme ?? Theme.LIGHT}>
       <head>
         <Meta />
         <PreventFlashOnWrongTheme ssrTheme={Boolean(serverTheme)} />
@@ -64,40 +65,32 @@ function App() {
         <Outlet context={{ supabase }} />
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   );
 }
 
 export default function AppWithProviders() {
-  const data = useLoaderData();
+  const data = useLoaderData<typeof loader>();
   return (
-    <ThemeProvider specifiedTheme={data.theme} themeAction="/api/set-theme">
+    <ThemeProvider specifiedTheme={data.theme} themeAction="set-theme">
       <App />
     </ThemeProvider>
   );
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error);
-  return (
-    <html>
-      <head>
-        <title>Oh no!</title>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <ErrorView message={error.message} />
-        <Scripts />
-      </body>
-    </html>
-  );
-}
+export function ErrorBoundary() {
+  const error = useRouteError();
 
-export function CatchBoundary() {
-  const caught = useCatch();
+  let code = null;
+  let message = null;
+  let slug = null;
+
+  if (isRouteErrorResponse(error)) {
+    code = error.status;
+    message = error.statusText;
+    slug = error.data?.slug;
+  }
 
   return (
     <html>
@@ -107,11 +100,7 @@ export function CatchBoundary() {
         <Links />
       </head>
       <body>
-        <ErrorView
-          code={caught.status}
-          message={caught.statusText}
-          slug={caught.data?.slug}
-        />
+        <ErrorView code={code} message={message} slug={slug} />
         <Scripts />
       </body>
     </html>

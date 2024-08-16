@@ -1,21 +1,23 @@
 import Spinner from "~/components/spinner";
 import Draw from "~/components/draw.client";
-import { LoaderArgs, MetaFunction, json } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import { OutletContext } from "~/utils/types";
 import { useOutletContext } from "@remix-run/react";
-import { ClientOnly, notFound } from "remix-utils";
+import { ClientOnly } from "remix-utils/client-only";
 
-export const meta: MetaFunction<typeof loader> = ({ params }) => {
-  return {
-    charset: "utf-8",
-    title: `draw - ${params.draw}`,
-    viewport: "width=device-width,initial-scale=1",
-  };
-};
+export function meta({ matches }: MetaArgs) {
+  const match = matches.find((m) => m.id === "routes/$draw._index");
+  const sceneId = match?.params["draw"];
+  return [
+    { title: `draw - ${sceneId}` },
+    { charset: "utf-8" },
+    { viewport: "width=device-width,initial-scale=1" },
+  ];
+}
 
-export async function loader({ params, request }: LoaderArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   const slug = params.draw;
   const response = new Response();
 
@@ -57,7 +59,7 @@ export async function loader({ params, request }: LoaderArgs) {
       { headers: response.headers },
     );
   } else {
-    throw notFound({ slug });
+    throw new Response("Not found", { status: 404 });
   }
 }
 

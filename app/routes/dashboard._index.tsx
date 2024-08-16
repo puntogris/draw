@@ -9,11 +9,13 @@ import SearchIcon from "~/components/icons/searchIcon";
 import EditDrawer, { EditDrawerCloseProps } from "~/components/editDrawer";
 import DeleteSceneDialog from "~/components/deleteDialog";
 
-export const meta = () => ({
-  charset: "utf-8",
-  title: "draw - dashboard",
-  viewport: "width=device-width,initial-scale=1",
-});
+export function meta() {
+  return [
+    { title: "draw - dashboard" },
+    { charset: "utf-8" },
+    { viewport: "width=device-width,initial-scale=1" },
+  ];
+}
 
 export default function Index() {
   const { supabase, user } = useOutletContext<DashboardOutletContext>();
@@ -100,7 +102,7 @@ export default function Index() {
       position: "top-right",
     });
 
-    const response = await fetch("/api/scene/update", {
+    const response = await fetch("/scene/update", {
       method: "post",
       body: JSON.stringify({
         id: selectedScene.id,
@@ -143,7 +145,7 @@ export default function Index() {
       position: "top-right",
     });
 
-    const response = await fetch("/api/scene/delete", {
+    const response = await fetch("/scene/delete", {
       method: "delete",
       body: JSON.stringify({ id: selectedScene.id }),
     });

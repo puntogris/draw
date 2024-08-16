@@ -12,7 +12,7 @@ import { Theme, useTheme } from "remix-themes";
 import MoonIcon from "~/components/icons/moonIcon";
 import SunIcon from "~/components/icons/sunIcon";
 import background from "../../public/background.webp";
-import favicon from "../../public/favicon.ico";
+import CompassIcon from "~/components/icons/compassIcon";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const response = new Response();
@@ -73,7 +73,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Index() {
   const navigation = useNavigation();
-  const actionData = useActionData();
+  const actionData = useActionData<typeof action>();
   const isLoading = navigation.state !== "idle";
   const [theme, setTheme] = useTheme();
   const [, setEmail] = useState();
@@ -109,12 +109,12 @@ export default function Index() {
   }, []);
 
   return (
-    <div className="grid min-h-screen grid-rows-2 divide-y divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-950 lg:grid-cols-2 lg:grid-rows-none lg:divide-x">
+    <div className="grid min-h-screen grid-rows-2 divide-y divide-gray-200 bg-white lg:grid-cols-2 lg:grid-rows-none lg:divide-x dark:divide-gray-800 dark:bg-gray-950">
       <button
         onClick={() =>
           setTheme((prev) => (prev === Theme.DARK ? Theme.LIGHT : Theme.DARK))
         }
-        className="fixed right-4 top-8 z-20 flex gap-2 rounded-md p-2 text-sm font-medium text-slate-200 transition-colors hover:bg-gray-800 dark:text-slate-200 lg:text-gray-900 lg:hover:bg-slate-200 dark:lg:text-slate-200 dark:lg:hover:bg-gray-800"
+        className="fixed right-4 top-8 z-20 flex gap-2 rounded-md p-2 text-sm font-medium text-slate-200 transition-colors hover:bg-gray-800 lg:text-gray-900 lg:hover:bg-slate-200 dark:text-slate-200 dark:lg:text-slate-200 dark:lg:hover:bg-gray-800"
       >
         {theme === Theme.DARK ? (
           <>
@@ -137,9 +137,9 @@ export default function Index() {
           href="https://puntogris.com/"
           target="_blank"
         >
-          <img src={favicon} alt="logo" width={30} height={30} />
+          <CompassIcon size={24} style="text-white" />
           <div className="text-xl font-semibold text-slate-50 hover:text-slate-200">
-            draw.puntogris
+            draw.
           </div>
         </a>
         <div className="z-10 mt-auto items-center space-y-1 pb-6 text-center font-medium text-slate-200 md:text-start">
@@ -174,7 +174,7 @@ export default function Index() {
           </div>
         </div>
       </div>
-      <div className="z-10 flex flex-col items-center justify-center gap-8 bg-white px-4 dark:bg-gray-950 md:flex-row md:gap-4">
+      <div className="z-10 flex flex-col items-center justify-center gap-8 bg-white px-4 md:flex-row md:gap-4 dark:bg-gray-950">
         <Form
           method="post"
           className="flex w-full max-w-md flex-col items-center justify-center gap-2 p-8"
@@ -198,6 +198,9 @@ export default function Index() {
               name="email"
               className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)]"
               required
+              style={{
+                WebkitTextFillColor: theme === Theme.DARK ? "white" : "black",
+              }}
             />
           </div>
           <div className="w-full">

@@ -51,7 +51,7 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
   }
 
   async function generateRandomName() {
-    const response = await fetch("/api/scene/generate-name");
+    const response = await fetch("/scene/generate-name");
     if (response.ok) {
       setName(await response.json());
     } else {
