@@ -187,6 +187,9 @@ export default function Index() {
 							name="password"
 							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)]"
 							required
+							style={{
+								WebkitTextFillColor: theme === Theme.DARK ? 'white' : 'black'
+							}}
 						/>
 					</div>
 					<button
