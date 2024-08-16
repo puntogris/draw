@@ -7,9 +7,9 @@ export default function CompassIcon({ style = "", size = 24 }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={style}
     >
       <path d="m12.99 6.74 1.93 3.44" />
