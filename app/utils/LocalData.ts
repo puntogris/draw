@@ -1,10 +1,8 @@
 import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 import { AppState, BinaryFileData, BinaryFiles } from '@excalidraw/excalidraw/types/types';
 import { createStore, getMany, setMany, set, get } from 'idb-keyval';
-import { Base64String } from './Base64String';
 import { exportToBlob } from '@excalidraw/excalidraw';
 import { debounce } from 'lodash';
-import { blobToBase64Async } from './utils';
 
 const filesStore = createStore('draw_files_db', 'draw_files_store');
 const previewsStore = createStore('draw_previews_db', 'draw_previews_store');
@@ -62,6 +60,7 @@ export class LocalData {
 		id: string,
 		isDarkThemeOn: boolean
 	) {
+		// TODO should resize the image to save space as it will be used as a preview
 		const blob = await exportToBlob({
 			elements: elements,
 			exportPadding: 100,
@@ -69,18 +68,13 @@ export class LocalData {
 			mimeType: 'image/webp',
 			appState: {
 				exportWithDarkMode: isDarkThemeOn
-			}
+			},
+			quality: 0.1
 		});
-		const preview = await blobToBase64Async(blob);
-		await set(id, Base64String.compress(preview), previewsStore);
+		await set(id, blob, previewsStore);
 	}
 
 	static async getPreview(id: string) {
-		const preview = await get(id, previewsStore);
-		if (preview) {
-			return Base64String.decompress(preview);
-		} else {
-			null;
-		}
+		return await get(id, previewsStore);
 	}
 }

@@ -19,12 +19,11 @@ export default function SceneCard({
 		async function getPreview() {
 			const preview = await LocalData.getPreview(sceneId.toString());
 			if (preview) {
-				setImage('data:image/png;base64,' + preview);
+				setImage(URL.createObjectURL(preview));
 			} else {
 				setImage(
 					'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NIKFn4HwAFIgJ12Vld0wAAAABJRU5ErkJggg=='
 				);
-				// create preview
 			}
 		}
 		getPreview();

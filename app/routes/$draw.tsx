@@ -21,11 +21,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const slug = params.draw;
 
 	const { supabase, headers } = getSupabaseServerClientHelper(request);
-	const { data: sessionData } = await supabase.auth.getSession();
+	const {
+		data: { user }
+	} = await supabase.auth.getUser();
 	const { data: scene } = await supabase.from('scenes').select().eq('name', slug).single();
 
 	if (scene) {
-		const isOwner = scene.uid == sessionData?.session?.user?.id;
+		const isOwner = user !== null && scene.uid == user.id;
 
 		let serverFilesId: string[] = [];
 
