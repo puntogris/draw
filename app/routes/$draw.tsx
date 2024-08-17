@@ -2,10 +2,10 @@ import Spinner from '~/components/spinner';
 import Draw from '~/components/draw.client';
 import { LoaderFunctionArgs, MetaArgs, json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { createServerClient } from '@supabase/auth-helpers-remix';
 import { OutletContext } from '~/utils/types';
 import { useOutletContext } from '@remix-run/react';
 import { ClientOnly } from 'remix-utils/client-only';
+import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
 export function meta({ matches }: MetaArgs) {
 	const match = matches.find((m) => m.id === 'routes/$draw._index');
@@ -19,15 +19,9 @@ export function meta({ matches }: MetaArgs) {
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const slug = params.draw;
-	const response = new Response();
 
-	const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
-		request,
-		response
-	});
-
+	const { supabase, headers } = getSupabaseServerClientHelper(request);
 	const { data: sessionData } = await supabase.auth.getSession();
-
 	const { data: scene } = await supabase.from('scenes').select().eq('name', slug).single();
 
 	if (scene) {
@@ -51,10 +45,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 				isOwner,
 				serverFilesId
 			},
-			{ headers: response.headers }
+			{ headers: headers }
 		);
 	} else {
-		throw new Response('Not found', { status: 404 });
+		throw new Response('Not found', { status: 404, headers: headers });
 	}
 }
 

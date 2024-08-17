@@ -17,7 +17,7 @@
     "@remix-run/react": "^2.11.2",
     "@remix-run/serve": "^2.11.2",
     "@remix-run/vercel": "^1.16.1",
-    "@supabase/auth-helpers-remix": "^0.4.0",
+    "@supabase/ssr": "^0.4.0",
     "@vercel/node": "^2.6.2",
     "base64-arraybuffer": "^1.0.2",
     "idb-keyval": "^6.2.0",

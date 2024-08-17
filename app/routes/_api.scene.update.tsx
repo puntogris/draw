@@ -1,16 +1,12 @@
 import { ActionFunction, json } from '@remix-run/node';
-import { createServerClient } from '@supabase/auth-helpers-remix';
+import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
 export const action: ActionFunction = async ({ request }) => {
 	const { id, name, description, published } = await request.json();
-	const response = new Response();
+
+	const { supabase, headers } = getSupabaseServerClientHelper(request);
 
 	try {
-		const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
-			request,
-			response
-		});
-
 		const { error: userError, data: userData } = await supabase.auth.getUser();
 
 		if (userError) {
@@ -32,12 +28,12 @@ export const action: ActionFunction = async ({ request }) => {
 		if (updateError?.code == '23505') {
 			return json('There is already a scene with this ID.', { status: 500 });
 		} else if (updateError) {
-			return json(updateError.message, { status: 500 });
+			return json(updateError.message, { status: 500, headers: headers });
 		} else {
-			return json(updateData[0], { status: 200 });
+			return json(updateData[0], { status: 200, headers: headers });
 		}
 	} catch (e) {
 		console.error(e);
-		return json('Internal error.', { status: 500 });
+		return json('Internal error.', { status: 500, headers: headers });
 	}
 };

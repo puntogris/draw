@@ -1,6 +1,5 @@
 import { NavLink, Outlet, useLoaderData, useNavigate, useOutletContext } from '@remix-run/react';
 import { json, LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { createServerClient } from '@supabase/auth-helpers-remix';
 import { OutletContext } from '~/utils/types';
 import DashboardIcon from '~/components/icons/dashboardIcon';
 import PlusIcon from '~/components/icons/plusIcon';
@@ -10,6 +9,7 @@ import { Theme, useTheme } from 'remix-themes';
 import SunIcon from '~/components/icons/sunIcon';
 import MoonIcon from '~/components/icons/moonIcon';
 import { toast } from 'react-hot-toast';
+import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
 export function meta() {
 	return [
@@ -19,24 +19,20 @@ export function meta() {
 	];
 }
 
-export async function loader({ params, request }: LoaderFunctionArgs) {
-	const response = new Response();
-	try {
-		const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
-			request,
-			response
-		});
+export async function loader({ request }: LoaderFunctionArgs) {
+	const { supabase, headers } = getSupabaseServerClientHelper(request);
 
+	try {
 		const { error, data } = await supabase.auth.getUser();
 
 		if (error) {
 			throw error;
 		}
 
-		return json({ user: data.user }, { headers: response.headers });
+		return json({ user: data.user }, { headers: headers });
 	} catch (e) {
 		console.error(e);
-		return redirect('/', { headers: response.headers });
+		return redirect('/', { headers: headers });
 	}
 }
 

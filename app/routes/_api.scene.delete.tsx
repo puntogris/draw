@@ -1,15 +1,12 @@
 import { ActionFunction, json } from '@remix-run/node';
-import { createServerClient } from '@supabase/auth-helpers-remix';
+import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
 export const action: ActionFunction = async ({ request }) => {
 	const { id } = await request.json();
-	const response = new Response();
+
+	const { supabase, headers } = getSupabaseServerClientHelper(request);
 
 	try {
-		const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
-			request,
-			response
-		});
 		const { error: userError, data: userData } = await supabase.auth.getUser();
 
 		if (userError) {
@@ -23,12 +20,12 @@ export const action: ActionFunction = async ({ request }) => {
 			.eq('uid', userData.user.id);
 
 		if (deleteError) {
-			return json(deleteError.message, { status: 500 });
+			return json(deleteError.message, { status: 500, headers: headers });
 		} else {
-			return json({ status: 200 });
+			return json({ status: 200, headers: headers });
 		}
 	} catch (e) {
 		console.error(e);
-		return json('Internal error.', { status: 500 });
+		return json('Internal error.', { status: 500, headers: headers });
 	}
 };

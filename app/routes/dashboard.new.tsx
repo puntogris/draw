@@ -1,10 +1,10 @@
 import ShuffleIcon from '~/components/icons/shuffleIcon';
 import CrossIcon from '~/components/icons/crossIcon';
 import { Form, useActionData, useNavigation } from '@remix-run/react';
-import { createServerClient } from '@supabase/auth-helpers-remix';
 import { useEffect, useState } from 'react';
 import { ActionFunction, redirect } from '@remix-run/node';
 import { toast } from 'react-hot-toast';
+import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
 export function meta() {
 	return [
@@ -19,14 +19,9 @@ export const action: ActionFunction = async ({ request }) => {
 	const name = body.get('name');
 	const description = body.get('description');
 	const published = body.get('publish') === 'on';
-	const response = new Response();
 
 	try {
-		const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
-			request,
-			response
-		});
-
+		const { supabase, headers } = getSupabaseServerClientHelper(request);
 		const { error: userError, data: userData } = await supabase.auth.getUser();
 
 		if (userError) {
@@ -42,14 +37,14 @@ export const action: ActionFunction = async ({ request }) => {
 		});
 
 		if (!insertError) {
-			return redirect(`/${name}`);
+			return redirect(`/${name}`, { headers: headers });
 		}
 
 		if (insertError.code == '23505') {
 			return { error: 'There is already a scene with this ID.' };
 		}
 
-		return { error: insertError.message };
+		return { error: insertError.message, headers: headers };
 	} catch (e) {
 		console.error(e);
 		return { error: 'Internal error.' };

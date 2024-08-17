@@ -1,50 +1,38 @@
 import { ActionFunction, LoaderFunction, json, redirect } from '@remix-run/node';
 import { Form, useActionData, useNavigation } from '@remix-run/react';
-import { createServerClient } from '@supabase/auth-helpers-remix';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { Theme, useTheme } from 'remix-themes';
 import MoonIcon from '~/components/icons/moonIcon';
 import SunIcon from '~/components/icons/sunIcon';
 import background from '/background.webp';
 import CompassIcon from '~/components/icons/compassIcon';
+import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
 export const loader: LoaderFunction = async ({ request }) => {
-	const response = new Response();
-
 	try {
-		const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
-			request,
-			response
-		});
+		const { supabase, headers } = getSupabaseServerClientHelper(request);
 
 		const { error, data } = await supabase.auth.getUser();
 
 		if (error || !data.user) {
-			return json(
-				{ error: error ? error.message : 'User not signed in.' },
-				{ headers: response.headers }
-			);
+			return json({ error: error ? error.message : 'User not signed in.' }, { headers: headers });
 		}
 
 		return redirect('/dashboard', {
-			headers: response.headers
+			headers: headers
 		});
 	} catch (e: any) {
 		console.error(e);
-		return json({ error: e.toString() }, { headers: response.headers });
+		return json({ error: e.toString() });
 	}
 };
 
 export const action: ActionFunction = async ({ request }) => {
-	const response = new Response();
 	const body = await request.formData();
 	const { email, password } = Object.fromEntries(body);
 
-	const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
-		request,
-		response
-	});
+	const { supabase, headers } = getSupabaseServerClientHelper(request);
 
 	const { error } = await supabase.auth.signInWithPassword({
 		email: email.toString(),
@@ -53,7 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 	if (!error) {
 		return redirect('/dashboard', {
-			headers: response.headers
+			headers: headers
 		});
 	} else {
 		return { error: error.message };
