@@ -1,10 +1,10 @@
 import type { SupabaseClient, User } from '@supabase/auth-helpers-remix';
 
-export type OutletContext = { supabase: SupabaseClient };
+type OutletContext = { supabase: SupabaseClient };
 
-export type DashboardOutletContext = { supabase: SupabaseClient; user: User };
+type DashboardOutletContext = { supabase: SupabaseClient; user: User };
 
-export type Scene = {
+type Scene = {
 	id: number;
 	data: JSON;
 	uid: string;
@@ -16,14 +16,14 @@ export type Scene = {
 	published: boolean;
 };
 
-export type DrawProps = {
+type DrawProps = {
 	scene: any;
 	isOwner: boolean;
 	supabase: SupabaseClient;
 	serverFilesId: string[];
 };
 
-export type SceneCardProps = {
+type SceneCardProps = {
 	name: string;
 	description: string;
 	sceneId: number;
@@ -31,9 +31,19 @@ export type SceneCardProps = {
 	onSceneCardEvent: (event: SceneCardEvent) => void;
 };
 
-export type SceneCardEvent = {
+type SceneCardEvent = {
 	item: string;
 	name: string;
 };
 
-export type SyncStatus = 'synced' | 'error' | 'syncing';
+type SyncStatus = 'synced' | 'error' | 'syncing';
+
+export type {
+	OutletContext,
+	DashboardOutletContext,
+	Scene,
+	DrawProps,
+	SceneCardProps,
+	SceneCardEvent,
+	SyncStatus
+};

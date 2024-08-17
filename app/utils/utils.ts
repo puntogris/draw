@@ -1,9 +1,6 @@
-export type ResolvablePromise<T> = Promise<T> & {
-	resolve: [T] extends [undefined] ? (value?: T) => void : (value: T) => void;
-	reject: (error: Error) => void;
-};
+import { ResolvablePromise } from '@excalidraw/excalidraw/types/utils';
 
-export const resolvablePromise = <T>() => {
+const resolvablePromise = <T>() => {
 	let resolve!: any;
 	let reject!: any;
 	const promise = new Promise((_resolve, _reject) => {
@@ -15,7 +12,7 @@ export const resolvablePromise = <T>() => {
 	return promise as ResolvablePromise<T>;
 };
 
-export async function getDataURLFromBlob(blob: Blob) {
+async function getDataURLFromBlob(blob: Blob) {
 	return new Promise((resolve, reject) => {
 		const fileReader = new FileReader();
 		fileReader.onerror = (e) => reject(fileReader.error);
@@ -25,3 +22,19 @@ export async function getDataURLFromBlob(blob: Blob) {
 		fileReader.readAsDataURL(blob);
 	});
 }
+
+async function blobToBase64Async(blob: Blob): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const fileReader = new FileReader();
+		fileReader.onerror = (e) => reject(fileReader.error);
+		fileReader.onloadend = (e) => {
+			const dataUrl = fileReader.result as string;
+			// remove "data:mime/type;base64," prefix from data url
+			const base64 = dataUrl.substring(dataUrl.indexOf(',') + 1);
+			resolve(base64);
+		};
+		fileReader.readAsDataURL(blob);
+	});
+}
+
+export { resolvablePromise, getDataURLFromBlob, blobToBase64Async };

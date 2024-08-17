@@ -1,9 +1,10 @@
 import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 import { AppState, BinaryFileData, BinaryFiles } from '@excalidraw/excalidraw/types/types';
 import { createStore, getMany, setMany, set, get } from 'idb-keyval';
-import { blobToBase64Async, compress, decompress } from './compression';
+import { compress, decompress } from './compression';
 import { exportToBlob } from '@excalidraw/excalidraw';
 import { debounce } from 'lodash';
+import { blobToBase64Async } from './utils';
 
 const filesStore = createStore('draw_files_db', 'draw_files_store');
 const previewsStore = createStore('draw_previews_db', 'draw_previews_store');
