@@ -58,9 +58,9 @@ export default function Dashboard() {
 	return (
 		<div className="flex min-h-screen flex-row divide-x divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-950">
 			<aside className="fixed flex h-full max-h-screen w-80 flex-col gap-2 p-6">
-				<a className="mt-1 text-xl font-semibold text-gray-900 dark:text-slate-50" href="/">
+				<h1 className="mt-1 text-xl font-semibold text-gray-900 dark:text-slate-50">
 					draw.puntogris
-				</a>
+				</h1>
 				<nav className="mt-5 flex h-full flex-col gap-2 font-medium">
 					<NavLink
 						to="/dashboard/new"
@@ -70,7 +70,7 @@ export default function Dashboard() {
 							)
 						}
 					>
-						<PlusIcon size={20} />
+						<PlusIcon className="h-5 w-5" />
 						New scene
 					</NavLink>
 					<NavLink
@@ -80,9 +80,8 @@ export default function Dashboard() {
 								isActive ? ' bg-slate-100 dark:bg-gray-800' : ''
 							)
 						}
-						end
 					>
-						<DashboardIcon size={20} />
+						<DashboardIcon className="h-5 w-5" />
 						Dashboard
 					</NavLink>
 					<NavLink
@@ -93,7 +92,7 @@ export default function Dashboard() {
 							)
 						}
 					>
-						<SettingsIcon size={20} />
+						<SettingsIcon className="h-5 w-5" />
 						Settings
 					</NavLink>
 					<div className="mt-auto flex flex-col gap-2">
@@ -102,14 +101,18 @@ export default function Dashboard() {
 							type="button"
 							onClick={() => setTheme((prev) => (prev === Theme.DARK ? Theme.LIGHT : Theme.DARK))}
 						>
-							{theme === Theme.DARK ? <SunIcon size={20} /> : <MoonIcon size={20} />}
+							{theme === Theme.DARK ? (
+								<SunIcon className="h-5 w-5" />
+							) : (
+								<MoonIcon className="h-5 w-5" />
+							)}
 							Toggle theme
 						</button>
 						<button
 							onClick={signOut}
 							className="flex items-center gap-3 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
 						>
-							<SignOutIcon size={20} />
+							<SignOutIcon className="h-5 w-5" />
 							Sign out
 						</button>
 					</div>

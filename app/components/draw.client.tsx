@@ -337,7 +337,7 @@ function Welcome() {
 					<WelcomeScreen.Center.MenuItemLoadScene />
 					<WelcomeScreen.Center.MenuItemHelp />
 					<WelcomeScreen.Center.MenuItemLink
-						icon={<EnvelopeIcon size={16} />}
+						icon={<EnvelopeIcon className="h-4 w-4" />}
 						href="https://puntogris.com"
 						target="_blank"
 					>
@@ -380,7 +380,7 @@ function Menu({
 			<MainMenu.DefaultItems.ToggleTheme />
 			<MainMenu.ItemCustom>
 				<select
-					className="dark:bg-exalidraw-surface-low w-full rounded border border-zinc-100 bg-white px-2 py-1 text-sm text-neutral-800 shadow-none dark:border-neutral-700 dark:text-white"
+					className="w-full rounded border border-zinc-100 bg-white px-2 py-1 text-sm text-neutral-800 shadow-none dark:border-neutral-700 dark:bg-exalidraw-surface-low dark:text-white"
 					onChange={({ target }) => setLangCode(target.value)}
 					value={langCode}
 					aria-label={t('buttons.selectLanguage')}
@@ -403,11 +403,11 @@ function AppFooter({ status }: { status: SyncStatus }) {
 
 	switch (status) {
 		case 'synced':
-			syncIcon = <CheckIcon size={20} style="text-green-600" />;
+			syncIcon = <CheckIcon className="h-5 w-5 text-green-600" />;
 			syncText = 'Synced';
 			break;
 		case 'error':
-			syncIcon = <CrossIcon size={20} style="text-red-600" />;
+			syncIcon = <CrossIcon className="h-5 w-5 text-red-600" />;
 			syncText = 'Error';
 			break;
 		case 'syncing':
@@ -417,7 +417,7 @@ function AppFooter({ status }: { status: SyncStatus }) {
 	return (
 		<Footer>
 			<div className="relative w-full">
-				<div className="bg-exalidraw-surface-low absolute right-2 top-0 flex h-[36px] items-center gap-2 rounded-md px-4">
+				<div className="absolute right-2 top-0 flex h-[36px] items-center gap-2 rounded-md bg-exalidraw-surface-low px-4">
 					{syncIcon} <div className="text-sm">{syncText}</div>
 				</div>
 			</div>

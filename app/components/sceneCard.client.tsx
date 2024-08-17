@@ -119,7 +119,7 @@ function Dropdown({ onItemClicked }: { onItemClicked: (item: string) => void }) 
 							}}
 							className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
 						>
-							<ShareIcon size={16} /> Share link
+							<ShareIcon className="h-4 w-4" /> Share link
 						</button>
 						<button
 							onClick={() => {
@@ -128,7 +128,7 @@ function Dropdown({ onItemClicked }: { onItemClicked: (item: string) => void }) 
 							}}
 							className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
 						>
-							<PencilIcon size={16} /> Edit
+							<PencilIcon className="h-4 w-4" /> Edit
 						</button>
 						<button
 							onClick={() => {
@@ -137,7 +137,7 @@ function Dropdown({ onItemClicked }: { onItemClicked: (item: string) => void }) 
 							}}
 							className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
 						>
-							<TrashIcon size={16} /> Delete
+							<TrashIcon className="h-4 w-4" /> Delete
 						</button>
 					</div>
 				</div>

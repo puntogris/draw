@@ -139,7 +139,7 @@ export default function New() {
 									className="rounded-full bg-gray-100 p-0.5 text-slate-400 hover:bg-gray-200 dark:bg-gray-800 dark:text-slate-400 hover:dark:bg-gray-700"
 									type="button"
 								>
-									<CrossIcon size={17} />
+									<CrossIcon className="h-4 w-4" />
 								</button>
 							)}
 						</div>
@@ -148,7 +148,7 @@ export default function New() {
 							type="button"
 							className="flex items-center gap-2 rounded-md border border-transparent bg-gray-950 px-3 text-sm font-medium text-slate-50 hover:bg-gray-800 dark:bg-slate-50 dark:text-gray-950 hover:dark:bg-slate-200"
 						>
-							<ShuffleIcon size={18} style="dark:text-gray-950 text-slate-50" />
+							<ShuffleIcon className="h-4 w-4 text-slate-50 dark:text-gray-950" />
 						</button>
 					</div>
 					<label className="mb-2 mt-4 block self-start text-sm text-slate-700 dark:text-slate-300">
@@ -168,7 +168,7 @@ export default function New() {
 								className="rounded-full bg-gray-100 p-0.5 text-slate-400 hover:bg-gray-200 dark:bg-gray-800 dark:text-slate-400 hover:dark:bg-gray-700"
 								type="button"
 							>
-								<CrossIcon size={17} />
+								<CrossIcon className="h-4 w-4" />
 							</button>
 						)}
 					</div>

@@ -92,15 +92,7 @@ export default function Index() {
 				onClick={() => setTheme((prev) => (prev === Theme.DARK ? Theme.LIGHT : Theme.DARK))}
 				className="fixed right-4 top-8 z-20 flex gap-2 rounded-md p-2 text-sm font-medium text-slate-200 transition-colors hover:bg-gray-800 dark:text-slate-200 lg:text-gray-900 lg:hover:bg-slate-200 dark:lg:text-slate-200 dark:lg:hover:bg-gray-800"
 			>
-				{theme === Theme.DARK ? (
-					<>
-						Light theme <SunIcon size={20} />
-					</>
-				) : (
-					<>
-						Dark theme <MoonIcon size={20} />
-					</>
-				)}
+				{theme === Theme.DARK ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
 			</button>
 			<div className="flex flex-grow flex-col p-8">
 				<img className="absolute inset-0 h-full w-full object-cover lg:w-1/2" src={background} />
@@ -110,7 +102,7 @@ export default function Index() {
 					href="https://puntogris.com/"
 					target="_blank"
 				>
-					<CompassIcon size={24} style="text-white" />
+					<CompassIcon className="h-6 w-6 text-white" />
 					<div className="text-xl font-semibold text-slate-50 hover:text-slate-200">draw.</div>
 				</a>
 				<div className="z-10 mt-auto items-center space-y-1 pb-6 text-center font-medium text-slate-200 md:text-start">
