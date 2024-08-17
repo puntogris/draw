@@ -76,6 +76,7 @@ export default function Dashboard() {
 								isActive ? ' bg-slate-100 dark:bg-gray-800' : ''
 							)
 						}
+						end={true}
 					>
 						<DashboardIcon className="h-5 w-5" />
 						Dashboard
