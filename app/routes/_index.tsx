@@ -56,16 +56,13 @@ export default function Index() {
 
 	useEffect(() => {
 		if (actionData?.error) {
-			toast.error(actionData.error, {
-				position: 'top-right'
-			});
+			toast.error(actionData.error);
 		}
 	}, [actionData]);
 
 	useEffect(() => {
 		if (isLoading) {
 			toast.loading('Checking login credentials', {
-				position: 'top-right',
 				id: 'login_loading'
 			});
 		} else {

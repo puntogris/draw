@@ -55,7 +55,7 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
 		if (response.ok) {
 			setName(await response.json());
 		} else {
-			toast.error('Failed generating a name.', { position: 'top-right' });
+			toast.error('Failed generating a name.');
 		}
 	}
 

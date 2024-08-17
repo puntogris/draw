@@ -60,14 +60,13 @@ export default function New() {
 
 	useEffect(() => {
 		if (actionData?.error) {
-			toast.error(actionData.error, { position: 'top-right' });
+			toast.error(actionData.error);
 		}
 	}, [actionData]);
 
 	useEffect(() => {
 		if (isLoading) {
 			toast.loading('Creating new scene', {
-				position: 'top-right',
 				id: 'create_loading'
 			});
 		} else {
@@ -95,7 +94,7 @@ export default function New() {
 		if (response.ok) {
 			setName(await response.json());
 		} else {
-			toast.error('Failed generating a name.', { position: 'top-right' });
+			toast.error('Failed generating a name.');
 		}
 	}
 

@@ -166,9 +166,7 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 		}
 
 		if (error) {
-			toast.error('Unable to save the scene, changes could be lost!', {
-				position: 'top-right'
-			});
+			toast.error('Unable to save the scene, changes could be lost!');
 		}
 	}
 
@@ -186,8 +184,7 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 					</div>
 				),
 				{
-					duration: VIEWER_ALERT_DURATION_MS,
-					position: 'top-right'
+					duration: VIEWER_ALERT_DURATION_MS
 				}
 			);
 		}
@@ -277,22 +274,16 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 	);
 
 	async function onSaveClicked() {
-		const loadingToast = toast.loading('Saving scene...', {
-			position: 'top-right'
-		});
+		const loadingToast = toast.loading('Saving scene...');
 
 		const { error } = await saveSceneServer();
 
 		toast.dismiss(loadingToast);
 
 		if (!error) {
-			toast.success('Scene saved successfully.', {
-				position: 'top-right'
-			});
+			toast.success('Scene saved successfully.');
 		} else {
-			toast.error('An error ocurred.', {
-				position: 'top-right'
-			});
+			toast.error('An error ocurred.');
 		}
 	}
 

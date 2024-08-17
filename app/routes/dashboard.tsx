@@ -43,9 +43,7 @@ export default function Dashboard() {
 	const navigate = useNavigate();
 
 	async function signOut() {
-		const toastId = toast.loading('Signing out...', {
-			position: 'bottom-center'
-		});
+		const toastId = toast.loading('Signing out...');
 		await supabase.auth.signOut();
 		toast.dismiss(toastId);
 		navigate('/');

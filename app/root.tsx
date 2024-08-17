@@ -54,7 +54,7 @@ function App() {
 				<Links />
 			</head>
 			<body>
-				<Toaster />
+				<Toaster position="top-right" />
 				<Outlet context={{ supabase }} />
 				<ScrollRestoration />
 				<Scripts />
