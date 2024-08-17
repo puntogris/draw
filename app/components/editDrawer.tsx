@@ -10,7 +10,7 @@ export const meta = () => ({
 	viewport: 'width=device-width,initial-scale=1'
 });
 
-export type EditDrawerProps = {
+type EditDrawerProps = {
 	show: boolean;
 	scene: Scene | null;
 	onClose: (scene: EditDrawerCloseProps | null) => void;

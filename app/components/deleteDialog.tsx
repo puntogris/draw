@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export type DeleteDialogProps = {
+type DeleteDialogProps = {
 	isOpen: boolean;
 	name: string | undefined;
 	onClose: (confirmed: boolean) => void;
