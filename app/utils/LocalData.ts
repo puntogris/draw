@@ -1,7 +1,7 @@
 import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 import { AppState, BinaryFileData, BinaryFiles } from '@excalidraw/excalidraw/types/types';
 import { createStore, getMany, setMany, set, get } from 'idb-keyval';
-import { compress, decompress } from './compression';
+import { Base64String } from './Base64String';
 import { exportToBlob } from '@excalidraw/excalidraw';
 import { debounce } from 'lodash';
 import { blobToBase64Async } from './utils';
@@ -72,13 +72,13 @@ export class LocalData {
 			}
 		});
 		const preview = await blobToBase64Async(blob);
-		await set(id, compress(preview), previewsStore);
+		await set(id, Base64String.compress(preview), previewsStore);
 	}
 
 	static async getPreview(id: string) {
 		const preview = await get(id, previewsStore);
 		if (preview) {
-			return decompress(preview);
+			return Base64String.decompress(preview);
 		} else {
 			null;
 		}
