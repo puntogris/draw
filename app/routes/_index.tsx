@@ -105,37 +105,34 @@ export default function Index() {
 					<CompassIcon className="h-6 w-6 text-white" />
 					<div className="text-xl font-semibold text-slate-50 hover:text-slate-200">draw.</div>
 				</a>
-				<div className="z-10 mt-auto items-center space-y-1 pb-6 text-center font-medium text-slate-200 md:text-start">
-					<span>Drawing site made using</span>
+				<p className="z-10 mt-auto items-center pb-6 text-center font-medium text-slate-200 md:text-start">
+					<span>Drawing site made using </span>
 					<a
 						className="font-semibold text-blue-400 hover:underline"
 						href="https://github.com/excalidraw/excalidraw"
 						target="_blank"
 					>
-						{' '}
 						Exalidraw
-					</a>{' '}
-					and
+					</a>
+					<span> and </span>
 					<a
 						className="font-semibold text-blue-400 hover:underline"
 						href="https://supabase.com/"
 						target="_blank"
 					>
-						{' '}
 						Supabase.
 					</a>
-					<div>This is mostly for personal use.</div>
-					<div>
-						If you would like an account, you can reach me at:
-						<a
-							href="mailto:dev@puntogris.com"
-							className="font-semibold text-blue-400 hover:underline"
-						>
-							{' '}
-							dev@puntogris.com
-						</a>
-					</div>
-				</div>
+					<br />
+					<span>This is mostly for personal use.</span>
+					<br />
+					<span>If you would like an account, you can reach me at: </span>
+					<a
+						href="mailto:dev@puntogris.com"
+						className="font-semibold text-blue-400 hover:underline"
+					>
+						dev@puntogris.com
+					</a>
+				</p>
 			</div>
 			<div className="z-10 flex flex-col items-center justify-center gap-8 bg-white px-4 dark:bg-gray-950 md:flex-row md:gap-4">
 				<Form
@@ -145,9 +142,9 @@ export default function Index() {
 					<h1 className="self-center text-2xl font-bold text-gray-800 dark:text-slate-50">
 						Sign in
 					</h1>
-					<h1 className="self-center text-base text-slate-600 dark:text-slate-400">
+					<p className="self-center text-base text-slate-600 dark:text-slate-400">
 						Enter your credentials below to enter the app
-					</h1>
+					</p>
 					<div className="w-full">
 						<label
 							htmlFor="email"
