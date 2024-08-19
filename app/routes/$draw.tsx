@@ -8,7 +8,7 @@ import { ClientOnly } from 'remix-utils/client-only';
 import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
 export function meta({ matches }: MetaArgs) {
-	const match = matches.find((m) => m.id === 'routes/$draw._index');
+	const match = matches.find((m) => m.id === 'routes/$draw');
 	const sceneId = match?.params['draw'];
 	return [
 		{ title: `draw - ${sceneId}` },
