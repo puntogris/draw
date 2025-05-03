@@ -1,4 +1,4 @@
-import type { SupabaseClient, User } from '@supabase/auth-helpers-remix';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
 
 type OutletContext = { supabase: SupabaseClient };
 
@@ -31,10 +31,7 @@ type SceneCardProps = {
 	onSceneCardEvent: (event: SceneCardEvent) => void;
 };
 
-type SceneCardEvent = {
-	item: string;
-	name: string;
-};
+type SceneCardEvent = { item: string; name: string };
 
 type SyncStatus = 'synced' | 'error' | 'syncing';
 

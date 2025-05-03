@@ -15,9 +15,9 @@
     "@react-router/fs-routes": "^7.5.3",
     "@react-router/node": "^7.0.0",
     "@react-router/serve": "^7.0.0",
-    "@remix-run/vercel": "1.19.3",
     "@supabase/ssr": "^0.4.1",
     "@vercel/node": "^2.15.10",
+    "@vercel/react-router": "^1.1.0",
     "base64-arraybuffer": "^1.0.2",
     "idb-keyval": "^6.2.1",
     "isbot": "latest",
@@ -28,7 +28,7 @@
     "react-hot-toast": "^2.5.2",
     "react-router": "^7.0.0",
     "react-router-dom": "^7.5.3",
-    "remix-themes": "^1.6.1",
+    "remix-themes": "^2.0.4",
     "remix-utils": "^7.7.0"
   },
   "devDependencies": {
