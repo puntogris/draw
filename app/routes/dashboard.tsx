@@ -1,5 +1,5 @@
-import { NavLink, Outlet, useLoaderData, useNavigate, useOutletContext } from '@remix-run/react';
-import { json, LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { NavLink, Outlet, useLoaderData, useNavigate, useOutletContext } from 'react-router';
+import { LoaderFunctionArgs, redirect, data } from 'react-router';
 import { OutletContext } from '~/utils/types';
 import DashboardIcon from '~/components/icons/dashboardIcon';
 import PlusIcon from '~/components/icons/plusIcon';
@@ -23,13 +23,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const { supabase, headers } = getSupabaseServerClientHelper(request);
 
 	try {
-		const { error, data } = await supabase.auth.getUser();
+		const { error, data: user } = await supabase.auth.getUser();
 
 		if (error) {
 			throw error;
 		}
 
-		return json({ user: data.user }, { headers: headers });
+		return data({ user: user.user }, { headers: headers });
 	} catch (e) {
 		console.error(e);
 		return redirect('/', { headers: headers });

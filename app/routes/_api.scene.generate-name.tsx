@@ -1,6 +1,6 @@
-import { json } from "@remix-run/node";
-import { generate } from "namor/dist/generate";
+import { data } from 'react-router';
+import { generate } from 'namor/dist/generate';
 
 export async function loader() {
-  return json(generate({ words: 3 }));
+	return data(generate({ words: 3 }));
 }

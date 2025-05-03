@@ -1,4 +1,4 @@
-import type { LinksFunction, LoaderFunctionArgs } from '@remix-run/node';
+import type { LinksFunction, LoaderFunctionArgs } from 'react-router';
 import {
 	isRouteErrorResponse,
 	Links,
@@ -8,7 +8,7 @@ import {
 	ScrollRestoration,
 	useLoaderData,
 	useRouteError
-} from '@remix-run/react';
+} from 'react-router';
 import { createBrowserClient } from '@supabase/ssr';
 import { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
@@ -35,10 +35,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!
 	};
 	const themeResolver = await themeSessionResolver(request);
-	return {
-		env,
-		theme: themeResolver.getTheme()
-	};
+	return { env, theme: themeResolver.getTheme() };
 }
 
 function App() {

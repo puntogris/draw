@@ -1,8 +1,8 @@
 import ShuffleIcon from '~/components/icons/shuffleIcon';
 import CrossIcon from '~/components/icons/crossIcon';
-import { Form, useActionData, useNavigation } from '@remix-run/react';
+import { Form, useActionData, useNavigation } from 'react-router';
 import { useEffect, useState } from 'react';
-import { ActionFunction, redirect } from '@remix-run/node';
+import { ActionFunction, redirect } from 'react-router';
 import { toast } from 'react-hot-toast';
 import { getSupabaseServerClientHelper } from '~/utils/supabase';
 

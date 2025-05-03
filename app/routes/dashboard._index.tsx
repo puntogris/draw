@@ -1,4 +1,4 @@
-import { useOutletContext } from '@remix-run/react';
+import { useOutletContext } from 'react-router';
 import { Dispatch, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { DashboardOutletContext, Scene, SceneCardEvent } from '~/utils/types';

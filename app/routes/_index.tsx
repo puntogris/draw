@@ -1,5 +1,5 @@
-import { ActionFunction, LoaderFunction, json, redirect } from '@remix-run/node';
-import { Form, useActionData, useNavigation } from '@remix-run/react';
+import { ActionFunction, LoaderFunction, data, redirect } from 'react-router';
+import { Form, useActionData, useNavigation } from 'react-router';
 import { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { Theme, useTheme } from 'remix-themes';
@@ -13,18 +13,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 	try {
 		const { supabase, headers } = getSupabaseServerClientHelper(request);
 
-		const { error, data } = await supabase.auth.getUser();
+		const { error, data: userData } = await supabase.auth.getUser();
 
-		if (error || !data.user) {
-			return json({ error: error ? error.message : 'User not signed in.' }, { headers: headers });
+		if (error || !userData.user) {
+			return data({ error: error ? error.message : 'User not signed in.' }, { headers: headers });
 		}
 
-		return redirect('/dashboard', {
-			headers: headers
-		});
+		return redirect('/dashboard', { headers: headers });
 	} catch (e: any) {
 		console.error(e);
-		return json({ error: e.toString() });
+		return data({ error: e.toString() });
 	}
 };
 
@@ -40,9 +38,7 @@ export const action: ActionFunction = async ({ request }) => {
 	});
 
 	if (!error) {
-		return redirect('/dashboard', {
-			headers: headers
-		});
+		return redirect('/dashboard', { headers: headers });
 	} else {
 		return { error: error.message };
 	}
@@ -62,9 +58,7 @@ export default function Index() {
 
 	useEffect(() => {
 		if (isLoading) {
-			toast.loading('Checking login credentials', {
-				id: 'login_loading'
-			});
+			toast.loading('Checking login credentials', { id: 'login_loading' });
 		} else {
 			toast.dismiss('login_loading');
 		}
@@ -143,9 +137,7 @@ export default function Index() {
 							name="email"
 							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)]"
 							required
-							style={{
-								WebkitTextFillColor: theme === Theme.DARK ? 'white' : 'black'
-							}}
+							style={{ WebkitTextFillColor: theme === Theme.DARK ? 'white' : 'black' }}
 						/>
 					</div>
 					<div className="w-full">
@@ -161,9 +153,7 @@ export default function Index() {
 							name="password"
 							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)]"
 							required
-							style={{
-								WebkitTextFillColor: theme === Theme.DARK ? 'white' : 'black'
-							}}
+							style={{ WebkitTextFillColor: theme === Theme.DARK ? 'white' : 'black' }}
 						/>
 					</div>
 					<button

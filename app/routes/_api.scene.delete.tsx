@@ -1,4 +1,4 @@
-import { ActionFunction, json } from '@remix-run/node';
+import { ActionFunction, data } from 'react-router';
 import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
 export const action: ActionFunction = async ({ request }) => {
@@ -10,7 +10,7 @@ export const action: ActionFunction = async ({ request }) => {
 		const { error: userError, data: userData } = await supabase.auth.getUser();
 
 		if (userError) {
-			return json(userError.message, { status: 401 });
+			return data(userError.message, { status: 401 });
 		}
 
 		const { error: deleteError, data: deleteData } = await supabase
@@ -20,12 +20,12 @@ export const action: ActionFunction = async ({ request }) => {
 			.eq('uid', userData.user.id);
 
 		if (deleteError) {
-			return json(deleteError.message, { status: 500, headers: headers });
+			return data(deleteError.message, { status: 500, headers: headers });
 		} else {
-			return json({ status: 200, headers: headers });
+			return data({ status: 200, headers: headers });
 		}
 	} catch (e) {
 		console.error(e);
-		return json('Internal error.', { status: 500, headers: headers });
+		return data('Internal error.', { status: 500, headers: headers });
 	}
 };

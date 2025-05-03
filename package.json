@@ -4,18 +4,18 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix vite:build",
-    "dev": "remix vite:dev",
+    "build": "react-router build",
+    "dev": "react-router dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "remix-serve ./build/server/index.js",
-    "typecheck": "tsc"
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.0",
-    "@remix-run/node": "^2.16.5",
-    "@remix-run/react": "^2.16.5",
-    "@remix-run/serve": "^2.16.5",
-    "@remix-run/vercel": "^1.19.3",
+    "@react-router/fs-routes": "^7.5.3",
+    "@react-router/node": "^7.0.0",
+    "@react-router/serve": "^7.0.0",
+    "@remix-run/vercel": "1.19.3",
     "@supabase/ssr": "^0.4.1",
     "@vercel/node": "^2.15.10",
     "base64-arraybuffer": "^1.0.2",
@@ -26,11 +26,13 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.5.2",
+    "react-router": "^7.0.0",
+    "react-router-dom": "^7.5.3",
     "remix-themes": "^1.6.1",
     "remix-utils": "^7.7.0"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.16.5",
+    "@react-router/dev": "^7.0.0",
     "@remix-run/eslint-config": "^1.19.3",
     "@types/lodash": "^4.17.16",
     "@types/react": "^18.3.20",

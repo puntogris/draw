@@ -1,9 +1,9 @@
 import Spinner from '~/components/spinner';
 import Draw from '~/components/draw.client';
-import { LoaderFunctionArgs, MetaArgs, json } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { LoaderFunctionArgs, MetaArgs, data } from 'react-router';
+import { useLoaderData } from 'react-router';
 import { OutletContext } from '~/utils/types';
-import { useOutletContext } from '@remix-run/react';
+import { useOutletContext } from 'react-router';
 import { ClientOnly } from 'remix-utils/client-only';
 import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
@@ -41,7 +41,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			}
 		}
 
-		return json({ scene, isOwner, serverFilesId }, { headers: headers });
+		return data({ scene, isOwner, serverFilesId }, { headers: headers });
 	} else {
 		throw new Response('Not found', { status: 404, headers: headers });
 	}

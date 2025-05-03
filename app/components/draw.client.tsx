@@ -10,7 +10,7 @@ import {
 	languages,
 	useI18n
 } from '@excalidraw/excalidraw';
-import { useNavigate } from '@remix-run/react';
+import { useNavigate } from 'react-router';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { LocalData } from '~/utils/LocalData';
 import '@excalidraw/excalidraw/index.css';
