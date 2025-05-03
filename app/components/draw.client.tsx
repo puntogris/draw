@@ -13,26 +13,29 @@ import {
 import { useNavigate } from '@remix-run/react';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { LocalData } from '~/utils/LocalData';
-import type {
+import '@excalidraw/excalidraw/index.css';
+
+import { toast } from 'react-hot-toast';
+import EnvelopeIcon from './icons/envelopeIcon';
+
+import { debounce, isEqual } from 'lodash';
+import type { DrawProps, SyncStatus } from '~/utils/types';
+import { decode } from 'base64-arraybuffer';
+import { resolvablePromise, getDataURLFromBlob } from '~/utils/utils';
+import { Theme as GlobalTheme, useTheme } from 'remix-themes';
+import {
 	AppState,
 	BinaryFileData,
 	BinaryFiles,
 	ExcalidrawImperativeAPI,
 	ExcalidrawInitialDataState
-} from '@excalidraw/excalidraw/types/types';
-import { toast } from 'react-hot-toast';
-import EnvelopeIcon from './icons/envelopeIcon';
-import type {
+} from '@excalidraw/excalidraw/types';
+import { ResolvablePromise } from '@excalidraw/excalidraw/utils';
+import {
 	ExcalidrawElement,
 	ExcalidrawImageElement,
 	FileId
-} from '@excalidraw/excalidraw/types/element/types';
-import { debounce, isEqual } from 'lodash';
-import type { DrawProps, SyncStatus } from '~/utils/types';
-import { decode } from 'base64-arraybuffer';
-import { ResolvablePromise } from '@excalidraw/excalidraw/types/utils';
-import { resolvablePromise, getDataURLFromBlob } from '~/utils/utils';
-import { Theme as GlobalTheme, useTheme } from 'remix-themes';
+} from '@excalidraw/excalidraw/element/types';
 
 const UPDATE_DEBOUNCE_MS = 2000;
 const UPDATE_MAX_WAIT_MS = 10000;
@@ -137,10 +140,7 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 
 		const { error } = await supabase
 			.from('scenes')
-			.update({
-				data: sceneDataRef.current,
-				updated_at: new Date().getTime()
-			})
+			.update({ data: sceneDataRef.current, updated_at: new Date().getTime() })
 			.eq('id', scene.id);
 
 		if (error) {
@@ -183,9 +183,7 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 						</button>
 					</div>
 				),
-				{
-					duration: VIEWER_ALERT_DURATION_MS
-				}
+				{ duration: VIEWER_ALERT_DURATION_MS }
 			);
 		}
 
@@ -240,9 +238,7 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 			await saveScene();
 		},
 		UPDATE_DEBOUNCE_MS,
-		{
-			maxWait: UPDATE_MAX_WAIT_MS
-		}
+		{ maxWait: UPDATE_MAX_WAIT_MS }
 	);
 
 	const onChange = useCallback(
@@ -292,12 +288,7 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 			<Excalidraw
 				excalidrawAPI={excalidrawRef}
 				initialData={initialStatePromiseRef.current.promise}
-				UIOptions={{
-					canvasActions: {
-						toggleTheme: true
-					},
-					welcomeScreen: true
-				}}
+				UIOptions={{ canvasActions: { toggleTheme: true }, welcomeScreen: true }}
 				onChange={onChange}
 				autoFocus={true}
 				theme={theme == THEME.LIGHT ? THEME.LIGHT : THEME.DARK}

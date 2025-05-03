@@ -41,14 +41,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			}
 		}
 
-		return json(
-			{
-				scene,
-				isOwner,
-				serverFilesId
-			},
-			{ headers: headers }
-		);
+		return json({ scene, isOwner, serverFilesId }, { headers: headers });
 	} else {
 		throw new Response('Not found', { status: 404, headers: headers });
 	}
