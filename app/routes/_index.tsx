@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunction, data, redirect } from 'react-router';
+import { ActionFunctionArgs, LoaderFunction, data, redirect } from 'react-router';
 import { Form, useActionData, useNavigation } from 'react-router';
 import { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
@@ -22,11 +22,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 		return redirect('/dashboard', { headers: headers });
 	} catch (e: any) {
 		console.error(e);
-		return data({ error: e.toString() });
+		return { error: e.toString() };
 	}
 };
 
-export const action: ActionFunction = async ({ request }) => {
+export async function action({ request }: ActionFunctionArgs) {
 	const body = await request.formData();
 	const { email, password } = Object.fromEntries(body);
 
@@ -42,7 +42,7 @@ export const action: ActionFunction = async ({ request }) => {
 	} else {
 		return { error: error.message };
 	}
-};
+}
 
 export default function Index() {
 	const navigation = useNavigation();

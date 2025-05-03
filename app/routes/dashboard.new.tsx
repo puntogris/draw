@@ -28,13 +28,15 @@ export const action: ActionFunction = async ({ request }) => {
 			return { error: userError.message };
 		}
 
-		const { error: insertError } = await supabase.from('scenes').insert({
-			name,
-			description,
-			uid: userData.user.id,
-			created_at: new Date().getTime(),
-			published
-		});
+		const { error: insertError } = await supabase
+			.from('scenes')
+			.insert({
+				name,
+				description,
+				uid: userData.user.id,
+				created_at: new Date().getTime(),
+				published
+			});
 
 		if (!insertError) {
 			return redirect(`/${name}`, { headers: headers });
@@ -66,9 +68,7 @@ export default function New() {
 
 	useEffect(() => {
 		if (isLoading) {
-			toast.loading('Creating new scene', {
-				id: 'create_loading'
-			});
+			toast.loading('Creating new scene', { id: 'create_loading' });
 		} else {
 			toast.dismiss('create_loading');
 		}
@@ -92,7 +92,8 @@ export default function New() {
 	async function generateRandomName() {
 		const response = await fetch('/scene/generate-name');
 		if (response.ok) {
-			setName(await response.json());
+			const { name } = await response.json();
+			setName(name);
 		} else {
 			toast.error('Failed generating a name.');
 		}

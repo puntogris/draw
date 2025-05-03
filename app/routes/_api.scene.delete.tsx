@@ -13,7 +13,7 @@ export const action: ActionFunction = async ({ request }) => {
 			return data(userError.message, { status: 401 });
 		}
 
-		const { error: deleteError, data: deleteData } = await supabase
+		const { error: deleteError } = await supabase
 			.from('scenes')
 			.delete()
 			.eq('id', id)
