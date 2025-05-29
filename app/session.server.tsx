@@ -4,7 +4,7 @@ import { createThemeSessionResolver } from "remix-themes";
 export const themeSessionResolver = createThemeSessionResolver(
   createCookieSessionStorage({
     cookie: {
-      name: "draw.puntogris",
+      name: "draw.puntogris.theme",
       path: "/",
       httpOnly: true,
       sameSite: "lax",
