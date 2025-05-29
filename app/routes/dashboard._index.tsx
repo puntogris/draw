@@ -21,16 +21,17 @@ export function meta() {
 export async function loader({ request }: LoaderFunctionArgs) {
 	const { supabase, headers } = getSupabaseServerClientHelper(request);
 	try {
-		const { error, data: user } = await supabase.auth.getUser();
+		const { error, data: sessionData } = await supabase.auth.getSession();
+		const userId = sessionData.session?.user.id
 
-		if (error) {
+		if (error || !userId) {
 			throw error;
 		}
 
 		const scenes = supabase
 			.from('scenes')
 			.select('id,uid,name,description,updated_at,created_at,published')
-			.eq('uid', user.user.id)
+			.eq('uid', userId)
 			.order('created_at', { ascending: false })
 			.then(result => result);
 

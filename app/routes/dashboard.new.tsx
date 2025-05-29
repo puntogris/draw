@@ -1,6 +1,6 @@
 import ShuffleIcon from '~/components/icons/shuffleIcon';
 import CrossIcon from '~/components/icons/crossIcon';
-import { data, Form, LoaderFunctionArgs, useActionData, useNavigation,  ActionFunction, redirect } from 'react-router';
+import { data, Form, LoaderFunctionArgs, useActionData, useNavigation, ActionFunction, redirect } from 'react-router';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { getSupabaseServerClientHelper } from '~/utils/supabase';
@@ -16,13 +16,13 @@ export function meta() {
 export async function loader({ request }: LoaderFunctionArgs) {
 	const { supabase, headers } = getSupabaseServerClientHelper(request);
 	try {
-		const { error, data: user } = await supabase.auth.getUser();
+		const { error, data: sessionData } = await supabase.auth.getSession();
 
-		if (error) {
+		if (error || !sessionData.session) {
 			throw error;
 		}
 
-		return data({ user: user.user }, { headers: headers });
+		return data({}, { headers: headers });
 	} catch (e) {
 		console.error(e);
 		return redirect('/', { headers: headers });
