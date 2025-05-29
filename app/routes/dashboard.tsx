@@ -63,6 +63,7 @@ export default function Dashboard() {
 								isActive ? ' bg-slate-100 dark:bg-gray-800' : ''
 							)
 						}
+						prefetch="intent"
 					>
 						<PlusIcon className="h-5 w-5" />
 						New scene
@@ -75,21 +76,23 @@ export default function Dashboard() {
 							)
 						}
 						end={true}
+						prefetch="intent"
 					>
 						<DashboardIcon className="h-5 w-5" />
 						Dashboard
 					</NavLink>
-					<NavLink
+					{/* <NavLink
 						to="/dashboard/settings"
 						className={({ isActive }) =>
 							'flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800'.concat(
 								isActive ? ' bg-slate-100 dark:bg-slate-800' : ''
 							)
 						}
+						prefetch="intent"
 					>
 						<SettingsIcon className="h-5 w-5" />
 						Settings
-					</NavLink>
+					</NavLink> */}
 					<div className="mt-auto flex flex-col gap-2">
 						<button
 							className="flex items-center gap-3 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
