@@ -45,11 +45,18 @@ export default function Index() {
 	const { scenes } = useLoaderData<typeof loader>()
 
 	return (
-		<Suspense fallback={<div className="flex h-full items-center justify-center"><Spinner size={'lg'} /></div>}>
-			<Await resolve={scenes}>
-				{(value) => <Scenes userScenes={value.data as Scene[]} />}
-			</Await>
-		</Suspense>
+		<div className='flex h-full flex-col px-16 py-10'>
+			<h1 className="text-xl font-bold text-gray-900 dark:text-slate-50">Dashboard</h1>
+			<p className="text-sm text-slate-600 dark:text-slate-400">
+				These are your scenes and they will be automatically synced.
+			</p>
+			<Suspense fallback={<div className="flex h-full items-center justify-center"><Spinner size={'lg'} /></div>}>
+				<Await resolve={scenes}>
+					{(value) => <Scenes userScenes={value.data as Scene[]} />}
+				</Await>
+			</Suspense>
+		</div>
+
 	);
 }
 
@@ -163,17 +170,13 @@ function Scenes({ userScenes }: { userScenes: Scene[] }) {
 	}, [searchInput]);
 
 	return (
-		<div className="flex h-full flex-col px-16 py-10">
+		<div className="flex h-full flex-col">
 			<DeleteSceneDialog
 				name={selectedScene?.name}
 				isOpen={showDeleteDialog}
 				onClose={onCloseDeleteDialog}
 			/>
 			<EditDrawer show={showSceneDrawer} onClose={onCloseEditDrawer} scene={selectedScene} />
-			<h1 className="text-xl font-bold text-gray-900 dark:text-slate-50">Dashboard</h1>
-			<p className="text-sm text-slate-600 dark:text-slate-400">
-				These are your scenes and they will be automatically synced.
-			</p>
 			{scenes.length == 0 && <EmptyDataView />}
 			{scenes.length > 0 && (
 				<>
