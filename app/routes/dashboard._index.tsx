@@ -1,13 +1,14 @@
-import { useOutletContext } from 'react-router';
-import { Dispatch, useEffect, useState } from 'react';
+import { Dispatch, useEffect, useState, Suspense } from 'react';
 import { toast } from 'react-hot-toast';
-import { DashboardOutletContext, Scene, SceneCardEvent } from '~/utils/types';
+import { Scene, SceneCardEvent } from '~/utils/types';
 import SceneCard from '~/components/sceneCard.client';
 import Spinner from '~/components/spinner';
 import EmptyContentIcon from '~/components/icons/emptyContentIcon';
 import SearchIcon from '~/components/icons/searchIcon';
 import EditDrawer, { EditDrawerCloseProps } from '~/components/editDrawer';
 import DeleteSceneDialog from '~/components/deleteDialog';
+import { getSupabaseServerClientHelper } from '~/utils/supabase';
+import { Await, redirect, useLoaderData, LoaderFunctionArgs } from "react-router";
 
 export function meta() {
 	return [
@@ -17,44 +18,48 @@ export function meta() {
 	];
 }
 
+export async function loader({ request }: LoaderFunctionArgs) {
+	const { supabase, headers } = getSupabaseServerClientHelper(request);
+	try {
+		const { error, data: user } = await supabase.auth.getUser();
+
+		if (error) {
+			throw error;
+		}
+
+		const scenes = supabase
+			.from('scenes')
+			.select('id,uid,name,description,updated_at,created_at,published')
+			.eq('uid', user.user.id)
+			.order('created_at', { ascending: false })
+			.then(result => result);
+
+		return { scenes }
+	} catch (e) {
+		console.error(e);
+		return redirect('/', { headers: headers });
+	}
+}
+
 export default function Index() {
-	const { supabase, user } = useOutletContext<DashboardOutletContext>();
-	const [isLoadingState, setIsLoadingState] = useState(true);
-	const [scenes, setScenes] = useState<Scene[]>([]);
+	const { scenes } = useLoaderData<typeof loader>()
+
+	return (
+		<Suspense fallback={<div className="flex h-full items-center justify-center"><Spinner size={'lg'} /></div>}>
+			<Await resolve={scenes}>
+				{(value) => <Scenes userScenes={value.data as Scene[]} />}
+			</Await>
+		</Suspense>
+	);
+}
+
+function Scenes({ userScenes }: { userScenes: Scene[] }) {
+	const [scenes, setScenes] = useState<Scene[]>(userScenes);
 	const [filteredScenes, setFilteredScenes] = useState<Scene[]>([]);
 	const [searchInput, setSearchInput] = useState('');
 	const [showSceneDrawer, setShowSceneDrawer] = useState(false);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [selectedScene, setSelectedScene] = useState<Scene | null>(null);
-
-	useEffect(() => {
-		async function fetchScenes() {
-			const { data, error } = await supabase
-				.from('scenes')
-				.select('id,uid,name,description,updated_at,created_at,published')
-				.eq('uid', user.id)
-				.order('created_at', { ascending: false });
-
-			if (error) {
-				setIsLoadingState(false);
-				toast.error('An error ocurred calling the server.', {
-					id: 'fetch_error'
-				});
-			} else {
-				const sorted = sortScenesByDate(data as Scene[]);
-				setScenes(sorted);
-				setFilteredScenes(sorted);
-				setIsLoadingState(false);
-			}
-		}
-		fetchScenes();
-
-		return () => toast.dismiss('fetch_error');
-	}, []);
-
-	useEffect(() => {
-		setFilteredScenes(sortScenesByDate(scenes.filter((scene) => scene.name.includes(searchInput))));
-	}, [searchInput]);
 
 	function sortScenesByDate(scenes: Scene[]) {
 		return scenes.sort((a, b) => (b.updated_at || b.created_at) - (a.updated_at || a.created_at));
@@ -153,6 +158,10 @@ export default function Index() {
 		setSelectedScene(null);
 	}
 
+	useEffect(() => {
+		setFilteredScenes(sortScenesByDate(scenes.filter((scene) => scene.name.includes(searchInput))));
+	}, [searchInput]);
+
 	return (
 		<div className="flex h-full flex-col px-16 py-10">
 			<DeleteSceneDialog
@@ -165,12 +174,7 @@ export default function Index() {
 			<p className="text-sm text-slate-600 dark:text-slate-400">
 				These are your scenes and they will be automatically synced.
 			</p>
-			{!isLoadingState && scenes.length == 0 && <EmptyDataView />}
-			{isLoadingState && (
-				<div className="flex h-full items-center justify-center">
-					<Spinner size={'lg'} />
-				</div>
-			)}
+			{scenes.length == 0 && <EmptyDataView />}
 			{scenes.length > 0 && (
 				<>
 					<SearchInput inputChange={setSearchInput} />

@@ -1,5 +1,4 @@
-import { NavLink, Outlet, useLoaderData, useNavigate, useOutletContext } from 'react-router';
-import { LoaderFunctionArgs, redirect, data } from 'react-router';
+import { NavLink, Outlet, useNavigate, useOutletContext } from 'react-router';
 import { OutletContext } from '~/utils/types';
 import DashboardIcon from '~/components/icons/dashboardIcon';
 import PlusIcon from '~/components/icons/plusIcon';
@@ -9,7 +8,6 @@ import { Theme, useTheme } from 'remix-themes';
 import SunIcon from '~/components/icons/sunIcon';
 import MoonIcon from '~/components/icons/moonIcon';
 import { toast } from 'react-hot-toast';
-import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
 export function meta() {
 	return [
@@ -19,27 +17,9 @@ export function meta() {
 	];
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
-	const { supabase, headers } = getSupabaseServerClientHelper(request);
-
-	try {
-		const { error, data: user } = await supabase.auth.getUser();
-
-		if (error) {
-			throw error;
-		}
-
-		return data({ user: user.user }, { headers: headers });
-	} catch (e) {
-		console.error(e);
-		return redirect('/', { headers: headers });
-	}
-}
-
 export default function Dashboard() {
 	const [theme, setTheme] = useTheme();
 	const { supabase } = useOutletContext<OutletContext>();
-	const { user } = useLoaderData<typeof loader>();
 	const navigate = useNavigate();
 
 	async function signOut() {
@@ -117,7 +97,7 @@ export default function Dashboard() {
 				</nav>
 			</aside>
 			<div className="ml-80 w-full">
-				<Outlet context={{ supabase, user }} />
+				<Outlet context={{ supabase }} />
 			</div>
 		</div>
 	);

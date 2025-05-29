@@ -1,8 +1,7 @@
 import ShuffleIcon from '~/components/icons/shuffleIcon';
 import CrossIcon from '~/components/icons/crossIcon';
-import { Form, useActionData, useNavigation } from 'react-router';
+import { data, Form, LoaderFunctionArgs, useActionData, useNavigation,  ActionFunction, redirect } from 'react-router';
 import { useEffect, useState } from 'react';
-import { ActionFunction, redirect } from 'react-router';
 import { toast } from 'react-hot-toast';
 import { getSupabaseServerClientHelper } from '~/utils/supabase';
 
@@ -12,6 +11,22 @@ export function meta() {
 		{ charset: 'utf-8' },
 		{ viewport: 'width=device-width,initial-scale=1' }
 	];
+}
+
+export async function loader({ request }: LoaderFunctionArgs) {
+	const { supabase, headers } = getSupabaseServerClientHelper(request);
+	try {
+		const { error, data: user } = await supabase.auth.getUser();
+
+		if (error) {
+			throw error;
+		}
+
+		return data({ user: user.user }, { headers: headers });
+	} catch (e) {
+		console.error(e);
+		return redirect('/', { headers: headers });
+	}
 }
 
 export const action: ActionFunction = async ({ request }) => {
