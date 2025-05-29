@@ -3,7 +3,7 @@ import { createServerClient, parseCookieHeader, serializeCookieHeader } from '@s
 function getSupabaseServerClientHelper(request: Request) {
 	const headers = new Headers();
 
-	const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
+	const supabase = createServerClient(process.env.TEST_SUPABASE_URL!, process.env.TEST_SUPABASE_ANON_KEY!, {
 		cookies: {
 			getAll() {
 				return parseCookieHeader(request.headers.get('Cookie') ?? '');
