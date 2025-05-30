@@ -138,11 +138,18 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 	async function saveSceneServer() {
 		setSyncStatus('syncing');
 
-		const { error } = await supabase
-			.from('scenes')
-			.update({ data: sceneDataRef.current, updated_at: new Date().getTime() })
-			.eq('id', scene.id);
+		const syncResult = await fetch('/scene/sync', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				sceneId: scene.id,
+				sceneData: sceneDataRef.current
+			})
+		});
 
+		const { error } = await syncResult.json();
 		if (error) {
 			setSyncStatus('error');
 		} else {
@@ -243,7 +250,10 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 
 	const onChange = useCallback(
 		(elements: readonly ExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
-			setTheme(appState.theme == THEME.DARK ? GlobalTheme.DARK : GlobalTheme.LIGHT);
+			const sceneTheme = appState.theme == THEME.DARK ? GlobalTheme.DARK : GlobalTheme.LIGHT;
+			if (theme !== sceneTheme) {
+				setTheme(sceneTheme);
+			}
 
 			if (!isOwner) {
 				return;
