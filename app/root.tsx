@@ -44,7 +44,7 @@ function App() {
 	const [theme] = useTheme();
 
 	return (
-		<html lang="en" data-theme={theme ?? Theme.LIGHT}>
+		<html lang="en" data-theme={theme ?? Theme.DARK}>
 			<head>
 				<Meta />
 				<PreventFlashOnWrongTheme ssrTheme={Boolean(serverTheme)} />

@@ -1,4 +1,4 @@
-import { ResolvablePromise } from '@excalidraw/excalidraw/types/utils';
+import { ResolvablePromise } from '@excalidraw/excalidraw/utils';
 
 const resolvablePromise = <T>() => {
 	let resolve!: any;
