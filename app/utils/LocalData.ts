@@ -1,5 +1,5 @@
-import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
-import { AppState, BinaryFileData, BinaryFiles } from '@excalidraw/excalidraw/types/types';
+import { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import { AppState, BinaryFileData, BinaryFiles } from '@excalidraw/excalidraw/types';
 import { createStore, getMany, setMany, set, get } from 'idb-keyval';
 import { exportToBlob } from '@excalidraw/excalidraw';
 import { debounce } from 'lodash';

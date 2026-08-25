@@ -1,9 +1,10 @@
 import ShuffleIcon from '~/components/icons/shuffleIcon';
 import CrossIcon from '~/components/icons/crossIcon';
-import { data, Form, LoaderFunctionArgs, useActionData, useNavigation, ActionFunction, redirect } from 'react-router';
-import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { FormEvent, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { getSupabaseServerClientHelper } from '~/utils/supabase';
+import { useMutation } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 
 export function meta() {
 	return [
@@ -13,83 +14,26 @@ export function meta() {
 	];
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
-	const { supabase, headers } = getSupabaseServerClientHelper(request);
-	try {
-		const { error, data: sessionData } = await supabase.auth.getSession();
-
-		if (error || !sessionData.session) {
-			throw error;
-		}
-
-		return data({}, { headers: headers });
-	} catch (e) {
-		console.error(e);
-		return redirect('/', { headers: headers });
-	}
-}
-
-export const action: ActionFunction = async ({ request }) => {
-	const body = await request.formData();
-	const name = body.get('name');
-	const description = body.get('description');
-	const published = body.get('publish') === 'on';
-
-	try {
-		const { supabase, headers } = getSupabaseServerClientHelper(request);
-		const { error: userError, data: userData } = await supabase.auth.getUser();
-
-		if (userError) {
-			return { error: userError.message };
-		}
-
-		const { error: insertError } = await supabase
-			.from('scenes')
-			.insert({
-				name,
-				description,
-				uid: userData.user.id,
-				created_at: new Date().getTime(),
-				published
-			});
-
-		if (!insertError) {
-			return redirect(`/${name}`, { headers: headers });
-		}
-
-		if (insertError.code == '23505') {
-			return { error: 'There is already a scene with this ID.' };
-		}
-
-		return { error: insertError.message, headers: headers };
-	} catch (e) {
-		console.error(e);
-		return { error: 'Internal error.' };
-	}
-};
-
 export default function New() {
-	const actionData = useActionData<typeof action>();
-	const navigation = useNavigation();
-	const isLoading = navigation.state == 'submitting';
+	const createScene = useMutation(api.scenes.create);
+	const navigate = useNavigate();
+	const [isLoading, setIsLoading] = useState(false);
 	const [name, setName] = useState('');
 	const [description, setDescription] = useState('');
 
-	useEffect(() => {
-		if (actionData?.error) {
-			toast.error(actionData.error);
+	async function submit(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+		setIsLoading(true);
+		const formData = new FormData(event.currentTarget);
+		try {
+			await createScene({ name, description, published: formData.get('publish') === 'on' });
+			navigate(`/${name}`);
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : 'Could not create the scene.');
+		} finally {
+			setIsLoading(false);
 		}
-	}, [actionData]);
-
-	useEffect(() => {
-		if (isLoading) {
-			toast.loading('Creating new scene', { id: 'create_loading' });
-		} else {
-			toast.dismiss('create_loading');
-		}
-
-		return () => toast.dismiss('create_loading');
-	}, [isLoading]);
+	}
 
 	function validateAndSetName(name: string) {
 		const validationRegex = /^(?!.*--)[a-zA-Z0-9 -]+$/;
@@ -130,7 +74,7 @@ export default function New() {
 						draw.puntogris.com/{name.length == 0 ? 'super-cool-id' : name}
 					</span>
 				</h2>
-				<Form method="post" className="mt-2">
+				<form onSubmit={submit} className="mt-2">
 					<label className="mb-2 mt-3 block self-start text-sm text-slate-700 dark:text-slate-300">
 						Name
 					</label>
@@ -203,7 +147,7 @@ export default function New() {
 					>
 						{isLoading ? 'Creating' : 'Create'}
 					</button>
-				</Form>
+				</form>
 			</div>
 			<div className="w-full px-16 pb-10 xl:w-5/12 xl:py-10">
 				<h1 className="text font-bold text-slate-800 dark:text-slate-200 xl:mt-16">Usefull tips</h1>

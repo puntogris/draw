@@ -20,7 +20,6 @@ import EnvelopeIcon from './icons/envelopeIcon';
 
 import { debounce, isEqual } from 'lodash';
 import type { DrawProps, SyncStatus } from '~/utils/types';
-import { decode } from 'base64-arraybuffer';
 import { resolvablePromise, getDataURLFromBlob } from '~/utils/utils';
 import { Theme as GlobalTheme, useTheme } from 'remix-themes';
 import {
@@ -36,12 +35,18 @@ import {
 	ExcalidrawImageElement,
 	FileId
 } from '@excalidraw/excalidraw/element/types';
+import { useMutation } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 
 const UPDATE_DEBOUNCE_MS = 2000;
 const UPDATE_MAX_WAIT_MS = 10000;
 const VIEWER_ALERT_DURATION_MS = 20000;
 
-export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawProps) {
+export default function Draw({ scene, isOwner, files: remoteFiles }: DrawProps) {
+	const syncScene = useMutation(api.scenes.sync);
+	const generateUploadUrl = useMutation(api.scenes.generateUploadUrl);
+	const saveFile = useMutation(api.scenes.saveFile);
+	const serverFilesId = useRef(remoteFiles.map((file) => file.fileId));
 	const excalidrawApiRef = useRef<ExcalidrawImperativeAPI | null>(null);
 
 	const excalidrawRef = useCallback((api: ExcalidrawImperativeAPI) => {
@@ -113,13 +118,11 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 		for (const idIndex in missingIds) {
 			const id = missingIds[idIndex];
 
-			const { data, error } = await supabase.storage
-				.from('scenes')
-				.download(`${scene.uid}/${scene.name}/${id}`);
-
-			if (error) {
+			const remoteFile = remoteFiles.find((file) => file.fileId === id);
+			if (!remoteFile?.url) {
 				// show a notification and add a feature to try to sync from the menu
 			} else {
+				const data = await fetch(remoteFile.url).then((response) => response.blob());
 				const file = {
 					mimeType: data.type,
 					id: id,
@@ -156,28 +159,16 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 			files: filesMetadata
 		};
 
-		const syncResult = await fetch('/scene/sync', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				sceneId: scene.id,
-				sceneData
-			})
-		});
-
-		const { error } = await syncResult.json();
-		if (error) {
-			console.log('error', error);
-
-			setSyncStatus('error');
-		} else {
-			console.log('success');
+		try {
+			const serializableSceneData = JSON.parse(JSON.stringify(sceneData));
+			await syncScene({ sceneId: scene._id, data: serializableSceneData });
 			setSyncStatus('synced');
+			return { error: null };
+		} catch (error) {
+			console.error('Could not sync scene with Convex.', error);
+			setSyncStatus('error');
+			return { error };
 		}
-
-		return { error };
 	}
 
 	async function saveScene() {
@@ -189,7 +180,7 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 				await LocalData.savePreview(
 					elements,
 					files || null,
-					scene.id.toString(),
+					scene._id,
 					appState?.theme == THEME.DARK
 				);
 			} catch (error) {
@@ -228,21 +219,14 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 			.map((e) => (e as ExcalidrawImageElement).fileId) as string[];
 
 		for (let [fileId, file] of Object.entries(sceneFiles)) {
-			if (!serverFilesId.includes(fileId) && elementsFilesId.includes(fileId)) {
-				const { error } = await supabase.storage
-					.from(`scenes/${scene.uid}/${scene.name}`)
-					.upload(fileId, decode(file.dataURL.split('base64,')[1]), {
-						contentType: file.mimeType,
-						upsert: true
-					});
-
-				serverFilesId.push(fileId);
-
-				if (error) {
-					//handle error
-				} else {
-					// we could save it locally, but it already should be there
-				}
+			if (!serverFilesId.current.includes(fileId) && elementsFilesId.includes(fileId)) {
+				const uploadUrl = await generateUploadUrl({ sceneId: scene._id });
+				const blob = await fetch(file.dataURL).then((response) => response.blob());
+				const response = await fetch(uploadUrl, { method: 'POST', headers: { 'Content-Type': file.mimeType }, body: blob });
+				if (!response.ok) throw new Error('Could not upload image.');
+				const { storageId } = await response.json();
+				await saveFile({ sceneId: scene._id, fileId, storageId, mimeType: file.mimeType });
+				serverFilesId.current.push(fileId);
 			}
 		}
 	}
@@ -265,7 +249,7 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 			sceneDataRef.current = data;
 
 			// TODO we should not save files we already saved
-			LocalData.save(scene.id.toString(), notDeletedElemets, appState, files, () => {});
+			LocalData.save(scene._id, notDeletedElemets, appState, files, () => {});
 
 			await saveScene();
 		},

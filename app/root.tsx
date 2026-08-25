@@ -9,7 +9,8 @@ import {
 	useLoaderData,
 	useRouteError
 } from 'react-router';
-import { createBrowserClient } from '@supabase/ssr';
+import { ConvexReactClient } from 'convex/react';
+import { ConvexAuthProvider } from '@convex-dev/auth/react';
 import { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import ErrorView from './components/errorView';
@@ -31,8 +32,7 @@ export function meta() {
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const env = {
-		SUPABASE_URL: process.env.SUPABASE_URL!,
-		SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!
+		CONVEX_URL: process.env.CONVEX_URL ?? process.env.VITE_CONVEX_URL!
 	};
 	const themeResolver = await themeSessionResolver(request);
 	return { env, theme: themeResolver.getTheme() };
@@ -40,7 +40,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 function App() {
 	const { env, theme: serverTheme } = useLoaderData<typeof loader>();
-	const [supabase] = useState(() => createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY));
+	const [convex] = useState(() => new ConvexReactClient(env.CONVEX_URL));
 	const [theme] = useTheme();
 
 	return (
@@ -52,7 +52,9 @@ function App() {
 			</head>
 			<body>
 				<Toaster position="top-right" />
-				<Outlet context={{ supabase }} />
+				<ConvexAuthProvider client={convex}>
+					<Outlet />
+				</ConvexAuthProvider>
 				<ScrollRestoration />
 				<Scripts />
 			</body>

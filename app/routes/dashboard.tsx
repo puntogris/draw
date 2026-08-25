@@ -1,5 +1,4 @@
-import { NavLink, Outlet, useNavigate, useOutletContext } from 'react-router';
-import { OutletContext } from '~/utils/types';
+import { NavLink, Outlet, useNavigate } from 'react-router';
 import DashboardIcon from '~/components/icons/dashboardIcon';
 import PlusIcon from '~/components/icons/plusIcon';
 import SettingsIcon from '~/components/icons/slidersIcon';
@@ -8,6 +7,9 @@ import { Theme, useTheme } from 'remix-themes';
 import SunIcon from '~/components/icons/sunIcon';
 import MoonIcon from '~/components/icons/moonIcon';
 import { toast } from 'react-hot-toast';
+import { useAuthActions } from '@convex-dev/auth/react';
+import { useConvexAuth } from 'convex/react';
+import { useEffect } from 'react';
 
 export function meta() {
 	return [
@@ -19,12 +21,16 @@ export function meta() {
 
 export default function Dashboard() {
 	const [theme, setTheme] = useTheme();
-	const { supabase } = useOutletContext<OutletContext>();
+	const { signOut: convexSignOut } = useAuthActions();
+	const { isAuthenticated, isLoading } = useConvexAuth();
 	const navigate = useNavigate();
+	useEffect(() => {
+		if (!isLoading && !isAuthenticated) navigate('/', { replace: true });
+	}, [isAuthenticated, isLoading, navigate]);
 
 	async function signOut() {
 		const toastId = toast.loading('Signing out...');
-		await supabase.auth.signOut();
+		await convexSignOut();
 		toast.dismiss(toastId);
 		navigate('/');
 	}
@@ -97,7 +103,7 @@ export default function Dashboard() {
 				</nav>
 			</aside>
 			<div className="ml-80 w-full">
-				<Outlet context={{ supabase }} />
+				<Outlet />
 			</div>
 		</div>
 	);

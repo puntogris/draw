@@ -1,69 +1,39 @@
-import { ActionFunctionArgs, LoaderFunction, data, redirect } from 'react-router';
-import { Form, useActionData, useNavigation } from 'react-router';
-import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import { FormEvent, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { Theme, useTheme } from 'remix-themes';
 import MoonIcon from '~/components/icons/moonIcon';
 import SunIcon from '~/components/icons/sunIcon';
 import background from '/background.webp';
 import CompassIcon from '~/components/icons/compassIcon';
-import { getSupabaseServerClientHelper } from '~/utils/supabase';
-
-export const loader: LoaderFunction = async ({ request }) => {
-	try {
-		const { supabase, headers } = getSupabaseServerClientHelper(request);
-
-		const { error, data: userData } = await supabase.auth.getUser();
-
-		if (error || !userData.user) {
-			return data({ error: error ? error.message : 'User not signed in.' }, { headers: headers });
-		}
-
-		return redirect('/dashboard', { headers: headers });
-	} catch (e: any) {
-		console.error(e);
-		return { error: e.toString() };
-	}
-};
-
-export async function action({ request }: ActionFunctionArgs) {
-	const body = await request.formData();
-	const { email, password } = Object.fromEntries(body);
-
-	const { supabase, headers } = getSupabaseServerClientHelper(request);
-
-	const { error } = await supabase.auth.signInWithPassword({
-		email: email.toString(),
-		password: password.toString()
-	});
-
-	if (!error) {
-		return redirect('/dashboard', { headers: headers });
-	} else {
-		return { error: error.message };
-	}
-}
+import { useAuthActions } from '@convex-dev/auth/react';
+import { useConvexAuth } from 'convex/react';
 
 export default function Index() {
-	const navigation = useNavigation();
-	const actionData = useActionData<typeof action>();
-	const isLoading = navigation.state !== 'idle';
+	const { signIn } = useAuthActions();
+	const { isAuthenticated } = useConvexAuth();
+	const navigate = useNavigate();
+	const [isLoading, setIsLoading] = useState(false);
 	const [theme, setTheme] = useTheme();
 
 	useEffect(() => {
-		if (actionData?.error) {
-			toast.error(actionData.error);
-		}
-	}, [actionData]);
+		if (isAuthenticated) navigate('/dashboard', { replace: true });
+	}, [isAuthenticated, navigate]);
 
-	useEffect(() => {
-		if (isLoading) {
-			toast.loading('Checking login credentials', { id: 'login_loading' });
-		} else {
-			toast.dismiss('login_loading');
+	async function handleSignIn(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+		setIsLoading(true);
+		const formData = new FormData(event.currentTarget);
+		formData.set('email', String(formData.get('email')).trim().toLowerCase());
+		formData.set('flow', 'signIn');
+		try {
+			await signIn('password', formData);
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : 'Could not sign in.');
+		} finally {
+			setIsLoading(false);
 		}
-		return () => toast.dismiss('login_loading');
-	}, [isLoading]);
+	}
 
 	return (
 		<div className="grid min-h-screen grid-rows-2 divide-y divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-950 lg:grid-cols-2 lg:grid-rows-none lg:divide-x">
@@ -94,13 +64,7 @@ export default function Index() {
 						Exalidraw
 					</a>
 					<span> and </span>
-					<a
-						className="font-semibold text-blue-400 hover:underline"
-						href="https://supabase.com/"
-						target="_blank"
-					>
-						Supabase.
-					</a>
+					<a className="font-semibold text-blue-400 hover:underline" href="https://convex.dev/" target="_blank">Convex.</a>
 					<br />
 					<span>This is mostly for personal use.</span>
 					<br />
@@ -114,8 +78,8 @@ export default function Index() {
 				</p>
 			</div>
 			<div className="z-10 flex flex-col items-center justify-center gap-8 bg-white px-4 dark:bg-gray-950 md:flex-row md:gap-4">
-				<Form
-					method="post"
+				<form
+					onSubmit={handleSignIn}
 					className="flex w-full max-w-md flex-col items-center justify-center gap-2 p-8"
 				>
 					<h1 className="self-center text-2xl font-bold text-gray-800 dark:text-slate-50">
@@ -160,9 +124,9 @@ export default function Index() {
 						type="submit"
 						className="mt-4 w-full items-center justify-center gap-2 rounded-md bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-gray-800 focus:outline-none dark:bg-slate-50 dark:text-black dark:hover:bg-slate-200"
 					>
-						Sign in with email
+						{isLoading ? 'Signing in...' : 'Sign in with email'}
 					</button>
-				</Form>
+				</form>
 			</div>
 		</div>
 	);

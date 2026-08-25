@@ -4,19 +4,21 @@ Drawing site made for personal use.
 
 ## Self-Hosting & Deployment
 
-If you'd like to self-host this project, you'll need a [Supabase](https://supabase.com) account to manage authentication, database, and storage.
+Create a [Convex](https://convex.dev) project, then run `bunx convex dev` to configure a development deployment and generate backend types.
 
 **Required Environment Variables:**
 
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
+- `CONVEX_DEPLOYMENT`
+- `CONVEX_URL`
+
+Convex Auth also needs `JWT_PRIVATE_KEY` and `JWKS` in the deployment environment. Run `bunx @convex-dev/auth` after linking the project to generate them.
 
 For deployment, the choice is yours! Services like [Vercel](https://vercel.com) make it incredibly simple: just link your GitHub repository and deploy.
 
 ## Made with:
 
 - Exalidraw
-- Supabase
+- Convex
 - React Router
 - Tailwind CSS
 
