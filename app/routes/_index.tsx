@@ -99,9 +99,8 @@ export default function Index() {
 							type="email"
 							id="email"
 							name="email"
-							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)]"
+							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] autofill:[-webkit-text-fill-color:#111827] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)] dark:autofill:[-webkit-text-fill-color:#f8fafc]"
 							required
-							style={{ WebkitTextFillColor: theme === Theme.DARK ? 'white' : 'black' }}
 						/>
 					</div>
 					<div className="w-full">
@@ -115,9 +114,8 @@ export default function Index() {
 							type="password"
 							id="password"
 							name="password"
-							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)]"
+							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] autofill:[-webkit-text-fill-color:#111827] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)] dark:autofill:[-webkit-text-fill-color:#f8fafc]"
 							required
-							style={{ WebkitTextFillColor: theme === Theme.DARK ? 'white' : 'black' }}
 						/>
 					</div>
 					<button
