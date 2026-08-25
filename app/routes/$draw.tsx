@@ -2,7 +2,7 @@ import Spinner from '~/components/spinner';
 import Draw from '~/components/draw.client';
 import { MetaArgs, useParams } from 'react-router';
 import { ClientOnly } from 'remix-utils/client-only';
-import { useQuery } from 'convex/react';
+import { useConvexAuth, useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { useEffect, useState } from 'react';
 
@@ -10,8 +10,9 @@ export function meta({ params }: MetaArgs) { return [{ title: `draw - ${params.d
 
 export default function Index() {
 	const { draw = '' } = useParams();
-	const result = useQuery(api.scenes.getByName, { name: draw });
-	if (result === undefined) return <Loading />;
+	const { isLoading: isAuthLoading } = useConvexAuth();
+	const result = useQuery(api.scenes.getByName, isAuthLoading ? 'skip' : { name: draw });
+	if (isAuthLoading || result === undefined) return <Loading />;
 	if (result === null) return <div className="flex min-h-screen items-center justify-center">Scene not found.</div>;
 	return <SceneContent key={result.scene._id} result={result} />;
 }

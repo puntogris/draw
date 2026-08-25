@@ -5,6 +5,7 @@ import MoreIcon from './icons/moreIcon';
 import { useEffect, useRef, useState } from 'react';
 import { LocalData } from '~/utils/LocalData';
 import { SceneCardProps } from '~/utils/types';
+import { Link } from 'react-router';
 
 export default function SceneCard({
 	name,
@@ -54,21 +55,21 @@ export default function SceneCard({
 
 	return (
 		<div className="flex flex-col rounded-sm border border-gray-200 dark:border-gray-800">
-			<a className="flex" href={`/${name}`}>
+			<Link className="flex" to={`/${name}`}>
 				<img
 					className="h-48 w-full rounded-t-sm object-cover opacity-90 hover:opacity-80"
 					src={image}
 					alt="Image Description"
 				/>
-			</a>
+			</Link>
 			<div className="flex min-h-[100px] flex-col pb-3 pl-3 pr-1 pt-2">
 				<div className="flex items-center justify-between gap-3">
-					<a
-						href={`/${name}`}
+					<Link
+						to={`/${name}`}
 						className="overflow-hidden truncate text-sm font-semibold text-slate-800 hover:text-slate-700 dark:text-slate-50"
 					>
 						{name}
-					</a>
+					</Link>
 					<Dropdown onItemClicked={onItemClicked} />
 				</div>
 				<p className="mt-1 line-clamp-2 truncate text-xs text-slate-600 dark:text-slate-400">
