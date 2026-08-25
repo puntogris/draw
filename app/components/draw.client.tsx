@@ -42,6 +42,19 @@ const UPDATE_DEBOUNCE_MS = 2000;
 const UPDATE_MAX_WAIT_MS = 10000;
 const VIEWER_ALERT_DURATION_MS = 20000;
 
+function normalizeStoredAppState(appState: Record<string, unknown> | null | undefined) {
+	const storedSearchMatches = appState?.searchMatches;
+	const searchMatches =
+		storedSearchMatches &&
+		typeof storedSearchMatches === 'object' &&
+		!Array.isArray(storedSearchMatches) &&
+		Array.isArray((storedSearchMatches as { matches?: unknown }).matches)
+			? storedSearchMatches
+			: null;
+
+	return { ...appState, collaborators: undefined, searchMatches };
+}
+
 export default function Draw({ scene, isOwner, files: remoteFiles }: DrawProps) {
 	const generateUploadUrl = useMutation(api.scenes.generateUploadUrl);
 	const saveFile = useMutation(api.scenes.saveFile);
@@ -63,7 +76,7 @@ export default function Draw({ scene, isOwner, files: remoteFiles }: DrawProps) 
 
 	const sceneDataRef = useRef<ExcalidrawInitialDataState>({
 		elements: scene.data ? scene.data.elements : [],
-		appState: scene.data ? { ...scene.data.appState, collaborators: undefined } : {},
+		appState: scene.data ? normalizeStoredAppState(scene.data.appState) : {},
 		files: scene.files
 	});
 
@@ -81,14 +94,19 @@ export default function Draw({ scene, isOwner, files: remoteFiles }: DrawProps) 
 
 	useEffect(() => {
 		const initScene = async () => {
-			const elements = sceneDataRef.current.elements;
-			if (elements && elements.length > 0) {
-				await syncFiles(elements);
+			try {
+				const elements = sceneDataRef.current.elements;
+				if (elements && elements.length > 0) {
+					await syncFiles(elements);
+				}
+			} catch (error) {
+				console.error('Could not load every scene image.', error);
+			} finally {
+				initialStatePromiseRef.current.promise.resolve(sceneDataRef.current);
+				requestAnimationFrame(() => requestAnimationFrame(() => {
+					isInitializingRef.current = false;
+				}));
 			}
-			initialStatePromiseRef.current.promise.resolve(sceneDataRef.current);
-			requestAnimationFrame(() => requestAnimationFrame(() => {
-				isInitializingRef.current = false;
-			}));
 		};
 		initScene();
 	}, []);
@@ -119,26 +137,29 @@ export default function Draw({ scene, isOwner, files: remoteFiles }: DrawProps) 
 
 		const missingIds = neededFilesId.filter((id) => !retrievedIds.includes(id));
 
-		for (const idIndex in missingIds) {
-			const id = missingIds[idIndex];
-
+		await Promise.allSettled(missingIds.map(async (id) => {
 			const remoteFile = remoteFiles.find((file) => file.fileId === id);
 			if (!remoteFile?.url) {
-				// show a notification and add a feature to try to sync from the menu
-			} else {
-				const data = await fetch(remoteFile.url).then((response) => response.blob());
-				const file = {
-					mimeType: data.type,
-					id: id,
-					dataURL: await getDataURLFromBlob(data),
-					created: new Date().getTime(),
-					lastRetrieved: new Date().getTime()
-				} as BinaryFileData;
-
-				sceneFiles[id] = file;
-				await LocalData.saveFile(file);
+				return;
 			}
-		}
+			const response = await fetch(remoteFile.url);
+			if (!response.ok) throw new Error(`Could not load image ${id}.`);
+			const data = await response.blob();
+			const file = {
+				mimeType: data.type,
+				id,
+				dataURL: await getDataURLFromBlob(data),
+				created: Date.now(),
+				lastRetrieved: Date.now()
+			} as BinaryFileData;
+
+			sceneFiles[id] = file;
+			try {
+				await LocalData.saveFile(file);
+			} catch (error) {
+				console.warn(`Could not cache image ${id}.`, error);
+			}
+		}));
 		sceneDataRef.current.files = sceneFiles;
 	}
 

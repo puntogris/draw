@@ -82,6 +82,8 @@ export function ErrorBoundary() {
 		code = error.status;
 		message = error.statusText;
 		slug = error.data?.slug;
+	} else if (error instanceof Error) {
+		message = error.message;
 	}
 
 	return (

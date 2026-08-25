@@ -21,7 +21,7 @@ export default function ErrorView({
 					{code ? code.toString() : 'Oh no!'}
 				</h1>
 				<h1 className="mt-4 text-gray-600 dark:text-gray-400">
-					{code != 404 && message
+					{message
 						? message
 						: 'Oops, access not allowed or non-existing route, contact the owner to verify if this scene is publicly accessible.'}
 				</h1>
