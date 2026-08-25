@@ -6,9 +6,12 @@ export default defineSchema({
 	...authTables,
 	scenes: defineTable({
 		ownerId: v.id('users'),
+		legacyId: v.optional(v.string()),
 		name: v.string(),
 		description: v.string(),
 		data: v.optional(v.any()),
+		dataStorageId: v.optional(v.id('_storage')),
+		createdAt: v.optional(v.number()),
 		updatedAt: v.optional(v.number()),
 		published: v.boolean()
 	})

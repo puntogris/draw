@@ -68,7 +68,7 @@ function Scenes({ scenes }: { scenes: Scene[] }) {
 		{scenes.length === 0 ? <EmptyDataView /> : <>
 			<SearchInput inputChange={setSearchInput} />
 			<div className="mt-4 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-				{filteredScenes.map((scene) => <SceneCard key={scene._id} name={scene.name} description={scene.description} sceneId={scene._id} lastUpdated={scene.updatedAt ?? scene._creationTime} onSceneCardEvent={onSceneCardEvent} />)}
+				{filteredScenes.map((scene) => <SceneCard key={scene._id} name={scene.name} description={scene.description} sceneId={scene._id} lastUpdated={scene.updatedAt ?? scene.createdAt ?? scene._creationTime} onSceneCardEvent={onSceneCardEvent} />)}
 			</div>
 		</>}
 	</div>;

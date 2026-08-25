@@ -4,8 +4,10 @@ type Scene = {
 	_id: Id<'scenes'>;
 	_creationTime: number;
 	data?: any;
+	dataStorageId?: Id<'_storage'>;
 	name: string;
 	description: string;
+	createdAt?: number;
 	updatedAt?: number;
 	published: boolean;
 };

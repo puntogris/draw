@@ -35,6 +35,7 @@ export const getByName = query({
 		return {
 			scene,
 			isOwner,
+			dataUrl: scene.dataStorageId ? await ctx.storage.getUrl(scene.dataStorageId) : null,
 			files: await Promise.all(files.map(async (file: any) => ({ ...file, url: await ctx.storage.getUrl(file.storageId) })))
 		};
 	}
@@ -46,7 +47,37 @@ export const create = mutation({
 		const ownerId = await currentUserId(ctx);
 		const existing = await ctx.db.query('scenes').withIndex('by_name', (q: any) => q.eq('name', args.name)).first();
 		if (existing) throw new ConvexError('There is already a scene with this ID.');
-		return await ctx.db.insert('scenes', { ownerId, ...args });
+		return await ctx.db.insert('scenes', { ownerId, createdAt: Date.now(), ...args });
+	}
+});
+
+export const importLegacy = mutation({
+	args: {
+		legacyId: v.string(),
+		name: v.string(),
+		description: v.string(),
+		createdAt: v.number(),
+		updatedAt: v.optional(v.number()),
+		published: v.boolean()
+	},
+	returns: v.id('scenes'),
+	handler: async (ctx, args) => {
+		const ownerId = await currentUserId(ctx);
+		const existing = await ctx.db
+			.query('scenes')
+			.withIndex('by_name', (query) => query.eq('name', args.name))
+			.unique();
+		const scene = { ownerId, ...args };
+
+		if (existing) {
+			if (existing.ownerId !== ownerId) {
+				throw new ConvexError('A scene with this name belongs to another user.');
+			}
+			await ctx.db.patch(existing._id, scene);
+			return existing._id;
+		}
+
+		return await ctx.db.insert('scenes', scene);
 	}
 });
 
@@ -68,15 +99,27 @@ export const sync = mutation({
 	}
 });
 
+export const saveDataFile = mutation({
+	args: { sceneId: v.id('scenes'), storageId: v.id('_storage') },
+	returns: v.null(),
+	handler: async (ctx, { sceneId, storageId }) => {
+		const scene = await ownedScene(ctx, sceneId);
+		if (scene.dataStorageId) await ctx.storage.delete(scene.dataStorageId);
+		await ctx.db.patch(sceneId, { dataStorageId: storageId, data: undefined, updatedAt: Date.now() });
+		return null;
+	}
+});
+
 export const remove = mutation({
 	args: { sceneId: v.id('scenes') },
 	handler: async (ctx, { sceneId }) => {
-		await ownedScene(ctx, sceneId);
+		const scene = await ownedScene(ctx, sceneId);
 		const files = await ctx.db.query('sceneFiles').withIndex('by_scene', (q: any) => q.eq('sceneId', sceneId)).collect();
 		for (const file of files) {
 			await ctx.storage.delete(file.storageId);
 			await ctx.db.delete(file._id);
 		}
+		if (scene.dataStorageId) await ctx.storage.delete(scene.dataStorageId);
 		await ctx.db.delete(sceneId);
 	}
 });

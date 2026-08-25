@@ -43,10 +43,11 @@ const UPDATE_MAX_WAIT_MS = 10000;
 const VIEWER_ALERT_DURATION_MS = 20000;
 
 export default function Draw({ scene, isOwner, files: remoteFiles }: DrawProps) {
-	const syncScene = useMutation(api.scenes.sync);
 	const generateUploadUrl = useMutation(api.scenes.generateUploadUrl);
 	const saveFile = useMutation(api.scenes.saveFile);
+	const saveDataFile = useMutation(api.scenes.saveDataFile);
 	const serverFilesId = useRef(remoteFiles.map((file) => file.fileId));
+	const isInitializingRef = useRef(true);
 	const excalidrawApiRef = useRef<ExcalidrawImperativeAPI | null>(null);
 
 	const excalidrawRef = useCallback((api: ExcalidrawImperativeAPI) => {
@@ -62,7 +63,7 @@ export default function Draw({ scene, isOwner, files: remoteFiles }: DrawProps) 
 
 	const sceneDataRef = useRef<ExcalidrawInitialDataState>({
 		elements: scene.data ? scene.data.elements : [],
-		appState: scene.data ? { ...scene.data.appState, collaborators: [] } : {},
+		appState: scene.data ? { ...scene.data.appState, collaborators: undefined } : {},
 		files: scene.files
 	});
 
@@ -85,6 +86,9 @@ export default function Draw({ scene, isOwner, files: remoteFiles }: DrawProps) 
 				await syncFiles(elements);
 			}
 			initialStatePromiseRef.current.promise.resolve(sceneDataRef.current);
+			requestAnimationFrame(() => requestAnimationFrame(() => {
+				isInitializingRef.current = false;
+			}));
 		};
 		initScene();
 	}, []);
@@ -160,8 +164,16 @@ export default function Draw({ scene, isOwner, files: remoteFiles }: DrawProps) 
 		};
 
 		try {
-			const serializableSceneData = JSON.parse(JSON.stringify(sceneData));
-			await syncScene({ sceneId: scene._id, data: serializableSceneData });
+			const serializedSceneData = JSON.stringify(sceneData);
+			const uploadUrl = await generateUploadUrl({ sceneId: scene._id });
+			const upload = await fetch(uploadUrl, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: new Blob([serializedSceneData], { type: 'application/json' })
+			});
+			if (!upload.ok) throw new Error('Could not upload scene data.');
+			const { storageId } = await upload.json();
+			await saveDataFile({ sceneId: scene._id, storageId });
 			setSyncStatus('synced');
 			return { error: null };
 		} catch (error) {
@@ -265,6 +277,9 @@ export default function Draw({ scene, isOwner, files: remoteFiles }: DrawProps) 
 			}
 
 			if (!isOwner) {
+				return;
+			}
+			if (isInitializingRef.current) {
 				return;
 			}
 
