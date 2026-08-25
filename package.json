@@ -13,7 +13,7 @@
   "dependencies": {
     "@auth/core": "0.41.1",
     "@convex-dev/auth": "^0.0.95",
-    "@excalidraw/excalidraw": "^0.18.1",
+    "@excalidraw/excalidraw": "^0.18.0-abeeaeb",
     "@react-router/fs-routes": "^7.18.2",
     "@react-router/node": "^7.18.2",
     "@react-router/serve": "^7.18.2",
