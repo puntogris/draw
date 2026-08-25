@@ -138,6 +138,24 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 	async function saveSceneServer() {
 		setSyncStatus('syncing');
 
+		const filesMetadata = Object.fromEntries(
+			Object.entries(sceneDataRef.current.files ?? {}).map(([fileId, file]) => [
+				fileId,
+				{
+					id: file.id,
+					mimeType: file.mimeType,
+					created: file.created,
+					lastRetrieved: file.lastRetrieved,
+					version: file.version
+				}
+			])
+		);
+
+		const sceneData = {
+			...sceneDataRef.current,
+			files: filesMetadata
+		};
+
 		const syncResult = await fetch('/scene/sync', {
 			method: 'POST',
 			headers: {
@@ -145,14 +163,17 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 			},
 			body: JSON.stringify({
 				sceneId: scene.id,
-				sceneData: sceneDataRef.current
+				sceneData
 			})
 		});
 
 		const { error } = await syncResult.json();
 		if (error) {
+			console.log('error', error);
+
 			setSyncStatus('error');
 		} else {
+			console.log('success');
 			setSyncStatus('synced');
 		}
 
@@ -164,12 +185,16 @@ export default function Draw({ scene, isOwner, supabase, serverFilesId }: DrawPr
 		const { elements, files, appState } = sceneDataRef.current;
 
 		if (elements) {
-			LocalData.savePreview(
-				elements,
-				files || null,
-				scene.id.toString(),
-				appState?.theme == THEME.DARK
-			);
+			try {
+				await LocalData.savePreview(
+					elements,
+					files || null,
+					scene.id.toString(),
+					appState?.theme == THEME.DARK
+				);
+			} catch (error) {
+				console.error('Could not generate scene preview.', error);
+			}
 		}
 
 		if (error) {

@@ -66,6 +66,7 @@ export class LocalData {
 			exportPadding: 100,
 			files: files,
 			mimeType: 'image/webp',
+			maxWidthOrHeight: 1200,
 			appState: {
 				exportWithDarkMode: isDarkThemeOn
 			},
