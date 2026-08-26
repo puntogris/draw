@@ -44,13 +44,7 @@ const VIEWER_ALERT_DURATION_MS = 20000;
 
 function normalizeStoredAppState(appState: Record<string, unknown> | null | undefined) {
 	const storedSearchMatches = appState?.searchMatches;
-	const searchMatches =
-		storedSearchMatches &&
-		typeof storedSearchMatches === 'object' &&
-		!Array.isArray(storedSearchMatches) &&
-		Array.isArray((storedSearchMatches as { matches?: unknown }).matches)
-			? storedSearchMatches
-			: null;
+	const searchMatches = Array.isArray(storedSearchMatches) ? storedSearchMatches : [];
 
 	return { ...appState, collaborators: undefined, searchMatches };
 }
