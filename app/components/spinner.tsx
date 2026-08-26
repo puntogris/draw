@@ -3,7 +3,7 @@ export default function Spinner({ size = 'md' }: { size: 'xs' | 'sm' | 'md' | 'l
 
 	switch (size) {
 		case 'xs':
-			dimen = 'h-3 w-3 border-[1px]';
+			dimen = 'h-3 w-3 border';
 			break;
 		case 'sm':
 			dimen = 'h-6 w-6 border-[3px]';

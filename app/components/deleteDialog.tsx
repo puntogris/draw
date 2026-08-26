@@ -17,7 +17,7 @@ function DeleteSceneDialog({ isOpen, name, onClose }: DeleteDialogProps) {
 		<>
 			{isOpen && (
 				<div
-					className="fixed left-0 top-0 z-40 flex h-full w-full items-center justify-center bg-white bg-opacity-50 backdrop-blur-sm dark:bg-gray-950 dark:bg-opacity-80"
+					className="fixed left-0 top-0 z-40 flex h-full w-full items-center justify-center bg-white/50 backdrop-blur-xs dark:bg-gray-950/80"
 					onClick={() => onClose(false)}
 				>
 					<div

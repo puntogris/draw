@@ -71,7 +71,7 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
 		<>
 			{show && (
 				<div
-					className="fixed inset-0 z-30 bg-white bg-opacity-50 backdrop-blur-sm dark:bg-gray-950 dark:bg-opacity-80"
+					className="fixed inset-0 z-30 bg-white/50 backdrop-blur-xs dark:bg-gray-950/80"
 					onClick={() => onClose(null)}
 				></div>
 			)}
@@ -94,12 +94,12 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
 							name="name"
 							value={name}
 							onChange={(e) => validateAndSetName(e.target.value)}
-							className="block w-full bg-transparent px-4 py-3 text-sm text-gray-900 outline-none dark:text-slate-50"
+							className="block w-full bg-transparent px-4 py-3 text-sm text-gray-900 outline-hidden dark:text-slate-50"
 						/>
 						{name.length > 0 && (
 							<button
 								onClick={() => setName('')}
-								className="rounded-full bg-gray-100 p-0.5 text-slate-400 hover:bg-gray-200 dark:bg-gray-800 dark:text-slate-400 hover:dark:bg-gray-700"
+								className="rounded-full bg-gray-100 p-0.5 text-slate-400 hover:bg-gray-200 dark:bg-gray-800 dark:text-slate-400 dark:hover:bg-gray-700"
 								type="button"
 							>
 								<CrossIcon className="h-4 w-4" />
@@ -109,7 +109,7 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
 					<button
 						onClick={generateRandomName}
 						type="button"
-						className="flex items-center gap-2 rounded-md border border-transparent bg-gray-950 px-3 text-slate-50 hover:bg-gray-800 dark:bg-slate-50 dark:text-gray-950 hover:dark:bg-slate-200"
+						className="flex items-center gap-2 rounded-md border border-transparent bg-gray-950 px-3 text-slate-50 hover:bg-gray-800 dark:bg-slate-50 dark:text-gray-950 dark:hover:bg-slate-200"
 					>
 						<ShuffleIcon className="h-4 w-4 text-slate-50 dark:text-gray-950" />
 					</button>
@@ -123,12 +123,12 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
 						type="text"
 						value={description}
 						onChange={(e) => setDescription(e.target.value)}
-						className="block w-full bg-transparent px-4 py-3 text-sm text-gray-900 outline-none dark:text-slate-50"
+						className="block w-full bg-transparent px-4 py-3 text-sm text-gray-900 outline-hidden dark:text-slate-50"
 					/>
 					{description.length > 0 && (
 						<button
 							onClick={() => setDescription('')}
-							className="rounded-full bg-gray-100 p-0.5 text-slate-400 hover:bg-gray-200 dark:bg-gray-800 dark:text-slate-400 hover:dark:bg-gray-700"
+							className="rounded-full bg-gray-100 p-0.5 text-slate-400 hover:bg-gray-200 dark:bg-gray-800 dark:text-slate-400 dark:hover:bg-gray-700"
 							type="button"
 						>
 							<CrossIcon className="h-4 w-4" />
@@ -147,12 +147,12 @@ export default function EditDrawer({ show, scene, onClose }: EditDrawerProps) {
 						name="publish"
 						checked={published}
 						onChange={(e) => setPublished(e.target.checked)}
-						className="h-7 w-[3.25rem] cursor-pointer appearance-none rounded-full border-2 border-transparent bg-slate-300 ring-1 ring-transparent ring-offset-white transition-colors duration-200 ease-in-out before:inline-block before:h-6 before:w-6 before:translate-x-0 before:transform before:rounded-full before:bg-white before:shadow before:ring-0 before:transition before:duration-200 before:ease-in-out checked:bg-gray-950 checked:bg-none checked:before:translate-x-full checked:before:bg-slate-50 focus:outline-none dark:bg-slate-700 dark:before:bg-gray-950 dark:checked:bg-slate-50 dark:checked:before:bg-gray-950 dark:focus:ring-offset-gray-800"
+						className="h-7 w-13 cursor-pointer appearance-none rounded-full border-2 border-transparent bg-slate-300 ring-1 ring-transparent ring-offset-white transition-colors duration-200 ease-in-out before:inline-block before:h-6 before:w-6 before:translate-x-0 before:transform before:rounded-full before:bg-white before:shadow-sm before:ring-0 before:transition before:duration-200 before:ease-in-out checked:bg-gray-950 checked:bg-none checked:before:translate-x-full checked:before:bg-slate-50 focus:outline-hidden dark:bg-slate-700 dark:before:bg-gray-950 dark:checked:bg-slate-50 dark:checked:before:bg-gray-950 dark:focus:ring-offset-gray-800"
 					/>
 				</div>
 				<button
 					disabled={name.length < 3}
-					className="mt-6 w-full rounded-md bg-gray-950 px-4 py-3 text-sm font-semibold text-slate-50 transition-all hover:bg-gray-800 focus:outline-none disabled:opacity-50 dark:bg-slate-50 dark:text-gray-950 dark:hover:bg-slate-200"
+					className="mt-6 w-full rounded-md bg-gray-950 px-4 py-3 text-sm font-semibold text-slate-50 transition-all hover:bg-gray-800 focus:outline-hidden disabled:opacity-50 dark:bg-slate-50 dark:text-gray-950 dark:hover:bg-slate-200"
 					onClick={onSaveChanges}
 				>
 					Save changes

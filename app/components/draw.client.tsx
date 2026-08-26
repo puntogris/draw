@@ -417,7 +417,7 @@ function Menu({
 			<MainMenu.DefaultItems.ToggleTheme />
 			<MainMenu.ItemCustom>
 				<select
-					className="w-full rounded border border-zinc-100 bg-white px-2 py-1 text-sm text-neutral-800 shadow-none dark:border-neutral-700 dark:bg-exalidraw-surface-low dark:text-white"
+					className="w-full rounded-sm border border-zinc-100 bg-white px-2 py-1 text-sm text-neutral-800 shadow-none dark:border-neutral-700 dark:bg-exalidraw-surface-low dark:text-white"
 					onChange={({ target }) => setLangCode(target.value)}
 					value={langCode}
 					aria-label={t('buttons.selectLanguage')}

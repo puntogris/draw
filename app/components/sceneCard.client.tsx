@@ -54,7 +54,7 @@ export default function SceneCard({
 	}
 
 	return (
-		<div className="flex flex-col rounded-sm border border-gray-200 dark:border-gray-800">
+		<div className="flex flex-col rounded-xs border border-gray-200 dark:border-gray-800">
 			<Link className="flex" to={`/${name}`}>
 				<img
 					className="h-48 w-full rounded-t-sm object-cover opacity-90 hover:opacity-80"
@@ -117,7 +117,7 @@ function Dropdown({ onItemClicked }: { onItemClicked: (item: string) => void }) 
 								setIsOpen(false);
 								onItemClicked('share');
 							}}
-							className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+							className="flex w-full items-center gap-x-3 rounded-sm px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
 						>
 							<ShareIcon className="h-4 w-4" /> Share link
 						</button>
@@ -126,7 +126,7 @@ function Dropdown({ onItemClicked }: { onItemClicked: (item: string) => void }) 
 								setIsOpen(false);
 								onItemClicked('edit');
 							}}
-							className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+							className="flex w-full items-center gap-x-3 rounded-sm px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
 						>
 							<PencilIcon className="h-4 w-4" /> Edit
 						</button>
@@ -135,7 +135,7 @@ function Dropdown({ onItemClicked }: { onItemClicked: (item: string) => void }) 
 								setIsOpen(false);
 								onItemClicked('delete');
 							}}
-							className="flex w-full items-center gap-x-3 rounded px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+							className="flex w-full items-center gap-x-3 rounded-sm px-3 py-1.5 text-sm text-gray-800 hover:bg-slate-200 focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-300"
 						>
 							<TrashIcon className="h-4 w-4" /> Delete
 						</button>

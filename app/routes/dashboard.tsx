@@ -45,7 +45,7 @@ export default function Dashboard() {
 					<NavLink
 						to="/dashboard/new"
 						className={({ isActive }) =>
-							'flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800'.concat(
+							'flex items-center gap-3.5 rounded-sm px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800'.concat(
 								isActive ? ' bg-slate-100 dark:bg-gray-800' : ''
 							)
 						}
@@ -57,7 +57,7 @@ export default function Dashboard() {
 					<NavLink
 						to="/dashboard"
 						className={({ isActive }) =>
-							'flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800'.concat(
+							'flex items-center gap-3.5 rounded-sm px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800'.concat(
 								isActive ? ' bg-slate-100 dark:bg-gray-800' : ''
 							)
 						}
@@ -70,7 +70,7 @@ export default function Dashboard() {
 					{/* <NavLink
 						to="/dashboard/settings"
 						className={({ isActive }) =>
-							'flex items-center gap-3.5 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800'.concat(
+							'flex items-center gap-3.5 rounded-sm px-2.5 py-2 text-sm text-slate-700 hover:bg-gray-100 dark:text-slate-50 dark:hover:bg-gray-800'.concat(
 								isActive ? ' bg-slate-100 dark:bg-slate-800' : ''
 							)
 						}
@@ -81,7 +81,7 @@ export default function Dashboard() {
 					</NavLink> */}
 					<div className="mt-auto flex flex-col gap-2">
 						<button
-							className="flex items-center gap-3 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
+							className="flex items-center gap-3 rounded-sm px-2.5 py-2 text-sm text-slate-700 hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
 							type="button"
 							onClick={() => setTheme((prev) => (prev === Theme.DARK ? Theme.LIGHT : Theme.DARK))}
 						>
@@ -94,7 +94,7 @@ export default function Dashboard() {
 						</button>
 						<button
 							onClick={signOut}
-							className="flex items-center gap-3 rounded px-2.5 py-2 text-sm text-slate-700 hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
+							className="flex items-center gap-3 rounded-sm px-2.5 py-2 text-sm text-slate-700 hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-gray-800"
 						>
 							<SignOutIcon className="h-5 w-5" />
 							Sign out

@@ -75,7 +75,7 @@ function Scenes({ scenes }: { scenes: Scene[] }) {
 }
 
 function SearchInput({ inputChange }: { inputChange: Dispatch<string> }) {
-	return <div className="mt-6 flex items-center gap-3 rounded-md border px-4 text-sm dark:border-gray-700"><SearchIcon /><input className="w-full bg-transparent py-3 text-gray-900 outline-none dark:text-slate-50" placeholder="Search scenes" onChange={(event) => inputChange(event.target.value)} /></div>;
+	return <div className="mt-6 flex items-center gap-3 rounded-md border px-4 text-sm dark:border-gray-700"><SearchIcon /><input className="w-full bg-transparent py-3 text-gray-900 outline-hidden dark:text-slate-50" placeholder="Search scenes" onChange={(event) => inputChange(event.target.value)} /></div>;
 }
 
 function EmptyDataView() {

@@ -1,7 +1,7 @@
 export default function EmptyContentIcon(props: React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg
-			className="max-w-[5rem]"
+			className="max-w-20"
 			viewBox="0 0 375 428"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"

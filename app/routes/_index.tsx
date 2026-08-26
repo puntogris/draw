@@ -43,9 +43,9 @@ export default function Index() {
 			>
 				{theme === Theme.DARK ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
 			</button>
-			<div className="flex flex-grow flex-col p-8">
+			<div className="flex grow flex-col p-8">
 				<img className="absolute inset-0 h-full w-full object-cover lg:w-1/2" src={background} />
-				<div className="absolute inset-0 h-full w-full bg-black bg-opacity-50 lg:w-1/2" />
+				<div className="absolute inset-0 h-full w-full bg-black/50 lg:w-1/2" />
 				<a
 					className="z-10 flex w-fit items-center gap-3"
 					href="https://puntogris.com/"
@@ -99,7 +99,7 @@ export default function Index() {
 							type="email"
 							id="email"
 							name="email"
-							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] autofill:[-webkit-text-fill-color:#111827] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)] dark:autofill:[-webkit-text-fill-color:#f8fafc]"
+							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-hidden autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] autofill:[-webkit-text-fill-color:#111827] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)] dark:autofill:[-webkit-text-fill-color:#f8fafc]"
 							required
 						/>
 					</div>
@@ -114,13 +114,13 @@ export default function Index() {
 							type="password"
 							id="password"
 							name="password"
-							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-none autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] autofill:[-webkit-text-fill-color:#111827] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)] dark:autofill:[-webkit-text-fill-color:#f8fafc]"
+							className="block w-full rounded-md border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 outline-hidden autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] autofill:[-webkit-text-fill-color:#111827] dark:border-gray-700 dark:text-slate-50 dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(3,7,18)] dark:autofill:[-webkit-text-fill-color:#f8fafc]"
 							required
 						/>
 					</div>
 					<button
 						type="submit"
-						className="mt-4 w-full items-center justify-center gap-2 rounded-md bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-gray-800 focus:outline-none dark:bg-slate-50 dark:text-black dark:hover:bg-slate-200"
+						className="mt-4 w-full items-center justify-center gap-2 rounded-md bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-gray-800 focus:outline-hidden dark:bg-slate-50 dark:text-black dark:hover:bg-slate-200"
 					>
 						{isLoading ? 'Signing in...' : 'Sign in with email'}
 					</button>
